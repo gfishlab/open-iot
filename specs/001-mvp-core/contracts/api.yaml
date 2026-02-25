@@ -1,0 +1,715 @@
+openapi: 3.0.3
+info:
+  title: Open-IoT MVP API
+  version: 1.0.0
+  description: Open-IoT 物联网平台 MVP 阶段 API 契约
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: 开发环境
+
+tags:
+  - name: Auth
+    description: 认证相关
+  - name: Tenant
+    description: 租户管理
+  - name: Device
+    description: 设备管理
+  - name: Data
+    description: 数据上报与查询
+
+paths:
+  # ==================== 认证 ====================
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: 用户登录
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: 登录成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_LoginResponse'
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: 用户登出
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 登出成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_Void'
+
+  # ==================== 租户管理 ====================
+  /tenants:
+    get:
+      tags: [Tenant]
+      summary: 获取租户列表
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: ['0', '1']
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_PageResult_TenantVO'
+
+    post:
+      tags: [Tenant]
+      summary: 创建租户
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TenantCreateRequest'
+      responses:
+        '200':
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_TenantVO'
+
+  /tenants/{id}:
+    get:
+      tags: [Tenant]
+      summary: 获取租户详情
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_TenantVO'
+
+    put:
+      tags: [Tenant]
+      summary: 更新租户
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TenantUpdateRequest'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_TenantVO'
+
+  # ==================== 设备管理 ====================
+  /devices:
+    get:
+      tags: [Device]
+      summary: 获取设备列表
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: ['0', '1']
+        - name: protocolType
+          in: query
+          schema:
+            type: string
+            enum: [MQTT, TCP, HTTP]
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_PageResult_DeviceVO'
+
+    post:
+      tags: [Device]
+      summary: 创建设备
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceCreateRequest'
+      responses:
+        '200':
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_DeviceVO'
+
+  /devices/{id}:
+    get:
+      tags: [Device]
+      summary: 获取设备详情
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_DeviceVO'
+
+    put:
+      tags: [Device]
+      summary: 更新设备
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceUpdateRequest'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_DeviceVO'
+
+    delete:
+      tags: [Device]
+      summary: 删除设备
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: 删除成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_Void'
+
+  /devices/{id}/regenerate-token:
+    post:
+      tags: [Device]
+      summary: 重新生成设备Token
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_DeviceTokenVO'
+
+  # ==================== 数据上报 ====================
+  /devices/data:
+    post:
+      tags: [Data]
+      summary: HTTP设备数据上报
+      description: 第三方设备云通过HTTP推送数据
+      parameters:
+        - name: X-Device-Token
+          in: header
+          required: true
+          schema:
+            type: string
+          description: 设备认证Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceDataRequest'
+      responses:
+        '200':
+          description: 上报成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_Void'
+        '401':
+          description: Token无效或已过期
+
+  # ==================== 数据查询 ====================
+  /devices/{id}/trajectory:
+    get:
+      tags: [Data]
+      summary: 获取设备历史轨迹
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: startTime
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: endTime
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_List_TrajectoryPointVO'
+
+  /devices/{id}/trajectory/stream:
+    get:
+      tags: [Data]
+      summary: 实时轨迹推送（SSE）
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: SSE流
+          content:
+            text/event-stream:
+              schema:
+                $ref: '#/components/schemas/TrajectoryPointVO'
+
+  /devices/{id}/status:
+    get:
+      tags: [Data]
+      summary: 获取设备实时状态
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_DeviceStatusVO'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # ==================== 通用响应 ====================
+    ApiResponse_Void:
+      type: object
+      required: [code, msg]
+      properties:
+        code:
+          type: integer
+          example: 200
+        msg:
+          type: string
+          example: "success"
+        data:
+          type: object
+          nullable: true
+
+    ApiResponse_TenantVO:
+      type: object
+      required: [code, msg, data]
+      properties:
+        code:
+          type: integer
+        msg:
+          type: string
+        data:
+          $ref: '#/components/schemas/TenantVO'
+
+    ApiResponse_DeviceVO:
+      type: object
+      required: [code, msg, data]
+      properties:
+        code:
+          type: integer
+        msg:
+          type: string
+        data:
+          $ref: '#/components/schemas/DeviceVO'
+
+    ApiResponse_DeviceTokenVO:
+      type: object
+      required: [code, msg, data]
+      properties:
+        code:
+          type: integer
+        msg:
+          type: string
+        data:
+          $ref: '#/components/schemas/DeviceTokenVO'
+
+    ApiResponse_DeviceStatusVO:
+      type: object
+      required: [code, msg, data]
+      properties:
+        code:
+          type: integer
+        msg:
+          type: string
+        data:
+          $ref: '#/components/schemas/DeviceStatusVO'
+
+    ApiResponse_LoginResponse:
+      type: object
+      required: [code, msg, data]
+      properties:
+        code:
+          type: integer
+        msg:
+          type: string
+        data:
+          $ref: '#/components/schemas/LoginResponse'
+
+    ApiResponse_PageResult_TenantVO:
+      type: object
+      required: [code, msg, data]
+      properties:
+        code:
+          type: integer
+        msg:
+          type: string
+        data:
+          $ref: '#/components/schemas/PageResult_TenantVO'
+
+    ApiResponse_PageResult_DeviceVO:
+      type: object
+      required: [code, msg, data]
+      properties:
+        code:
+          type: integer
+        msg:
+          type: string
+        data:
+          $ref: '#/components/schemas/PageResult_DeviceVO'
+
+    ApiResponse_List_TrajectoryPointVO:
+      type: object
+      required: [code, msg, data]
+      properties:
+        code:
+          type: integer
+        msg:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrajectoryPointVO'
+
+    PageResult_TenantVO:
+      type: object
+      properties:
+        total:
+          type: integer
+        list:
+          type: array
+          items:
+            $ref: '#/components/schemas/TenantVO'
+
+    PageResult_DeviceVO:
+      type: object
+      properties:
+        total:
+          type: integer
+        list:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeviceVO'
+
+    # ==================== 请求对象 ====================
+    LoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    TenantCreateRequest:
+      type: object
+      required: [tenantCode, tenantName]
+      properties:
+        tenantCode:
+          type: string
+          maxLength: 50
+        tenantName:
+          type: string
+          maxLength: 100
+        contactEmail:
+          type: string
+          maxLength: 100
+
+    TenantUpdateRequest:
+      type: object
+      properties:
+        tenantName:
+          type: string
+          maxLength: 100
+        contactEmail:
+          type: string
+          maxLength: 100
+        status:
+          type: string
+          enum: ['0', '1']
+
+    DeviceCreateRequest:
+      type: object
+      required: [deviceCode, protocolType]
+      properties:
+        deviceCode:
+          type: string
+          maxLength: 50
+        deviceName:
+          type: string
+          maxLength: 100
+        protocolType:
+          type: string
+          enum: [MQTT, TCP, HTTP]
+
+    DeviceUpdateRequest:
+      type: object
+      properties:
+        deviceName:
+          type: string
+          maxLength: 100
+        status:
+          type: string
+          enum: ['0', '1']
+
+    DeviceDataRequest:
+      type: object
+      required: [eventType, payload]
+      properties:
+        eventType:
+          type: string
+          enum: [TELEMETRY, STATUS, ALARM]
+        payload:
+          type: object
+          additionalProperties: true
+        timestamp:
+          type: string
+          format: date-time
+
+    # ==================== 响应对象 ====================
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        userId:
+          type: integer
+          format: int64
+        username:
+          type: string
+        realName:
+          type: string
+        role:
+          type: string
+          enum: [ADMIN, TENANT_ADMIN]
+        tenantId:
+          type: integer
+          format: int64
+
+    TenantVO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        tenantCode:
+          type: string
+        tenantName:
+          type: string
+        contactEmail:
+          type: string
+        status:
+          type: string
+          enum: ['0', '1']
+        createTime:
+          type: string
+          format: date-time
+
+    DeviceVO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        deviceCode:
+          type: string
+        deviceName:
+          type: string
+        protocolType:
+          type: string
+          enum: [MQTT, TCP, HTTP]
+        status:
+          type: string
+          enum: ['0', '1']
+        onlineStatus:
+          type: string
+          enum: [ONLINE, OFFLINE]
+        lastSeenTime:
+          type: string
+          format: date-time
+        createTime:
+          type: string
+          format: date-time
+
+    DeviceTokenVO:
+      type: object
+      properties:
+        deviceId:
+          type: integer
+          format: int64
+        deviceToken:
+          type: string
+
+    DeviceStatusVO:
+      type: object
+      properties:
+        deviceId:
+          type: integer
+          format: int64
+        online:
+          type: boolean
+        lastSeenTime:
+          type: string
+          format: date-time
+        ip:
+          type: string
+        protocol:
+          type: string
+
+    TrajectoryPointVO:
+      type: object
+      properties:
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        speed:
+          type: number
+          format: double
+        heading:
+          type: number
+          format: double
+        eventTime:
+          type: string
+          format: date-time

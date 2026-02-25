@@ -1,0 +1,298 @@
+# Kafka Events Contract: Open-IoT MVP
+
+**Version**: 1.0.0
+**Created**: 2026-02-25
+
+---
+
+## Topics
+
+| Topic | Partitions | Replication | Retention | Purpose |
+|-------|------------|-------------|-----------|---------|
+| device-events | 3 | 1 | 7 days | 统一事件流（实时消费） |
+| raw-events | 3 | 1 | 7 days | 原始事件流（异步持久化） |
+| dlq-parse | 1 | 1 | 30 days | 解析失败死信队列 |
+
+---
+
+## Event Schemas
+
+### EventEnvelope（统一事件格式）
+
+用于 `device-events` Topic。
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["eventId", "tenantId", "deviceId", "eventType", "protocol", "timestamp", "traceId"],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "事件唯一标识"
+    },
+    "tenantId": {
+      "type": "string",
+      "description": "租户ID"
+    },
+    "deviceId": {
+      "type": "string",
+      "description": "设备ID"
+    },
+    "eventType": {
+      "type": "string",
+      "enum": ["TELEMETRY", "STATUS", "ALARM"],
+      "description": "事件类型"
+    },
+    "protocol": {
+      "type": "string",
+      "enum": ["MQTT", "TCP", "HTTP"],
+      "description": "协议类型"
+    },
+    "payload": {
+      "type": "object",
+      "description": "解析后的业务数据",
+      "additionalProperties": true
+    },
+    "rawPayload": {
+      "type": "string",
+      "description": "原始载荷（Base64编码）"
+    },
+    "timestamp": {
+      "type": "integer",
+      "description": "事件时间戳（毫秒）"
+    },
+    "traceId": {
+      "type": "string",
+      "description": "链路追踪ID"
+    }
+  }
+}
+```
+
+**示例**:
+```json
+{
+  "eventId": "550e8400-e29b-41d4-a716-446655440000",
+  "tenantId": "1001",
+  "deviceId": "2001",
+  "eventType": "TELEMETRY",
+  "protocol": "MQTT",
+  "payload": {
+    "latitude": 30.1234567,
+    "longitude": 120.1234567,
+    "speed": 25.5,
+    "heading": 180.0
+  },
+  "rawPayload": "eyJ0ZW1wIjoyNS41LCJodW1pZCI6NjB9",
+  "timestamp": 1709012345678,
+  "traceId": "abc123def456"
+}
+```
+
+---
+
+### RawEvent（原始事件格式）
+
+用于 `raw-events` Topic。
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["eventId", "tenantId", "deviceId", "protocol", "rawPayload", "timestamp"],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "tenantId": {
+      "type": "string"
+    },
+    "deviceId": {
+      "type": "string"
+    },
+    "protocol": {
+      "type": "string",
+      "enum": ["MQTT", "TCP", "HTTP"]
+    },
+    "rawPayload": {
+      "type": "string",
+      "description": "原始载荷（Base64编码）"
+    },
+    "timestamp": {
+      "type": "integer"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "元数据",
+      "properties": {
+        "sourceIp": {
+          "type": "string"
+        },
+        "mqttTopic": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
+```
+
+---
+
+### DeadLetterEvent（死信事件格式）
+
+用于 `dlq-parse` Topic。
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["eventId", "originalEvent", "failureReason", "failedAt"],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "description": "死信事件ID"
+    },
+    "originalEvent": {
+      "type": "object",
+      "description": "原始事件（EventEnvelope格式）"
+    },
+    "originalEventId": {
+      "type": "string",
+      "description": "原始事件ID"
+    },
+    "failureReason": {
+      "type": "string",
+      "description": "失败原因"
+    },
+    "retryCount": {
+      "type": "integer",
+      "default": 0,
+      "description": "已重试次数"
+    },
+    "failedAt": {
+      "type": "integer",
+      "description": "失败时间戳"
+    },
+    "lastRetryAt": {
+      "type": "integer",
+      "description": "最后重试时间戳"
+    }
+  }
+}
+```
+
+**示例**:
+```json
+{
+  "eventId": "660e8400-e29b-41d4-a716-446655440001",
+  "originalEvent": {
+    "eventId": "550e8400-e29b-41d4-a716-446655440000",
+    "tenantId": "1001",
+    "deviceId": "2001",
+    "eventType": "TELEMETRY",
+    "protocol": "TCP",
+    "rawPayload": "aW52YWxpZF9wYXlsb2Fk",
+    "timestamp": 1709012345678
+  },
+  "originalEventId": "550e8400-e29b-41d4-a716-446655440000",
+  "failureReason": "Failed to parse TCP protocol: invalid frame header",
+  "retryCount": 3,
+  "failedAt": 1709012400000,
+  "lastRetryAt": 1709012500000
+}
+```
+
+---
+
+## Key Schema
+
+所有 Topic 使用相同的 Key 格式：
+
+```
+{tenantId}:{deviceId}
+```
+
+**示例**: `1001:2001`
+
+---
+
+## 消费者组
+
+| Consumer Group | Topic | Purpose |
+|----------------|-------|---------|
+| realtime-consumer | device-events | 实时处理，写入 Redis |
+| async-consumer | raw-events | 异步持久化到 MongoDB |
+| parser-consumer | raw-events | 解析任务，写入 PostgreSQL |
+| monitor-consumer | device-events | 监控指标收集 |
+
+---
+
+## 消息头（Headers）
+
+| Header | Type | Description |
+|--------|------|-------------|
+| trace_id | String | 链路追踪ID |
+| tenant_id | String | 租户ID |
+| device_id | String | 设备ID |
+| event_type | String | 事件类型 |
+| source | String | 来源服务 |
+| timestamp | Long | 消息生成时间戳 |
+
+---
+
+## 生产者配置
+
+```yaml
+# Kafka Producer 配置
+spring:
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 3
+      properties:
+        enable.idempotence: true
+        max.in.flight.requests.per.connection: 5
+```
+
+---
+
+## 消费者配置
+
+```yaml
+# Kafka Consumer 配置
+spring:
+  kafka:
+    consumer:
+      group-id: ${spring.application.name}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      properties:
+        spring.json.trusted.packages: "com.openiot.*"
+```
+
+---
+
+## 错误处理策略
+
+### 重试策略
+
+| 场景 | 重试次数 | 延迟 | 动作 |
+|------|---------|------|------|
+| 临时错误（网络超时） | 3 | 指数退避 | 重试 |
+| 解析错误 | 3 | 固定5秒 | 重试后进死信 |
+| 业务错误 | 0 | - | 直接进死信 |
+
+### 死信处理
+
+1. 消息进入 `dlq-parse` Topic
+2. 消费者写入 MongoDB `dlq_events` 集合
+3. 运维人员通过 API 查看死信
+4. 手动触发重试（重新发送到 `device-events`）
