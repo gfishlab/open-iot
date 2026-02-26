@@ -1,0 +1,139 @@
+version: '3.8'
+
+# 生产环境覆盖配置
+# 使用方式: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+services:
+  # ==================== 生产环境服务配置 ====================
+
+  gateway-service:
+    image: ${DOCKER_REGISTRY:-registry.example.com/open-iot}/gateway-service:${IMAGE_TAG:-latest}
+    container_name: open-iot-gateway
+    restart: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - NACOS_SERVER_ADDR=nacos:8848
+      - JAVA_OPTS=-Xms512m -Xmx1024m
+    depends_on:
+      - nacos
+      - redis
+    networks:
+      - open-iot-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+
+  tenant-service:
+    image: ${DOCKER_REGISTRY:-registry.example.com/open-iot}/tenant-service:${IMAGE_TAG:-latest}
+    container_name: open-iot-tenant
+    restart: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - NACOS_SERVER_ADDR=nacos:8848
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    depends_on:
+      - nacos
+      - postgres
+      - redis
+    networks:
+      - open-iot-network
+
+  device-service:
+    image: ${DOCKER_REGISTRY:-registry.example.com/open-iot}/device-service:${IMAGE_TAG:-latest}
+    container_name: open-iot-device
+    restart: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - NACOS_SERVER_ADDR=nacos:8848
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    depends_on:
+      - nacos
+      - postgres
+      - redis
+      - kafka
+    networks:
+      - open-iot-network
+
+  connect-service:
+    image: ${DOCKER_REGISTRY:-registry.example.com/open-iot}/connect-service:${IMAGE_TAG:-latest}
+    container_name: open-iot-connect
+    restart: always
+    ports:
+      - "8888:8888"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - NACOS_SERVER_ADDR=nacos:8848
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    depends_on:
+      - nacos
+      - redis
+      - kafka
+    networks:
+      - open-iot-network
+
+  data-service:
+    image: ${DOCKER_REGISTRY:-registry.example.com/open-iot}/data-service:${IMAGE_TAG:-latest}
+    container_name: open-iot-data
+    restart: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - NACOS_SERVER_ADDR=nacos:8848
+      - JAVA_OPTS=-Xms512m -Xmx1024m
+    depends_on:
+      - nacos
+      - postgres
+      - mongodb
+      - redis
+      - kafka
+    networks:
+      - open-iot-network
+
+  frontend:
+    image: ${DOCKER_REGISTRY:-registry.example.com/open-iot}/frontend:${IMAGE_TAG:-latest}
+    container_name: open-iot-frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - gateway-service
+    networks:
+      - open-iot-network
+
+  # ==================== 基础设施（生产配置） ====================
+
+  nacos:
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  postgres:
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  redis:
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-openiot123} --maxmemory 1gb --maxmemory-policy allkeys-lru
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  mongodb:
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  kafka:
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+networks:
+  open-iot-network:
+    driver: bridge
