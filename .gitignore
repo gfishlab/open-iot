@@ -68,6 +68,7 @@ application-local.properties
 
 # Docker
 *.pid
+infrastructure/docker/data/
 
 # Test output
 test-output/

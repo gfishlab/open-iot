@@ -1,0 +1,55 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: data-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        namespace: public
+      config:
+        server-addr: 127.0.0.1:8848
+        file-extension: yaml
+        namespace: public
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:5432/openiot
+    username: openiot
+    password: openiot123
+    driver-class-name: org.postgresql.Driver
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      password: openiot123
+      database: 0
+    mongodb:
+      uri: mongodb://openiot:openiot123@127.0.0.1:27017/openiot
+  kafka:
+    bootstrap-servers: 127.0.0.1:9092
+    consumer:
+      group-id: data-service
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+
+# MyBatis Plus 配置
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+# Actuator 配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+# 日志配置
+logging:
+  level:
+    com.openiot: debug
