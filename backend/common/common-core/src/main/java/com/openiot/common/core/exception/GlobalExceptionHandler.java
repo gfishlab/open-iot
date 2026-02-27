@@ -1,5 +1,7 @@
 package com.openiot.common.core.exception;
 
+import cn.dev33.satoken.exception.NotPermissionException;
+import cn.dev33.satoken.exception.NotRoleException;
 import com.openiot.common.core.result.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
@@ -7,7 +9,6 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -134,13 +135,23 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 处理权限不足异常
+     * 处理 Sa-Token 权限不足异常
      */
-    @ExceptionHandler(AccessDeniedException.class)
+    @ExceptionHandler(NotPermissionException.class)
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<Void> handleAccessDeniedException(AccessDeniedException e, HttpServletRequest request) {
+    public ApiResponse<Void> handleNotPermissionException(NotPermissionException e, HttpServletRequest request) {
         log.warn("权限不足: {} - {}", request.getRequestURI(), e.getMessage());
-        return ApiResponse.forbidden("权限不足");
+        return ApiResponse.forbidden("权限不足: " + e.getPermission());
+    }
+
+    /**
+     * 处理 Sa-Token 角色不足异常
+     */
+    @ExceptionHandler(NotRoleException.class)
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<Void> handleNotRoleException(NotRoleException e, HttpServletRequest request) {
+        log.warn("角色不足: {} - {}", request.getRequestURI(), e.getMessage());
+        return ApiResponse.forbidden("角色不足: " + e.getRole());
     }
 
     /**
