@@ -8,13 +8,10 @@ services:
     environment:
       - MODE=standalone
       - PREFER_HOST_MODE=hostname
-      - SPRING_DATASOURCE_PLATFORM=mysql
     ports:
       - "8848:8848"
       - "9848:9848"
       - "9849:9849"
-    volumes:
-      - ./data/nacos/logs:/home/nacos/logs
     restart: unless-stopped
     networks:
       - open-iot-network
@@ -30,7 +27,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./data/postgres/data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     restart: unless-stopped
     networks:
       - open-iot-network
@@ -43,7 +40,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - ./data/redis/data:/data
+      - redis-data:/data
     restart: unless-stopped
     networks:
       - open-iot-network
@@ -58,7 +55,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ./data/mongo/data:/data/db
+      - mongo-data:/data/db
     restart: unless-stopped
     networks:
       - open-iot-network
@@ -71,8 +68,8 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     volumes:
-      - ./data/zookeeper/data:/var/lib/zookeeper/data
-      - ./data/zookeeper/logs:/var/lib/zookeeper/log
+      - zookeeper-data:/var/lib/zookeeper/data
+      - zookeeper-logs:/var/lib/zookeeper/log
     restart: unless-stopped
     networks:
       - open-iot-network
@@ -97,7 +94,7 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     volumes:
-      - ./data/kafka/data:/var/lib/kafka/data
+      - kafka-data:/var/lib/kafka/data
     restart: unless-stopped
     networks:
       - open-iot-network
@@ -117,10 +114,7 @@ services:
       - "8084:8084"    # WSS
       - "8883:8883"    # MQTTS
       - "18083:18083"  # Dashboard
-    volumes:
-      - ./data/emqx/data:/opt/emqx/data
-      - ./data/emqx/log:/opt/emqx/log
-      - ../emqx/emqx.conf:/opt/emqx/etc/emqx.conf
+    # Windows 兼容：使用 named volume 而非 bind mount
     restart: unless-stopped
     networks:
       - open-iot-network
@@ -151,5 +145,6 @@ volumes:
   redis-data:
   mongo-data:
   zookeeper-data:
+  zookeeper-logs:
   kafka-data:
   emqx-data:
