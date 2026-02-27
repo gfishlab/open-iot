@@ -33,7 +33,7 @@
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
 
-        <!-- Sa-Token (Reactor) - 必须在 common-security 之前 -->
+        <!-- Sa-Token (Reactor) -->
         <dependency>
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-reactor-spring-boot3-starter</artifactId>
@@ -43,48 +43,10 @@
             <artifactId>sa-token-redis-jackson</artifactId>
         </dependency>
 
-        <!-- Common Redis (排除 web) -->
+        <!-- Spring Boot Data Redis (Reactive) -->
         <dependency>
-            <groupId>com.openiot</groupId>
-            <artifactId>common-redis</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-web</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!-- Common Core (排除 web 和 sa-token) -->
-        <dependency>
-            <groupId>com.openiot</groupId>
-            <artifactId>common-core</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-web</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>cn.dev33</groupId>
-                    <artifactId>sa-token-spring-boot3-starter</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!-- Common Security (排除 servlet 版 sa-token 和 web) -->
-        <dependency>
-            <groupId>com.openiot</groupId>
-            <artifactId>common-security</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-web</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>cn.dev33</groupId>
-                    <artifactId>sa-token-spring-boot3-starter</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
         </dependency>
 
         <!-- Spring Boot Actuator -->

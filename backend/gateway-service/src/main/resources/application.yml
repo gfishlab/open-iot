@@ -37,7 +37,7 @@ spring:
         - id: data-service
           uri: lb://data-service
           predicates:
-            - Path=/api/v1/data/**,/api/v1/replay/**
+            - Path=/api/v1/data/**,/api/v1/replay/**,/api/v1/sse/**
           filters:
             - StripPrefix=0
   data:
