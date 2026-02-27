@@ -116,6 +116,13 @@ public class ApiResponse<T> implements Serializable {
         return new ApiResponse<>(400, msg, null);
     }
 
+    /**
+     * 资源不存在响应
+     */
+    public static <T> ApiResponse<T> notFound(String msg) {
+        return new ApiResponse<>(404, msg, null);
+    }
+
     // ==================== 链式设置 ====================
 
     /**

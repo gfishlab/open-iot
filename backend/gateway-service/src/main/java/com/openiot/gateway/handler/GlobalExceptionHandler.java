@@ -2,12 +2,14 @@ package com.openiot.gateway.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
@@ -16,8 +18,6 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 网关全局异常处理器
@@ -45,9 +45,9 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
         int code;
         String message;
 
-        if (ex instanceof ResponseStatusException) {
-            ResponseStatusException responseStatusException = (ResponseStatusException) ex;
-            code = responseStatusException.getStatus().value();
+        if (ex instanceof ResponseStatusException responseStatusException) {
+            HttpStatusCode statusCode = responseStatusException.getStatusCode();
+            code = statusCode.value();
             message = responseStatusException.getReason();
         } else {
             code = HttpStatus.INTERNAL_SERVER_ERROR.value();
@@ -57,19 +57,30 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
         // 记录异常日志
         log.error("网关异常: {} - {}", exchange.getRequest().getPath(), ex.getMessage(), ex);
 
-        // 构建响应
-        Map<String, Object> result = new HashMap<>();
-        result.put("code", code);
-        result.put("msg", message);
-        result.put("data", null);
-        result.put("timestamp", System.currentTimeMillis());
+        // 构建响应 VO
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setCode(code);
+        errorResponse.setMsg(message);
+        errorResponse.setData(null);
+        errorResponse.setTimestamp(System.currentTimeMillis());
 
         try {
-            String body = objectMapper.writeValueAsString(result);
+            String body = objectMapper.writeValueAsString(errorResponse);
             DataBuffer buffer = response.bufferFactory().wrap(body.getBytes(StandardCharsets.UTF_8));
             return response.writeWith(Mono.just(buffer));
         } catch (JsonProcessingException e) {
             return response.setComplete();
         }
+    }
+
+    /**
+     * 错误响应 VO
+     */
+    @Data
+    public static class ErrorResponse {
+        private Integer code;
+        private String msg;
+        private Object data;
+        private Long timestamp;
     }
 }

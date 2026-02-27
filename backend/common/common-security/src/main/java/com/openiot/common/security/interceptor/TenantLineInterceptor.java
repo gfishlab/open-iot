@@ -52,7 +52,7 @@ public class TenantLineInterceptor implements TenantLineHandler {
      * 判断表是否忽略租户隔离
      */
     @Override
-    public boolean ignoreTable(String tableName, String sql) {
+    public boolean ignoreTable(String tableName) {
         // 平台管理员跳过租户隔离
         if (TenantContext.isPlatformAdmin()) {
             return true;

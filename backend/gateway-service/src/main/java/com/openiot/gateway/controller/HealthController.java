@@ -1,8 +1,6 @@
 package com.openiot.gateway.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
+import lombok.Data;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,20 +17,40 @@ import java.util.Map;
 public class HealthController {
 
     @GetMapping("/health")
-    public Mono<Map<String, Object>> health() {
-        Map<String, Object> health = new HashMap<>();
-        health.put("status", "UP");
-        health.put("timestamp", System.currentTimeMillis());
-        health.put("service", "gateway-service");
+    public Mono<HealthVO> health() {
+        HealthVO health = new HealthVO();
+        health.setStatus("UP");
+        health.setTimestamp(System.currentTimeMillis());
+        health.setService("gateway-service");
         return Mono.just(health);
     }
 
     @GetMapping("/info")
-    public Mono<Map<String, Object>> info() {
-        Map<String, Object> info = new HashMap<>();
-        info.put("name", "Open-IoT Gateway Service");
-        info.put("version", "1.0.0");
-        info.put("description", "API 网关服务");
+    public Mono<InfoVO> info() {
+        InfoVO info = new InfoVO();
+        info.setName("Open-IoT Gateway Service");
+        info.setVersion("1.0.0");
+        info.setDescription("API 网关服务");
         return Mono.just(info);
+    }
+
+    /**
+     * 健康检查响应 VO
+     */
+    @Data
+    public static class HealthVO {
+        private String status;
+        private Long timestamp;
+        private String service;
+    }
+
+    /**
+     * 服务信息响应 VO
+     */
+    @Data
+    public static class InfoVO {
+        private String name;
+        private String version;
+        private String description;
     }
 }

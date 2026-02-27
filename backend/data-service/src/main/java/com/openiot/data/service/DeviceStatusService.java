@@ -1,12 +1,10 @@
 package com.openiot.data.service;
 
 import com.openiot.common.redis.util.RedisUtil;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 设备状态服务
@@ -27,10 +25,6 @@ public class DeviceStatusService {
     public void updateOnlineStatus(String tenantId, String deviceId, boolean online) {
         String key = DEVICE_STATUS_KEY_PREFIX + tenantId + ":" + deviceId;
 
-        Map<String, Object> status = new HashMap<>();
-        status.put("online", online);
-        status.put("lastSeen", System.currentTimeMillis());
-
         redisUtil.hSet(key, "online", String.valueOf(online));
         redisUtil.hSet(key, "lastSeen", String.valueOf(System.currentTimeMillis()));
         redisUtil.expire(key, STATUS_TTL);
@@ -41,13 +35,24 @@ public class DeviceStatusService {
     /**
      * 获取设备在线状态
      */
-    public Map<String, Object> getDeviceStatus(String tenantId, String deviceId) {
+    public DeviceStatusVO getDeviceStatus(String tenantId, String deviceId) {
         String key = DEVICE_STATUS_KEY_PREFIX + tenantId + ":" + deviceId;
 
-        Map<String, Object> status = new HashMap<>();
-        status.put("online", Boolean.parseBoolean(String.valueOf(redisUtil.hGet(key, "online"))));
-        status.put("lastSeen", Long.parseLong(String.valueOf(redisUtil.hGet(key, "lastSeen")));
+        DeviceStatusVO status = new DeviceStatusVO();
+        status.setOnline(Boolean.parseBoolean(String.valueOf(redisUtil.hGet(key, "online"))));
+
+        String lastSeen = String.valueOf(redisUtil.hGet(key, "lastSeen"));
+        status.setLastSeen(lastSeen != null && !"null".equals(lastSeen) ? Long.parseLong(lastSeen) : null);
 
         return status;
+    }
+
+    /**
+     * 设备状态响应 VO
+     */
+    @Data
+    public static class DeviceStatusVO {
+        private Boolean online;
+        private Long lastSeen;
     }
 }

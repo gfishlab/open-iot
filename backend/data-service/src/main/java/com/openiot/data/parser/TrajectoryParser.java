@@ -4,16 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openiot.common.mongodb.document.RawEventDocument;
 import com.openiot.data.entity.DeviceTrajectory;
 import com.openiot.data.mapper.DeviceTrajectoryMapper;
+import com.openiot.data.service.TrajectoryService.TrajectoryPayload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Map;
 
 /**
  * 轨迹解析器
@@ -43,11 +41,12 @@ public class TrajectoryParser {
                 return;
             }
 
-            Map<String, Object> payloadMap;
-            if (payload instanceof Map) {
-                payloadMap = (Map<String, Object>) payload;
+            // 转换为轨迹载荷对象
+            TrajectoryPayload trajectoryPayload;
+            if (payload instanceof TrajectoryPayload) {
+                trajectoryPayload = (TrajectoryPayload) payload;
             } else {
-                payloadMap = objectMapper.convertValue(payload, Map.class);
+                trajectoryPayload = objectMapper.convertValue(payload, TrajectoryPayload.class);
             }
 
             // 构建轨迹实体
@@ -58,17 +57,17 @@ public class TrajectoryParser {
             trajectory.setCreateTime(LocalDateTime.now());
 
             // 解析轨迹字段
-            if (payloadMap.containsKey("latitude")) {
-                trajectory.setLatitude(new BigDecimal(String.valueOf(payloadMap.get("latitude"))));
+            if (trajectoryPayload.getLatitude() != null) {
+                trajectory.setLatitude(trajectoryPayload.getLatitude());
             }
-            if (payloadMap.containsKey("longitude")) {
-                trajectory.setLongitude(new BigDecimal(String.valueOf(payloadMap.get("longitude"))));
+            if (trajectoryPayload.getLongitude() != null) {
+                trajectory.setLongitude(trajectoryPayload.getLongitude());
             }
-            if (payloadMap.containsKey("speed")) {
-                trajectory.setSpeed(new BigDecimal(String.valueOf(payloadMap.get("speed"))));
+            if (trajectoryPayload.getSpeed() != null) {
+                trajectory.setSpeed(trajectoryPayload.getSpeed());
             }
-            if (payloadMap.containsKey("heading")) {
-                trajectory.setHeading(new BigDecimal(String.valueOf(payloadMap.get("heading"))));
+            if (trajectoryPayload.getHeading() != null) {
+                trajectory.setHeading(trajectoryPayload.getHeading());
             }
 
             // 保存到 PostgreSQL

@@ -1,5 +1,6 @@
 package com.openiot.gateway.controller;
 
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
 import org.springframework.cloud.gateway.route.RouteDefinition;
@@ -8,9 +9,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 动态路由控制器
@@ -36,12 +34,23 @@ public class RouteController {
      * 刷新路由配置
      */
     @PostMapping("/routes/refresh")
-    public Mono<Map<String, Object>> refreshRoutes() {
+    public Mono<RefreshResponse> refreshRoutes() {
         publisher.publishEvent(new RefreshRoutesEvent(this));
-        Map<String, Object> result = new HashMap<>();
-        result.put("code", 200);
-        result.put("msg", "路由刷新成功");
-        result.put("timestamp", System.currentTimeMillis());
-        return Mono.just(result);
+
+        RefreshResponse response = new RefreshResponse();
+        response.setCode(200);
+        response.setMsg("路由刷新成功");
+        response.setTimestamp(System.currentTimeMillis());
+        return Mono.just(response);
+    }
+
+    /**
+     * 路由刷新响应 VO
+     */
+    @Data
+    public static class RefreshResponse {
+        private Integer code;
+        private String msg;
+        private Long timestamp;
     }
 }

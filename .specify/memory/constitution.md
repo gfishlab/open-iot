@@ -2,10 +2,10 @@
 =============================================================================
 SYNC IMPACT REPORT
 =============================================================================
-Version change: 1.2.0 → 1.2.1 (PATCH - 技术栈规范扩展)
+Version change: 1.2.2 → 1.2.3 (PATCH - 透明类型禁止规则补充)
 Modified principles: None
 Added sections:
-  - 前端技术栈规范
+  - 透明类型禁止规则（在"后端接口与对象映射规范"中）
 Removed sections: None
 Templates requiring updates:
   - .specify/templates/plan-template.md ✅ (no changes needed - generic)
@@ -112,6 +112,18 @@ SaaS 模式下所有核心业务表 MUST 包含租户隔离能力。
 | UI 组件库 | Element Plus | Vue 3 企业级 UI 组件库 |
 | 状态管理 | Pinia | Vue 3 官方推荐状态管理库 |
 
+### 后端接口与对象映射规范
+
+- 对象映射：Entity 与 VO/DTO 之间的转换 MUST 使用 `MapStruct`，禁止在业务代码中手写大段属性拷贝逻辑
+- 入参约束：Controller 接口入参 MUST 使用 VO/DTO，禁止直接使用 Entity 作为请求参数
+- 出参约束：Controller 接口返回值 MUST 使用 VO/DTO，禁止直接返回 Entity
+- 边界约束：Entity 仅用于持久化层与领域内部，不得作为对外 API 契约
+- **透明类型禁止**：接口入参和返回数据结构 MUST 使用自定义 VO/DTO 类，禁止使用 `Map`、`JSONObject`、`Object` 等不透明数据结构
+  - 入参必须定义明确的请求 VO（如 `XxxRequest`、`XxxCreateVO`、`XxxUpdateVO`）
+  - 出参必须定义明确的响应 VO（如 `XxxResponse`、`XxxVO`）
+  - 禁止 `Map<String, Object>` 作为 Controller 层入参或出参
+  - 禁止 `JSONObject`/`Map` 直接暴露给 API 层，必须在 Service 层完成转换
+
 ### 代码规范
 
 - 编码格式：统一使用 UTF-8
@@ -175,4 +187,4 @@ SaaS 模式下所有核心业务表 MUST 包含租户隔离能力。
 - 代码审查需要检查是否符合宪法原则
 - 复杂度增加必须有合理的理由和文档
 
-**Version**: 1.2.1 | **Ratified**: 2026-02-25 | **Last Amended**: 2026-02-25
+**Version**: 1.2.3 | **Ratified**: 2026-02-25 | **Last Amended**: 2026-02-27
