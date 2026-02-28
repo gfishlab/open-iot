@@ -28,7 +28,10 @@ spring:
       password: openiot123
       database: 0
     mongodb:
-      uri: mongodb://openiot:openiot123@127.0.0.1:27017/openiot
+      # MongoDB 连接 URI，authSource=admin 表示用户认证信息存储在 admin 数据库
+      uri: mongodb://openiot:openiot123@127.0.0.1:27017/openiot?authSource=admin
+      # 自动创建索引
+      auto-index-creation: true
   kafka:
     bootstrap-servers: 127.0.0.1:9092
     consumer:
