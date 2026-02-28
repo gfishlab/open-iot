@@ -7,20 +7,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
- * Redis 配置类
+ * Redis 自动配置类
  * 配置 RedisTemplate 序列化方式
  */
-@Configuration
+@AutoConfiguration
+@ConditionalOnClass(RedisTemplate.class)
 @EnableCaching
+@ComponentScan("com.openiot.common.redis")
 public class RedisConfig {
 
     /**
@@ -29,6 +34,7 @@ public class RedisConfig {
      * Value 使用 JSON 序列化
      */
     @Bean
+    @ConditionalOnMissingBean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
