@@ -1,7 +1,9 @@
 package com.openiot.data.config;
 
+import com.mongodb.client.MongoDatabase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.Document;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -71,8 +73,10 @@ public class DataServiceHealthIndicator implements HealthIndicator {
     }
 
     private void checkMongoDB(Health.Builder builder) {
-        String dbName = mongoTemplate.getDb().getName();
-        boolean isHealthy = mongoTemplate.getDb().runCommand("{ ping: 1 }").containsKey("ok");
+        MongoDatabase db = mongoTemplate.getDb();
+        String dbName = db.getName();
+        Document result = db.runCommand(new Document("ping", 1));
+        boolean isHealthy = result.containsKey("ok") && result.getInteger("ok") == 1;
         builder.withDetail("mongodb", isHealthy ? "UP" : "DOWN")
                 .withDetail("mongodb_database", dbName);
     }
