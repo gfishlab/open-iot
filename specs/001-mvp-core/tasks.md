@@ -269,18 +269,18 @@
 
 #### 租户管理完善
 
-- [ ] T109 [US6] 完善租户 CRUD 接口 backend/tenant-service/src/main/java/com/openiot/tenant/controller/TenantController.java
-- [ ] T110 [US6] 创建用户管理服务 backend/tenant-service/src/main/java/com/openiot/tenant/service/UserService.java
-- [ ] T111 [US6] 创建用户管理接口 backend/tenant-service/src/main/java/com/openiot/tenant/controller/UserController.java
-- [ ] T112 [US6] 创建权限校验服务 backend/tenant-service/src/main/java/com/openiot/tenant/service/PermissionService.java
+- [x] T109 [US6] 完善租户 CRUD 接口 backend/tenant-service/src/main/java/com/openiot/tenant/controller/TenantController.java
+- [x] T110 [US6] 创建用户管理服务 backend/tenant-service/src/main/java/com/openiot/tenant/service/UserService.java
+- [x] T111 [US6] 创建用户管理接口 backend/tenant-service/src/main/java/com/openiot/tenant/controller/UserController.java
+- [x] T112 [US6] 创建权限校验服务 backend/tenant-service/src/main/java/com/openiot/tenant/service/PermissionService.java
 
 #### 前端管理页面
 
-- [ ] T113 [P] [US6] 创建登录页面 frontend/src/views/auth/Login.vue
-- [ ] T114 [P] [US6] 创建租户管理页面 frontend/src/views/tenant/TenantList.vue
-- [ ] T115 [P] [US6] 创建设备管理页面 frontend/src/views/device/DeviceList.vue
-- [ ] T116 [US6] 创建用户 Store frontend/src/stores/user.ts
-- [ ] T117 [US6] 创建权限指令 frontend/src/directives/permission.ts
+- [x] T113 [P] [US6] 创建登录页面 frontend/src/views/auth/Login.vue
+- [x] T114 [P] [US6] 创建租户管理页面 frontend/src/views/tenant/TenantList.vue
+- [x] T115 [P] [US6] 创建设备管理页面 frontend/src/views/device/DeviceList.vue
+- [x] T116 [US6] 创建用户 Store frontend/src/stores/user.ts
+- [x] T117 [US6] 创建权限指令 frontend/src/directives/permission.ts
 
 ---
 

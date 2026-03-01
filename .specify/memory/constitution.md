@@ -2,11 +2,11 @@
 =============================================================================
 SYNC IMPACT REPORT
 =============================================================================
-Version change: 1.3.0 → 1.4.0 (MINOR - 新增前端UI/UX设计原则)
+Version change: 1.4.0 → 1.5.0 (MINOR - 新增 RBAC 权限模型原则)
 Modified principles:
   - None
 Added sections:
-  - 前端 UI/UX 设计原则 (Frontend UI/UX Design Principles)
+  - VIII. 严格 RBAC 权限模型原则 (Strict RBAC Permission Model)
 Removed sections: None
 Templates requiring updates:
   - .specify/templates/plan-template.md ✅ (no changes needed - generic)
@@ -96,6 +96,59 @@ SaaS 模式下所有核心业务表 MUST 包含租户隔离能力。
 - **受控入口信任**: 下游服务仅可在内网或受控入口条件下信任 Gateway 注入的身份上下文
 
 **理由**: 清晰认证边界可避免认证逻辑分散、身份伪造与跨租户越权，提升系统安全性与可维护性。
+
+### VIII. 严格 RBAC 权限模型原则 (Strict RBAC Permission Model)
+
+权限系统 MUST 遵循严格 RBAC（Role-Based Access Control）模型，实现用户-角色-权限的灵活配置。
+
+#### 核心模型
+
+```
+用户(sys_user) ←→ 角色(sys_role) ←→ 权限(sys_permission)
+        │                    │
+        └─ sys_user_role ────┘    └─ sys_role_permission ──┘
+```
+
+#### 数据库设计规范
+
+| 表名 | 说明 | 必要字段 |
+|------|------|----------|
+| `sys_user` | 用户表 | id, tenant_id, username, password, status |
+| `sys_role` | 角色表 | id, tenant_id, role_code, role_name, status |
+| `sys_permission` | 权限表 | id, permission_code, permission_name, resource_type, resource_path |
+| `sys_user_role` | 用户角色关联 | user_id, role_id |
+| `sys_role_permission` | 角色权限关联 | role_id, permission_id |
+
+#### 权限粒度规范
+
+- **模块级**: `module:action` 格式，如 `device:view`、`device:create`
+- **菜单级**: 控制菜单显示，如 `menu:device`
+- **按钮级**: 控制操作按钮，如 `btn:device:delete`
+- **数据级**: 结合租户隔离，控制数据范围
+
+#### 设计约束
+
+- **多角色支持**: 一个用户 MUST 可以拥有多个角色，权限取并集
+- **租户隔离**: 角色和权限 MUST 支持租户级别隔离，平台级角色 tenant_id 为 NULL
+- **权限继承**: 子角色可选继承父角色权限（MVP 阶段可暂不实现）
+- **动态加载**: 权限 MUST 从数据库动态加载，禁止硬编码
+- **缓存策略**: 权限数据 SHOULD 缓存到 Redis，变更时主动刷新
+
+#### 预置角色
+
+| 角色编码 | 角色名称 | 说明 | 级别 |
+|----------|----------|------|------|
+| `ADMIN` | 平台管理员 | 拥有所有权限 | 平台级 |
+| `TENANT_ADMIN` | 租户管理员 | 管理租户内用户和设备 | 租户级 |
+| `TENANT_USER` | 租户普通用户 | 仅查看权限 | 租户级 |
+
+#### 权限校验流程
+
+1. 用户登录 → 查询用户所有角色 → 查询角色所有权限 → 存入 Session/Redis
+2. 请求到达 → Gateway 校验 Token → 下游服务校验权限 → 放行或拒绝
+3. 前端渲染 → 根据权限列表控制菜单/按钮显示
+
+**理由**: 严格 RBAC 模型提供灵活的权限配置能力，支持企业级多角色场景，权限变更无需发版，满足 SaaS 平台权限管理需求。
 
 ## Technical Standards
 
@@ -214,4 +267,4 @@ SaaS 模式下所有核心业务表 MUST 包含租户隔离能力。
 - 代码审查需要检查是否符合宪法原则
 - 复杂度增加必须有合理的理由和文档
 
-**Version**: 1.4.0 | **Ratified**: 2026-02-25 | **Last Amended**: 2026-02-28
+**Version**: 1.5.0 | **Ratified**: 2026-02-25 | **Last Amended**: 2026-03-01

@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * 认证服务
  */
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final SysUserMapper sysUserMapper;
+    private final PermissionService permissionService;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     /**
@@ -54,10 +57,20 @@ public class AuthService {
 
         // 存储会话信息
         StpUtil.getSession().set("tenantId", user.getTenantId() != null ? String.valueOf(user.getTenantId()) : null);
-        StpUtil.getSession().set("role", user.getRole());
         StpUtil.getSession().set("username", user.getUsername());
 
-        log.info("用户登录成功: {} (role={})", username, user.getRole());
+        // 从数据库动态加载角色和权限（支持多角色）
+        List<String> roles = permissionService.getUserRoles(user.getId());
+        List<String> permissions = permissionService.getUserPermissions(user.getId());
+
+        StpUtil.getSession().set("roles", roles);
+        StpUtil.getSession().set("permissions", permissions);
+
+        // 兼容旧代码：保留单个 role 字段（取第一个角色）
+        String primaryRole = roles.isEmpty() ? null : roles.get(0);
+        StpUtil.getSession().set("role", primaryRole);
+
+        log.info("用户登录成功: {} (roles={}, permissions={})", username, roles, permissions.size());
 
         return StpUtil.getTokenValue();
     }
@@ -66,7 +79,15 @@ public class AuthService {
      * 用户登出
      */
     public void logout() {
+        if (!StpUtil.isLogin()) {
+            return;
+        }
         String username = (String) StpUtil.getSession().get("username");
+        Long userId = StpUtil.getLoginIdAsLong();
+
+        // 清除权限缓存
+        permissionService.clearUserPermissionCache(userId);
+
         StpUtil.logout();
         log.info("用户登出: {}", username);
     }
