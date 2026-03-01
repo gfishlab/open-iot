@@ -298,13 +298,13 @@
 
 - [x] T121 优化 Netty 线程模型 backend/connect-service/src/main/java/com/openiot/connect/netty/NettyServer.java
 - [x] T122 优化 Kafka 消费者配置 backend/data-service/src/main/resources/application.yml
-- [ ] T123 优化 Redis 连接池配置 backend/common/common-redis/src/main/resources/redis.properties
+- [x] T123 优化 Redis 连接池配置 backend/common/common-redis/src/main/java/com/openiot/common/redis/config/RedisConfig.java
 
 ### 可观测性
 
-- [x] T124 [P] 添加服务健康检查 backend/*/src/main/java/com/openiot/*/config/HealthConfig.java
-- [ ] T125 [P] 添加链路追踪配置 backend/common/common-core/src/main/java/com/openiot/common/core/config/TraceConfig.java
-- [ ] T126 创建监控指标收集 backend/data-service/src/main/java/com/openiot/data/metrics/DeviceMetrics.java
+- [x] T124 [P] 添加服务健康检查 backend/*/src/main/java/com/openiot/*/config/*HealthIndicator.java
+- [x] T125 [P] 添加链路追踪配置 backend/common/common-core/src/main/java/com/openiot/common/core/config/TraceConfig.java
+- [x] T126 创建监控指标收集 backend/data-service/src/main/java/com/openiot/data/metrics/DeviceMetrics.java
 
 ### 验证
 
