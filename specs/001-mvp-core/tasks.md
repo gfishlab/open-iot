@@ -235,27 +235,27 @@
 
 #### 异步消费者
 
-- [ ] T097 [US3] 创建异步消费者 backend/data-service/src/main/java/com/openiot/data/consumer/AsyncConsumer.java
-- [ ] T098 [US3] 创建原始事件服务 backend/data-service/src/main/java/com/openiot/data/service/RawEventService.java
-- [ ] T099 [US3] 创建 MongoDB RawEvent Repository backend/data-service/src/main/java/com/openiot/data/repository/RawEventRepository.java
+- [x] T097 [US3] 创建异步消费者 backend/data-service/src/main/java/com/openiot/data/consumer/AsyncConsumer.java
+- [x] T098 [US3] 创建原始事件服务 backend/data-service/src/main/java/com/openiot/data/service/RawEventService.java
+- [x] T099 [US3] 创建 MongoDB RawEvent Repository backend/data-service/src/main/java/com/openiot/data/repository/RawEventRepository.java
 
 #### 解析任务
 
-- [ ] T100 [US3] 创建解析任务调度器 backend/data-service/src/main/java/com/openiot/data/scheduler/ParseScheduler.java
-- [ ] T101 [US3] 创建轨迹解析器 backend/data-service/src/main/java/com/openiot/data/parser/TrajectoryParser.java
-- [ ] T102 [US3] 创建解析结果服务 backend/data-service/src/main/java/com/openiot/data/service/ParsedDataService.java
+- [x] T100 [US3] 创建解析任务调度器 backend/data-service/src/main/java/com/openiot/data/scheduler/ParseScheduler.java
+- [x] T101 [US3] 创建轨迹解析器 backend/data-service/src/main/java/com/openiot/data/parser/TrajectoryParser.java
+- [x] T102 [US3] 创建解析结果服务（TrajectoryParser 已包含此功能）
 
 #### 死信队列
 
-- [ ] T103 [US3] 创建死信消费者 backend/data-service/src/main/java/com/openiot/data/consumer/DlqConsumer.java
-- [ ] T104 [US3] 创建死信服务 backend/data-service/src/main/java/com/openiot/data/service/DeadLetterService.java
-- [ ] T105 [US3] 创建死信 Repository backend/data-service/src/main/java/com/openiot/data/repository/DeadLetterRepository.java
-- [ ] T106 [US3] 创建重试服务 backend/data-service/src/main/java/com/openiot/data/service/RetryService.java
+- [x] T103 [US3] 创建死信消费者 backend/data-service/src/main/java/com/openiot/data/consumer/DlqConsumer.java
+- [x] T104 [US3] 创建死信服务 backend/data-service/src/main/java/com/openiot/data/service/DeadLetterService.java
+- [x] T105 [US3] 创建死信 Repository backend/data-service/src/main/java/com/openiot/data/repository/DeadLetterRepository.java
+- [x] T106 [US3] 创建重试服务 backend/data-service/src/main/java/com/openiot/data/service/RetryService.java
 
 #### 历史重放
 
-- [ ] T107 [US3] 创建重放服务 backend/data-service/src/main/java/com/openiot/data/replay/ReplayService.java
-- [ ] T108 [US3] 创建重放控制器 backend/data-service/src/main/java/com/openiot/data/controller/ReplayController.java
+- [x] T107 [US3] 创建重放服务 backend/data-service/src/main/java/com/openiot/data/replay/ReplayService.java
+- [x] T108 [US3] 创建重放控制器 backend/data-service/src/main/java/com/openiot/data/controller/ReplayController.java
 
 ---
 
