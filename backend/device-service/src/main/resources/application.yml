@@ -85,7 +85,7 @@ openiot:
     tracing:
       enabled: true
       sampling-probability: 1.0
-      otlp-endpoint: http://tempo:4317
+      otlp-endpoint: http://localhost:4317
     logging:
       tenant-mdc: true
       sensitive-data-masking: true
