@@ -1,36 +1,37 @@
 [
   {
-    "targets": [
-      {
-        "labels": {
-          "service": "gateway-service"
-        },
-        "targets": ["http://gateway-service:8080/actuator/prometheus"]
-      },
-      {
-        "labels": {
-          "service": "tenant-service"
-        },
-        "targets": ["http://tenant-service:8086/actuator/prometheus"]
-      },
-      {
-        "labels": {
-          "service": "device-service"
-        },
-        "targets": ["http://device-service:8081/actuator/prometheus"]
-      },
-      {
-        "labels": {
-          "service": "data-service"
-        },
-        "targets": ["http://data-service:8085/actuator/prometheus"]
-      },
-      {
-        "labels": {
-          "service": "connect-service"
-        },
-        "targets": ["http://connect-service:8082/actuator/prometheus"]
-      }
-    ]
+    "targets": ["gateway-service:8080"],
+    "labels": {
+      "service": "gateway-service",
+      "__metrics_path__": "/actuator/prometheus"
+    }
+  },
+  {
+    "targets": ["tenant-service:8086"],
+    "labels": {
+      "service": "tenant-service",
+      "__metrics_path__": "/actuator/prometheus"
+    }
+  },
+  {
+    "targets": ["device-service:8081"],
+    "labels": {
+      "service": "device-service",
+      "__metrics_path__": "/actuator/prometheus"
+    }
+  },
+  {
+    "targets": ["data-service:8085"],
+    "labels": {
+      "service": "data-service",
+      "__metrics_path__": "/actuator/prometheus"
+    }
+  },
+  {
+    "targets": ["connect-service:8082"],
+    "labels": {
+      "service": "connect-service",
+      "__metrics_path__": "/actuator/prometheus"
+    }
   }
 ]

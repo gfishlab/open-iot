@@ -1,0 +1,9 @@
+# Tempo Runtime Overrides Configuration
+# 用于动态调整Tempo的配置，无需重启服务
+
+# 可以在这里添加针对特定租户的覆盖配置
+# 例如：
+# overrides:
+#   tenant-1:
+#     metrics_generator:
+#       processors: [service-graphs, span-metrics]

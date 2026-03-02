@@ -11,6 +11,7 @@ datasources:
   - name: Prometheus
     type: prometheus
     access: proxy
+    uid: prometheus
     url: http://prometheus:9090
     isDefault: true
     editable: false
@@ -85,6 +86,7 @@ datasources:
     type: alertmanager
     access: proxy
     url: http://alertmanager:9093
+    uid: alertmanager
     editable: false
     jsonData:
       implementation: prometheus
