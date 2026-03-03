@@ -6,11 +6,11 @@ spring:
     activate:
       on-profile: dev
 
-  # 开发环境数据源
+  # 设备服务数据库（独立数据库）
   datasource:
-    url: jdbc:postgresql://127.0.0.1:5432/openiot
-    username: openiot
-    password: openiot123
+    url: jdbc:postgresql://127.0.0.1:5432/openiot_device
+    username: openiot_device
+    password: device123
 
   # 开发环境 Redis
   data:

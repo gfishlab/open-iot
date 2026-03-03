@@ -23,11 +23,12 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
 
-# Flyway 配置（由 tenant-service 统一管理数据库迁移）
-# 说明：本项目采用共享数据库架构，所有表的 DDL 由 tenant-service 统一管理
-# data-service 只负责 CRUD 操作，不执行数据库迁移
+# Flyway 配置（独立数据库架构）
+# 说明：data-service 使用独立的 openiot_data 数据库
+# 包含：device_trajectory、raw_event 等数据相关表
 spring.flyway:
-  enabled: false
+  enabled: true  # 启用 Flyway
+  locations: classpath:db/migration
 
   # MongoDB 配置（公共）
   data:

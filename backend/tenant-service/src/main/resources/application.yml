@@ -44,13 +44,13 @@ sa-token:
   token-style: uuid
   is-log: false
 
-# Flyway 配置（集中式数据库迁移管理）
-# 说明：本项目采用共享数据库架构，tenant-service 负责统一管理所有服务的数据库表
-# 包含：tenant、sys_user、device、device_trajectory、RBAC 权限表等所有业务表
-# 注意：其他服务（device-service、data-service）的 Flyway 已禁用，避免重复迁移
+# Flyway 配置（独立数据库架构）
+# 说明：tenant-service 使用独立的 openiot_tenant 数据库
+# 包含：tenant、sys_user、RBAC 权限表等租户相关表
+# 注意：其他服务使用各自的独立数据库
 spring.flyway:
   enabled: true
-  locations: filesystem:infrastructure/sql/migrations  # 使用项目根目录的统一迁移脚本
+  locations: classpath:db/migration  # 使用服务内的迁移脚本
   baseline-on-migrate: true
   validate-on-migrate: true
   out-of-order: false  # 禁止乱序执行

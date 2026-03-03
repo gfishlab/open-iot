@@ -7,6 +7,10 @@ spring:
   profiles:
     active: dev  # 默认激活开发环境
 
+  # 数据源驱动（公共）
+  datasource:
+    driver-class-name: org.postgresql.Driver
+
   # Nacos 配置（公共）
   cloud:
     nacos:
@@ -42,6 +46,13 @@ netty:
     connections: true
     bytes: true
     latency: true
+
+# Flyway 配置（独立数据库架构）
+# 说明：connect-service 使用独立的 openiot_connect 数据库
+# 包含：device_session、connection_log 等连接相关表
+spring.flyway:
+  enabled: true  # 启用 Flyway
+  locations: classpath:db/migration
 
 # Actuator 配置（公共）
 management:
