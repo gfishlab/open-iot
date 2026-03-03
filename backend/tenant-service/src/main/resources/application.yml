@@ -44,12 +44,16 @@ sa-token:
   token-style: uuid
   is-log: false
 
-# Flyway 配置（公共）
+# Flyway 配置（集中式数据库迁移管理）
+# 说明：本项目采用共享数据库架构，tenant-service 负责统一管理所有服务的数据库表
+# 包含：tenant、sys_user、device、device_trajectory 等所有业务表
+# 注意：其他服务（device-service、data-service）的 Flyway 已禁用，避免重复迁移
 spring.flyway:
   enabled: true
   locations: classpath:db/migration
   baseline-on-migrate: true
   validate-on-migrate: true
+  out-of-order: false  # 禁止乱序执行
 
 # Actuator 配置（公共）
 management:

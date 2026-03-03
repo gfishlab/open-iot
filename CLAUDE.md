@@ -40,6 +40,159 @@ JDK 21 (LTS，支持虚拟线程): Follow standard conventions
 - 001-mvp-core: Added JDK 21 (LTS，支持虚拟线程) + Spring Boot 3.x, Spring Cloud Alibaba, Kafka, Netty, MyBatis Plus, Sa-Token
 
 <!-- MANUAL ADDITIONS START -->
+
+## 数据库迁移规范（Flyway）
+
+### 架构设计
+
+**共享数据库 + 集中式迁移管理**
+
+本项目采用**共享数据库**架构，所有微服务共享同一个 PostgreSQL 数据库：
+- **数据库名**：`openiot`
+- **迁移管理服务**：`tenant-service`（唯一启用 Flyway 的服务）
+- **其他服务**：`device-service`、`data-service`（禁用 Flyway，仅做 CRUD 操作）
+
+### Flyway 配置规范
+
+#### **tenant-service（数据库迁移管理服务）**
+
+✅ **启用 Flyway**，负责统一管理所有业务表的 DDL：
+
+```yaml
+# application.yml
+spring.flyway:
+  enabled: true
+  locations: classpath:db/migration
+  baseline-on-migrate: true
+  validate-on-migrate: true
+  out-of-order: false  # 禁止乱序执行
+```
+
+**迁移脚本位置**：`backend/tenant-service/src/main/resources/db/migration/`
+
+**包含的表**：
+- `tenant` - 租户表
+- `sys_user` - 系统用户表
+- `device` - 设备表
+- `device_trajectory` - 设备轨迹表
+- 其他所有业务表...
+
+#### **其他服务（device-service、data-service）**
+
+❌ **禁用 Flyway**，避免重复迁移导致冲突：
+
+```yaml
+# application.yml
+spring.flyway:
+  enabled: false
+```
+
+这些服务只负责 CRUD 操作，不执行数据库迁移。
+
+### 迁移脚本命名规范
+
+**格式**：`V<版本号>__<描述>.sql`
+
+**示例**：
+```
+V1.0.0__init_schema.sql          # 初始化表结构
+V1.0.1__init_data.sql            # 初始化数据
+V1.1.0__add_device_config.sql    # 添加设备配置表
+V1.1.1__add_index_for_device.sql # 添加设备表索引
+V1.2.0__add_alarm_table.sql      # 添加告警表
+```
+
+**注意事项**：
+- ✅ 版本号必须递增，不能重复
+- ✅ 使用双下划线 `__` 分隔版本号和描述
+- ✅ 描述使用下划线命名（snake_case）
+- ✅ 脚本一旦执行，**不可修改**（Flyway 会校验 checksum）
+- ❌ 禁止删除已执行的迁移脚本
+- ❌ 禁止修改已执行的迁移脚本内容
+
+### 新增表的流程
+
+1. **在 tenant-service 中创建迁移脚本**：
+   ```bash
+   # 进入 tenant-service 迁移目录
+   cd backend/tenant-service/src/main/resources/db/migration
+
+   # 创建新的迁移脚本（版本号递增）
+   touch V1.3.0__add_new_table.sql
+   ```
+
+2. **编写 SQL DDL**：
+   ```sql
+   -- V1.3.0__add_new_table.sql
+   CREATE TABLE IF NOT EXISTS alarm_config (
+       id BIGSERIAL PRIMARY KEY,
+       tenant_id BIGINT NOT NULL,
+       alarm_name VARCHAR(100) NOT NULL,
+       status CHAR(1) DEFAULT '1',
+       delete_flag CHAR(1) DEFAULT '0',
+       create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+       update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+       create_by BIGINT,
+       update_by BIGINT
+   );
+
+   COMMENT ON TABLE alarm_config IS '告警配置表';
+   COMMENT ON COLUMN alarm_config.id IS '主键';
+   -- ... 其他注释
+
+   -- 创建索引
+   CREATE INDEX IF NOT EXISTS idx_alarm_config_tenant
+       ON alarm_config(tenant_id, delete_flag);
+   ```
+
+3. **重启 tenant-service**（Flyway 自动执行迁移）
+
+4. **验证迁移结果**：
+   ```sql
+   -- 查询 Flyway 迁移历史
+   SELECT * FROM flyway_schema_history ORDER BY installed_rank;
+
+   -- 验证表是否创建成功
+   \d alarm_config
+   ```
+
+### 环境配置
+
+#### **开发环境（dev）**
+```yaml
+spring.flyway:
+  enabled: true
+  clean-disabled: false  # 允许清理（仅开发环境）
+```
+
+#### **生产环境（prod）**
+```yaml
+spring.flyway:
+  enabled: true
+  clean-disabled: true   # 禁止清理，防止误删数据
+  validate-on-migrate: true  # 严格校验
+```
+
+### 最佳实践
+
+1. **集中管理**：所有表的 DDL 都在 tenant-service 中管理，避免分散
+2. **版本控制**：迁移脚本纳入 Git 版本管理
+3. **向后兼容**：修改表结构时，确保向后兼容（避免破坏现有功能）
+4. **测试先行**：在开发环境测试迁移脚本，确认无误后再应用到生产
+5. **备份数据**：生产环境执行迁移前，先备份数据库
+6. **索引优化**：新建表时，同时创建必要的索引
+7. **注释完整**：每个表和字段都要添加 COMMENT
+
+### 禁止操作
+
+- ❌ 在 device-service、data-service 中启用 Flyway
+- ❌ 在代码中直接执行 DDL（CREATE TABLE、ALTER TABLE 等）
+- ❌ 修改已执行的迁移脚本
+- ❌ 删除 `flyway_schema_history` 表中的记录
+- ❌ 在生产环境使用 `flyway.clean()`
+
+---
+
 ## 数据库操作规范
 
 ### MyBatis Plus 使用规范
