@@ -48,11 +48,29 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
         </dependency>
+        <!-- Spring Boot Data Redis (for sa-token-redis-jackson / RedisTemplate) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
 
         <!-- Spring Boot Actuator -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- Common Observability -->
+        <dependency>
+            <groupId>com.openiot</groupId>
+            <artifactId>common-observability</artifactId>
+            <exclusions>
+                <!-- 网关使用 WebFlux，不引入 common-core 中的 MVC/Tomcat 传递依赖 -->
+                <exclusion>
+                    <groupId>com.openiot</groupId>
+                    <artifactId>common-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Lombok -->

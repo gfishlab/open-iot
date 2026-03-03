@@ -8,7 +8,7 @@ spring:
 
   # 开发环境数据源
   datasource:
-    url: jdbc:postgresql://127.0.0.1:5432/openiot_dev
+    url: jdbc:postgresql://127.0.0.1:5432/openiot
     username: openiot
     password: openiot123
 

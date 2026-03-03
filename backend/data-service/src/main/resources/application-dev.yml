@@ -8,7 +8,7 @@ spring:
 
   # 开发环境数据源
   datasource:
-    url: jdbc:postgresql://127.0.0.1:5432/openiot_dev
+    url: jdbc:postgresql://127.0.0.1:5432/openiot
     username: openiot
     password: openiot123
 
@@ -20,7 +20,7 @@ spring:
       password: openiot123
       database: 0
     mongodb:
-      uri: mongodb://openiot:openiot123@127.0.0.1:27017/openiot_dev?authSource=admin
+      uri: mongodb://openiot:openiot123@127.0.0.1:27017/openiot?authSource=admin
       auto-index-creation: true
 
   # 开发环境 Kafka

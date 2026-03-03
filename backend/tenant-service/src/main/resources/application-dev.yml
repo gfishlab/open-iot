@@ -8,7 +8,7 @@ spring:
 
   # 开发环境数据源
   datasource:
-    url: jdbc:postgresql://127.0.0.1:5432/openiot_dev
+    url: jdbc:postgresql://127.0.0.1:5432/openiot
     username: openiot
     password: openiot123
 
@@ -28,6 +28,13 @@ logging:
     com.baomidou.mybatisplus: DEBUG
     org.springframework.security: DEBUG
     cn.dev33.satoken: DEBUG
+
+# Tracing 配置 - 使用 OpenTelemetry
+management:
+  tracing:
+    enabled: true
+    propagation:
+      type: b3  # 使用 B3 传播格式
 
 # Sa-Token 开发环境配置
 sa-token:

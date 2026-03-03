@@ -10,6 +10,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.SocketOptions;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -43,9 +44,10 @@ public class RedisConfig {
     private final RedisProperties redisProperties;
     private final RedisPoolProperties poolProperties;
 
-    public RedisConfig(RedisProperties redisProperties, RedisPoolProperties poolProperties) {
+    public RedisConfig(RedisProperties redisProperties,
+                       ObjectProvider<RedisPoolProperties> poolPropertiesProvider) {
         this.redisProperties = redisProperties;
-        this.poolProperties = poolProperties;
+        this.poolProperties = poolPropertiesProvider.getIfUnique(RedisPoolProperties::new);
     }
 
     /**

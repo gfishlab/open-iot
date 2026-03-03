@@ -2,13 +2,11 @@ package com.openiot.common.redis.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * Redis 连接池配置属性
  */
 @Data
-@Configuration
 @ConfigurationProperties(prefix = "spring.data.redis.lettuce.pool")
 public class RedisPoolProperties {
 
