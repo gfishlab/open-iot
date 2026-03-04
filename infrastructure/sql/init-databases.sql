@@ -45,23 +45,10 @@ WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'openiot_connect')\gex
 COMMENT ON DATABASE openiot_connect IS '连接服务数据库';
 
 -- ========================================
--- 2. 创建用户（如果不存在）或更新密码
+-- 2. 创建用户
 -- ========================================
 
-DO $$
-BEGIN
-    -- 检查用户是否存在
-    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'openiot') THEN
-        -- 用户不存在，创建用户
-        CREATE USER openiot WITH PASSWORD 'openiot123';
-        RAISE NOTICE '用户 openiot 已创建';
-    ELSE
-        -- 用户已存在，更新密码
-        ALTER USER openiot WITH PASSWORD 'openiot123';
-        RAISE NOTICE '用户 openiot 已存在，密码已更新';
-    END IF;
-END
-$$;
+CREATE USER openiot WITH PASSWORD 'openiot123';
 
 -- ========================================
 -- 3. 授予数据库权限
