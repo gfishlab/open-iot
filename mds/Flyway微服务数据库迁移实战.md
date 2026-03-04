@@ -47,6 +47,61 @@
 
 ---
 
+## Spring Boot 集成 Flyway
+
+### Maven 依赖
+
+在 `pom.xml` 中添加 Flyway 核心依赖和数据库驱动：
+
+```xml
+<dependencies>
+    <!-- Flyway 核心 -->
+    <dependency>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-core</artifactId>
+    </dependency>
+
+    <!-- PostgreSQL 数据库支持 -->
+    <dependency>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-database-postgresql</artifactId>
+    </dependency>
+</dependencies>
+```
+
+**注意**：Spring Boot 3.x 会自动管理 Flyway 版本，无需手动指定版本号。
+
+### application.yml 配置
+
+```yaml
+spring:
+  flyway:
+    enabled: true                    # 启用 Flyway
+    locations: classpath:db/migration # 迁移脚本路径（默认值，可省略）
+    baseline-on-migrate: true        # 首次迁移时自动创建基线
+    validate-on-migrate: true        # 迁移前校验 checksum
+    out-of-order: false              # 禁止乱序执行（生产环境推荐）
+    clean-disabled: true             # 禁用 clean 命令（生产环境必须）
+    table: flyway_schema_history     # 历史记录表名（默认值）
+    encoding: UTF-8                  # 脚本编码
+```
+
+**关键配置说明**：
+
+- `baseline-on-migrate: true`：对已有数据库首次启用 Flyway 时，自动创建基线版本
+- `clean-disabled: true`：生产环境必须禁用，防止误删数据库
+- `out-of-order: false`：强制按版本号顺序执行，避免混乱
+
+### 工作原理
+
+1. **服务启动** → Flyway 扫描 `classpath:db/migration/` 目录
+2. **首次运行** → 创建 `flyway_schema_history` 表（记录迁移历史）
+3. **版本比对** → 检查已执行脚本 vs 待执行脚本
+4. **自动执行** → 按版本号顺序执行未应用的迁移脚本
+5. **记录历史** → 在 `flyway_schema_history` 表中记录执行结果
+
+---
+
 ## 微服务架构中的 Flyway 落地实践
 
 微服务架构下，每个服务独立部署、独立演进，数据库迁移也必须独立管理。
