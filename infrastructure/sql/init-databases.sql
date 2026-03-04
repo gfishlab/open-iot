@@ -90,26 +90,21 @@ GRANT ALL PRIVILEGES ON DATABASE openiot_connect TO openiot;
 -- ========================================
 -- 此脚本需要手动执行，不会被服务自动触发！
 --
--- 执行方式：
--- 1. 以超级用户（postgres）身份执行此脚本
+-- 执行步骤：
+-- 1. 以 postgres 超级用户执行此脚本
 --    psql -U postgres -f init-databases.sql
 --
--- 2. 执行 Schema 授权（复制上面的语句在每个数据库中执行）
---    psql -U postgres
---    \connect openiot_tenant
---    GRANT ALL ON SCHEMA public TO openiot;
---    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO openiot;
---    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO openiot;
---    （重复其他 3 个数据库）
+-- 2. 执行 Schema 权限授权脚本
+--    psql -U postgres -f grant-schema-permissions.sql
 --
--- 3. 验证
+-- 3. 验证数据库连接
 --    psql -U openiot -d openiot_tenant -c "SELECT current_database(), current_user;"
---    预期输出：
---     current_database  | current_user
---    --------------------+----------------
---     openiot_tenant     | openiot
---    (1 row)
 --
--- 4. 启动服务（Flyway 自动创建表）
+-- 4. 启动各服务（Flyway 自动创建表结构）
 --    cd backend/tenant-service
 --    mvn spring-boot:run
+--
+-- 注意事项：
+-- - 如果用户 openiot 已存在，步骤1会报错，可忽略
+-- - 必须执行步骤2，否则 Flyway 无法创建表
+-- - Schema 权限 ≠ 数据库权限，需要单独授权
