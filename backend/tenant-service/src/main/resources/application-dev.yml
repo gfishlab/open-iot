@@ -9,8 +9,8 @@ spring:
   # 租户服务数据库（独立数据库）
   datasource:
     url: jdbc:postgresql://127.0.0.1:5432/openiot_tenant
-    username: openiot_tenant
-    password: tenant123
+    username: openiot
+    password: openiot123
 
   # 开发环境 Redis
   data:

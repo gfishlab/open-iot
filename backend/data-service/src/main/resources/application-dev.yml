@@ -9,8 +9,8 @@ spring:
   # 数据服务数据库（独立数据库）
   datasource:
     url: jdbc:postgresql://127.0.0.1:5432/openiot_data
-    username: openiot_data
-    password: data123
+    username: openiot
+    password: openiot123
 
   # 开发环境 Redis
   data:

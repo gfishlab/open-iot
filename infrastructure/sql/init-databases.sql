@@ -57,24 +57,17 @@ CREATE DATABASE openiot_connect
 COMMENT ON DATABASE openiot_connect IS '连接服务数据库 - 管理设备连接、会话';
 
 -- ========================================
--- 2. 创建用户和权限
+-- 2. 创建用户和授权（统一账户）
 -- ========================================
 
--- 租户服务用户
-CREATE USER openiot_tenant WITH PASSWORD 'tenant123';
-GRANT ALL PRIVILEGES ON DATABASE openiot_tenant TO openiot_tenant;
+-- 创建统一的应用程序用户
+CREATE USER openiot WITH PASSWORD 'openiot123';
 
--- 设备服务用户
-CREATE USER openiot_device WITH PASSWORD 'device123';
-GRANT ALL PRIVILEGES ON DATABASE openiot_device TO openiot_device;
-
--- 数据服务用户
-CREATE USER openiot_data WITH PASSWORD 'data123';
-GRANT ALL PRIVILEGES ON DATABASE openiot_data TO openiot_data;
-
--- 连接服务用户
-CREATE USER openiot_connect WITH PASSWORD 'connect123';
-GRANT ALL PRIVILEGES ON DATABASE openiot_connect TO openiot_connect;
+-- 授予所有数据库权限
+GRANT ALL PRIVILEGES ON DATABASE openiot_tenant TO openiot;
+GRANT ALL PRIVILEGES ON DATABASE openiot_device TO openiot;
+GRANT ALL PRIVILEGES ON DATABASE openiot_data TO openiot;
+GRANT ALL PRIVILEGES ON DATABASE openiot_connect TO openiot;
 
 -- ========================================
 -- 3. 授权 Schema 权限
@@ -82,9 +75,14 @@ GRANT ALL PRIVILEGES ON DATABASE openiot_connect TO openiot_connect;
 
 -- 需要在每个数据库中执行以下授权语句
 -- \connect openiot_tenant
--- GRANT ALL ON SCHEMA public TO openiot_tenant;
--- ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO openiot_tenant;
--- ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO openiot_tenant;
+-- GRANT ALL ON SCHEMA public TO openiot;
+-- ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO openiot;
+-- ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO openiot;
+
+-- 重复其他 3 个数据库：
+-- \connect openiot_device
+-- \connect openiot_data
+-- \connect openiot_connect
 
 -- ========================================
 -- 说明
