@@ -489,7 +489,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.50, rate(openiot_message_processing_seconds_bucket[5m]))",
+          "expr": "histogram_quantile(0.50, rate(openiot_message_processing_duration_seconds_bucket[5m]))",
           "legendFormat": "p50",
           "range": true,
           "refId": "A"
@@ -500,7 +500,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, rate(openiot_message_processing_seconds_bucket[5m]))",
+          "expr": "histogram_quantile(0.95, rate(openiot_message_processing_duration_seconds_bucket[5m]))",
           "legendFormat": "p95",
           "range": true,
           "refId": "B"
@@ -511,7 +511,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.99, rate(openiot_message_processing_seconds_bucket[5m]))",
+          "expr": "histogram_quantile(0.99, rate(openiot_message_processing_duration_seconds_bucket[5m]))",
           "legendFormat": "p99",
           "range": true,
           "refId": "C"
@@ -623,7 +623,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(kafka_consumer_group_lag{service=\"data-service\"}) by (group, topic)",
+          "expr": "sum(openiot_kafka_consumer_lag{service=\"data-service\"}) by (group, topic)",
           "legendFormat": "{{group}} - {{topic}}",
           "range": true,
           "refId": "A"
@@ -714,7 +714,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(kafka_consumer_group_members{service=\"data-service\"}) by (group)",
+          "expr": "sum(openiot_kafka_consumer_members{service=\"data-service\"}) by (group)",
           "legendFormat": "{{group}}",
           "range": true,
           "refId": "A"
