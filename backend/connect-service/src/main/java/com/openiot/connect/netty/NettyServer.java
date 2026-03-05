@@ -5,14 +5,18 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.codec.LengthFieldPrepender;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.CharsetUtil;
+import io.netty.util.concurrent.DefaultEventExecutorGroup;
+import io.netty.util.concurrent.EventExecutorGroup;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,6 +54,18 @@ public class NettyServer {
     @Value("${netty.connect-timeout:30000}")
     private int connectTimeout;
 
+    @Value("${netty.max-frame-length:65535}")
+    private int maxFrameLength;
+
+    @Value("${netty.write-buffer-low-water-mark:32768}")
+    private int writeBufferLowWaterMark;
+
+    @Value("${netty.write-buffer-high-water-mark:65536}")
+    private int writeBufferHighWaterMark;
+
+    @Value("${netty.biz-threads:0}")
+    private int bizThreads;
+
     @Value("${netty.reader-idle-time:120}")
     private int readerIdleTime;
 
@@ -64,6 +80,7 @@ public class NettyServer {
 
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
+    private EventExecutorGroup bizGroup;
 
     @PostConstruct
     public void start() {
@@ -74,6 +91,10 @@ public class NettyServer {
             // worker 线程组：处理 I/O 操作
             // 默认 0 表示使用 Netty 默认值 (CPU 核心数 * 2)
             workerGroup = new NioEventLoopGroup(workerThreads);
+            // 业务线程池：隔离解析/鉴权/Kafka 发送，避免阻塞 I/O 线程
+            bizGroup = new DefaultEventExecutorGroup(
+                    bizThreads > 0 ? bizThreads : Math.max(4, Runtime.getRuntime().availableProcessors())
+            );
 
             try {
                 ServerBootstrap bootstrap = new ServerBootstrap();
@@ -88,6 +109,8 @@ public class NettyServer {
                         .childOption(ChannelOption.SO_SNDBUF, soSndbuf)
                         .childOption(ChannelOption.SO_RCVBUF, soRcvbuf)
                         .childOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeout)
+                        .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK,
+                                new WriteBufferWaterMark(writeBufferLowWaterMark, writeBufferHighWaterMark))
                         .childHandler(new ChannelInitializer<SocketChannel>() {
                             @Override
                             protected void initChannel(SocketChannel ch) {
@@ -97,12 +120,14 @@ public class NettyServer {
                                                 readerIdleTime, writerIdleTime, allIdleTime))
                                         // 长度字段解码器（解决粘包/拆包问题）
                                         .addLast("frameDecoder", new LengthFieldBasedFrameDecoder(
-                                                65535, 0, 4, 0, 4))
+                                                maxFrameLength, 0, 4, 0, 4))
+                                        // 长度字段编码器（出站响应与入站协议保持一致）
+                                        .addLast("frameEncoder", new LengthFieldPrepender(4))
                                         // 字符串编解码器
                                         .addLast("decoder", new StringDecoder(CharsetUtil.UTF_8))
                                         .addLast("encoder", new StringEncoder(CharsetUtil.UTF_8))
                                         // 业务处理器
-                                        .addLast("handler", messageHandler);
+                                        .addLast(bizGroup, "handler", messageHandler);
                             }
                         });
 
@@ -125,6 +150,9 @@ public class NettyServer {
         }
         if (workerGroup != null) {
             workerGroup.shutdownGracefully();
+        }
+        if (bizGroup != null) {
+            bizGroup.shutdownGracefully();
         }
         log.info("Netty Server 已关闭");
     }

@@ -79,7 +79,18 @@ public class PrivateProtocolParser implements ProtocolAdapter {
                 .traceId(UUID.randomUUID().toString().substring(0, 16))
                 .build();
 
-        kafkaTemplate.send(DEVICE_EVENTS_TOPIC, envelope.getKafkaKey(), envelope);
-        log.info("TCP数据发送到Kafka: deviceId={}, eventType={}", result.getDeviceId(), result.getEventType());
+        kafkaTemplate.send(DEVICE_EVENTS_TOPIC, envelope.getKafkaKey(), envelope)
+                .whenComplete((sendResult, ex) -> {
+                    if (ex != null) {
+                        log.error("TCP数据发送到Kafka失败: deviceId={}, eventType={}",
+                                result.getDeviceId(), result.getEventType(), ex);
+                        return;
+                    }
+                    log.debug("TCP数据发送到Kafka成功: deviceId={}, eventType={}, partition={}, offset={}",
+                            result.getDeviceId(),
+                            result.getEventType(),
+                            sendResult.getRecordMetadata().partition(),
+                            sendResult.getRecordMetadata().offset());
+                });
     }
 }

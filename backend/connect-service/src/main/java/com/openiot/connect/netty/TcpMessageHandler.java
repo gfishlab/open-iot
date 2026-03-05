@@ -25,6 +25,10 @@ public class TcpMessageHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
+        if (msg == null || msg.isBlank()) {
+            ctx.writeAndFlush("ERROR:EMPTY_MESSAGE");
+            return;
+        }
         log.debug("收到TCP消息: {}", msg);
 
         try {
@@ -54,6 +58,17 @@ public class TcpMessageHandler extends SimpleChannelInboundHandler<String> {
             log.error("处理消息异常", e);
             ctx.writeAndFlush("ERROR:" + e.getMessage());
         }
+    }
+
+    @Override
+    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
+        // 出站缓冲区高水位时暂停读取，防止内存持续上涨
+        boolean writable = ctx.channel().isWritable();
+        ctx.channel().config().setAutoRead(writable);
+        if (!writable) {
+            log.warn("Channel不可写，暂停读取: {}", ctx.channel().remoteAddress());
+        }
+        super.channelWritabilityChanged(ctx);
     }
 
     @Override

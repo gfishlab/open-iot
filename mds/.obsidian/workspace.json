@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Flyway微服务数据库迁移实战.md",
+                "file": "还在靠重启大法排查线上故障-一文掌握云原生监控技术栈LGTM.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Flyway微服务数据库迁移实战"
+              "title": "还在靠重启大法排查线上故障-一文掌握云原生监控技术栈LGTM"
             }
           }
         ]
@@ -185,8 +185,11 @@
   },
   "active": "27224ef8fb8d42ed",
   "lastOpenFiles": [
-    "d0fbb44a-c007-4045-a664-30aebb1064da.png",
     "Flyway微服务数据库迁移实战.md",
+    "还在靠重启大法排查线上故障-资深Java开发必须掌握的可观测性技术栈.md",
+    "还在靠重启大法排查线上故障-一文掌握云原生监控技术栈LGTM.md",
+    "云原生时代的监控利器-资深Java开发必须掌握的可观测性技术栈.md",
+    "d0fbb44a-c007-4045-a664-30aebb1064da.png",
     "Flyway微服务数据库迁移实战.md.tmp.35764.1772593499439",
     "Flyway微服务数据库迁移实战.md.tmp.35764.1772592523362",
     "Flyway微服务数据库迁移实战.md.tmp.35764.1772592508231",
