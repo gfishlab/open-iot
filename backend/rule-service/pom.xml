@@ -10,9 +10,9 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>device-service</artifactId>
-    <name>Open-IoT Device Service</name>
-    <description>设备管理服务 - 设备CRUD、状态管理、Token鉴权</description>
+    <artifactId>rule-service</artifactId>
+    <name>Open-IoT Rule Service</name>
+    <description>规则服务 - 解析规则、映射规则、转发规则、告警规则、规则引擎</description>
 
     <dependencies>
         <!-- Common Modules -->
@@ -67,21 +67,27 @@
             <artifactId>postgresql</artifactId>
         </dependency>
 
-        <!-- Flyway -->
+        <!-- GraalJS - JavaScript Script Engine -->
         <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
+            <groupId>org.graalvm.polyglot</groupId>
+            <artifactId>polyglot</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-database-postgresql</artifactId>
+            <groupId>org.graalvm.js</groupId>
+            <artifactId>js</artifactId>
+            <type>pom</type>
         </dependency>
 
-        <!-- SpringDoc OpenAPI (Swagger UI) -->
+        <!-- Aviator - Expression Engine -->
         <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.3.0</version>
+            <groupId>com.googlecode.aviator</groupId>
+            <artifactId>aviator</artifactId>
+        </dependency>
+
+        <!-- InfluxDB Client -->
+        <dependency>
+            <groupId>com.influxdb</groupId>
+            <artifactId>influxdb-client-java</artifactId>
         </dependency>
     </dependencies>
 

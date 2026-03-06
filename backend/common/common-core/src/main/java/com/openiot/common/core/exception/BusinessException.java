@@ -88,4 +88,11 @@ public class BusinessException extends RuntimeException {
     public static BusinessException badRequest(String message) {
         return new BusinessException(400, message);
     }
+
+    /**
+     * 服务器内部错误异常
+     */
+    public static BusinessException internalError(String message) {
+        return new BusinessException(500, message);
+    }
 }

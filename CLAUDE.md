@@ -3,6 +3,7 @@
 Auto-generated from all feature plans. Last updated: 2026-02-25
 
 ## Active Technologies
+- JDK 21 (LTS，支持虚拟线程) + Spring Boot 3.2.3 (003-iot-core-platform)
 
 ### 后端
 - JDK 21 (LTS，支持虚拟线程) + Spring Boot 3.x, Spring Cloud Alibaba, Kafka, Netty, MyBatis Plus, Sa-Token
@@ -36,6 +37,7 @@ tests/
 JDK 21 (LTS，支持虚拟线程): Follow standard conventions
 
 ## Recent Changes
+- 003-iot-core-platform: Added JDK 21 (LTS，支持虚拟线程) + Spring Boot 3.2.3
 
 - 001-mvp-core: Added JDK 21 (LTS，支持虚拟线程) + Spring Boot 3.x, Spring Cloud Alibaba, Kafka, Netty, MyBatis Plus, Sa-Token
 

@@ -139,6 +139,26 @@ services:
     networks:
       - open-iot-network
 
+  # ==================== InfluxDB (时序数据库) ====================
+  influxdb:
+    image: influxdb:2.7
+    container_name: open-iot-influxdb
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
+      - influxdb-config:/etc/influxdb2
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=admin123456
+      - DOCKER_INFLUXDB_INIT_ORG=openiot
+      - DOCKER_INFLUXDB_INIT_BUCKET=device-data
+      - DOCKER_INFLUXDB_INIT_RETENTION=90d
+    restart: unless-stopped
+    networks:
+      - open-iot-network
+
 networks:
   open-iot-network:
     driver: bridge
@@ -152,3 +172,5 @@ volumes:
   zookeeper-logs:
   kafka-data:
   emqx-data:
+  influxdb-data:
+  influxdb-config:

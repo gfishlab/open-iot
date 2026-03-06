@@ -1,17 +1,18 @@
-package com.openiot.device.entity;
+package com.openiot.rule.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * 设备实体类
+ * 映射规则实体类
+ *
+ * @author open-iot
  */
 @Data
-@TableName("device")
-public class Device {
+@TableName("mapping_rule")
+public class MappingRule {
 
     /**
      * 主键
@@ -22,6 +23,7 @@ public class Device {
     /**
      * 租户ID
      */
+    @TableField(fill = FieldFill.INSERT)
     private Long tenantId;
 
     /**
@@ -30,42 +32,23 @@ public class Device {
     private Long productId;
 
     /**
-     * 设备编码
+     * 规则名称
      */
-    private String deviceCode;
+    private String ruleName;
 
     /**
-     * 设备密钥（全局唯一）
+     * 字段映射配置（JSON格式）
      */
-    private String deviceKey;
+    @TableField(typeHandler = com.openiot.common.core.handler.JsonbTypeHandler.class)
+    private String fieldMappings;
 
     /**
-     * 设备密钥（BCrypt哈希）
-     */
-    private String deviceSecret;
-
-    /**
-     * 设备名称
-     */
-    private String deviceName;
-
-    /**
-     * 设备认证Token
-     */
-    private String deviceToken;
-
-    /**
-     * 协议类型：MQTT/TCP/HTTP
-     */
-    private String protocolType;
-
-    /**
-     * 状态：0-禁用，1-启用
+     * 状态（1=启用，0=禁用）
      */
     private String status;
 
     /**
-     * 删除标记：0-正常，1-已删除
+     * 删除标记（0=未删除，1=已删除）
      */
     @TableLogic
     private String deleteFlag;

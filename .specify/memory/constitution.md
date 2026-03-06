@@ -2,16 +2,16 @@
 =============================================================================
 SYNC IMPACT REPORT
 =============================================================================
-Version change: 1.5.0 → 1.6.0 (MINOR - 新增可观测性强制原则)
+Version change: 1.6.0 → 1.7.0 (MINOR - 新增数据字典强制原则)
 Modified principles:
   - None
 Added sections:
-  - IX. 可观测性强制原则 (Observability Enforcement)
+  - X. 数据字典优先原则 (Data Dictionary First)
 Removed sections: None
 Templates requiring updates:
   - .specify/templates/plan-template.md ✅ (no changes needed - generic)
-  - .specify/templates/spec-template.md ⚠ (建议添加可观测性需求检查项)
-  - .specify/templates/tasks-template.md ⚠ (建议添加可观测性任务类型)
+  - .specify/templates/spec-template.md ⚠ (建议添加数据字典需求检查项)
+  - .specify/templates/tasks-template.md ⚠ (建议添加字典数据初始化任务类型)
 Follow-up TODOs: None
 =============================================================================
 -->
