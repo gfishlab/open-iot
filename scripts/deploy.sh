@@ -6,6 +6,7 @@
 #   -e, --env         环境类型 (dev|prod)，默认 dev
 #   -s, --services    指定服务（逗号分隔）
 #     --infra         仅启动基础设施
+#     --observability 仅启动可观测性服务
 #   --stop           停止服务
 #   --logs           查看日志
 #   -h, --help       显示帮助
@@ -24,6 +25,7 @@ NC='\033[0m'
 ENV="dev"
 SERVICES=""
 INFRA_ONLY=false
+OBSERVABILITY_ONLY=false
 STOP_MODE=false
 SHOW_LOGS=false
 
@@ -42,6 +44,10 @@ while [[ $# -gt 0 ]]; do
             INFRA_ONLY=true
             shift
             ;;
+        --observability)
+            OBSERVABILITY_ONLY=true
+            shift
+            ;;
         --stop)
             STOP_MODE=true
             shift
@@ -57,6 +63,7 @@ while [[ $# -gt 0 ]]; do
             echo "  -e, --env <env>     环境类型 (dev|prod)，默认 dev"
             echo "  -s, --services      指定服务（逗号分隔）"
             echo "  --infra             仅启动基础设施"
+            echo "  --observability     仅启动可观测性服务"
             echo "  --stop              停止服务"
             echo "  --logs              查看日志"
             echo "  -h, --help          显示帮助"
@@ -65,6 +72,7 @@ while [[ $# -gt 0 ]]; do
             echo "  ./scripts/deploy.sh                    # 启动所有服务（开发环境）"
             echo "  ./scripts/deploy.sh -e prod            # 启动所有服务（生产环境）"
             echo "  ./scripts/deploy.sh --infra            # 仅启动基础设施"
+            echo "  ./scripts/deploy.sh --observability    # 仅启动可观测性服务"
             echo "  ./scripts/deploy.sh --stop             # 停止所有服务"
             echo "  ./scripts/deploy.sh --logs             # 查看日志"
             exit 0
@@ -85,6 +93,16 @@ COMPOSE_DIR="$PROJECT_ROOT/infrastructure/docker"
 COMPOSE_FILE="$COMPOSE_DIR/docker-compose.yml"
 if [ -f "$COMPOSE_DIR/docker-compose.$ENV.yml" ]; then
     COMPOSE_FILE="-f $COMPOSE_FILE -f $COMPOSE_DIR/docker-compose.$ENV.yml"
+fi
+
+# 添加可观测性配置文件
+OBSERVABILITY_FILE="$COMPOSE_DIR/docker-compose.observability.yml"
+if [ -f "$OBSERVABILITY_FILE" ] && [ "$OBSERVABILITY_ONLY" = true ]; then
+    if [ -n "$COMPOSE_FILE" ]; then
+        COMPOSE_FILE="$COMPOSE_FILE -f $OBSERVABILITY_FILE"
+    else
+        COMPOSE_FILE="-f $OBSERVABILITY_FILE"
+    fi
 fi
 
 echo -e "${BLUE}========================================${NC}"
@@ -118,6 +136,19 @@ fi
 
 # 启动基础设施
 echo -e "${YELLOW}启动基础设施...${NC}"
+
+if [ "$OBSERVABILITY_ONLY" = true ]; then
+    docker-compose $COMPOSE_FILE up -d prometheus loki tempo grafana alertmanager
+    echo -e "${GREEN}✓ 可观测性服务已启动${NC}"
+    echo ""
+    echo -e "${BLUE}服务地址:${NC}"
+    echo -e "  Grafana:     ${GREEN}http://localhost:3000${NC} (admin/admin)"
+    echo -e "  Prometheus:  ${GREEN}http://localhost:9090${NC}"
+    echo -e "  Loki:        ${GREEN}http://localhost:3100${NC}"
+    echo -e "  Tempo:       ${GREEN}http://localhost:3200${NC}"
+    echo -e "  Alertmanager:${GREEN}http://localhost:9093${NC}"
+    exit 0
+fi
 
 if [ "$INFRA_ONLY" = true ]; then
     docker-compose $COMPOSE_FILE up -d nacos postgres redis mongodb kafka emqx
