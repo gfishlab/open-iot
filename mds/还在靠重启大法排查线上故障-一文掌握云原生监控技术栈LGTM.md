@@ -26,10 +26,8 @@
 
 可观测性建立在三大支柱之上：
 
-**图床位置 1：可观测性三大支柱架构图**
-```
-[预留位置：展示 Metrics、Logs、Traces 三大支柱及其关系]
-```
+![](https://cdn.jsdelivr.net/gh/gxj1134506645/img-bed@main/images/20260306090851555.png)
+
 
 | 支柱 | 作用 | 解决的问题 | 典型工具 |
 |------|------|-----------|---------|
@@ -58,10 +56,7 @@
 
 > **注意**：虽然缩写是 LGTM，但通常按照 Prometheus → Loki → Tempo → Grafana 的顺序学习和使用。
 
-**图床位置 2：LGTM Stack 架构图**
-```
-[预留位置：展示应用服务 → Prometheus/Loki/Tempo → Grafana 的数据流转]
-```
+![](https://cdn.jsdelivr.net/gh/gxj1134506645/img-bed@main/images/20260306090525157.png)
 
 ### 2.2 为什么选择 LGTM Stack？
 
@@ -140,11 +135,6 @@ sum(rate(http_requests_total[5m]))
 sum by (service) (rate(http_requests_total[5m]))
 ```
 
-#### 访问地址
-```
-http://localhost:9090
-```
-
 ---
 
 ### 3.2 Loki：轻量级日志聚合
@@ -203,11 +193,6 @@ count_over_time({level="ERROR"}[5m])
 
 # 5. 根据 Trace ID 查询日志
 {service="data-service"} |= "trace-id-12345"
-```
-
-#### 访问地址
-```
-http://localhost:3100
 ```
 
 ---
@@ -281,13 +266,6 @@ Trace (Trace ID: abc123)
 {traceId="abc123def456"}
 ```
 
-#### 访问地址
-```
-http://localhost:3200  # Tempo API
-http://localhost:4317  # OTLP gRPC
-http://localhost:4318  # OTLP HTTP
-```
-
 ---
 
 ### 3.4 Grafana：统一可视化平台
@@ -311,10 +289,7 @@ Grafana 是整个栈的**统一入口**，用户通过 Grafana：
 - 分析 Tempo 的链路追踪
 - 配置告警规则
 
-**图床位置 3：Grafana Dashboard 示例**
-```
-[预留位置：展示包含 JVM、HTTP、Database、Kafka 等多面板的 Grafana Dashboard]
-```
+![](https://cdn.jsdelivr.net/gh/gxj1134506645/img-bed@main/images/20260306092531996.png)
 
 #### Dashboard 组织建议
 
@@ -325,12 +300,6 @@ Grafana 是整个栈的**统一入口**，用户通过 Grafana：
 ├── 📊 数据库监控（连接池、慢查询）
 ├── 📊 Kafka 监控（消费延迟、吞吐量）
 └── 📊 业务指标（设备在线数、消息量）
-```
-
-#### 访问地址
-```
-http://localhost:3000
-默认账号：admin / admin
 ```
 
 ---
