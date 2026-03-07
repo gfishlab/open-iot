@@ -152,4 +152,15 @@ public class OpenApiConfig {
                 .pathsToMatch("/api/sse/**")
                 .build();
     }
+
+    /**
+     * 数据重放 API 分组
+     */
+    @Bean
+    public GroupedOpenApi replayApi() {
+        return GroupedOpenApi.builder()
+                .group("08-数据重放")
+                .pathsToMatch("/api/replay/**")
+                .build();
+    }
 }
