@@ -4,13 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.openiot.common.core.exception.BusinessException;
 import com.openiot.common.security.context.TenantContext;
 import com.openiot.device.entity.AlertRecord;
 import com.openiot.device.entity.Device;
 import com.openiot.device.mapper.AlertRecordMapper;
 import com.openiot.device.mapper.DeviceMapper;
+import com.openiot.device.metrics.AlertMetrics;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +34,7 @@ public class AlertService extends ServiceImpl<AlertRecordMapper, AlertRecord> {
 
     private final DeviceMapper deviceMapper;
     private final com.openiot.device.mapper.RuleMapper ruleMapper;
+    private final AlertMetrics alertMetrics;
 
     /**
      * 分页查询告警记录
@@ -121,6 +122,10 @@ public class AlertService extends ServiceImpl<AlertRecordMapper, AlertRecord> {
 
         this.update(wrapper);
 
+        // 记录告警处理指标
+        String tenantId = TenantContext.getTenantId();
+        alertMetrics.recordAlarmHandled(tenantId, alertId, status);
+
         log.info("处理告警: alertId={}, status={}, handledBy={}", alertId, status,
                 TenantContext.getUserId());
 
@@ -150,6 +155,10 @@ public class AlertService extends ServiceImpl<AlertRecordMapper, AlertRecord> {
         }
 
         int count = this.update(wrapper);
+
+        // 记录告警批量处理指标
+        alertMetrics.recordAlarmBatchHandled(tenantId, count, status);
+
         log.info("批量处理告警: count={}, status={}, handledBy={}", count, status, userId);
 
         return count;

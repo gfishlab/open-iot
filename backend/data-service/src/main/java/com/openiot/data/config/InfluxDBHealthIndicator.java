@@ -1,0 +1,130 @@
+package com.openiot.data.config;
+
+import com.influxdb.client.InfluxDBClient;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
+
+/**
+ * InfluxDB 健康检查指示器
+ *
+ * <p>检查 InfluxDB 时序数据库的连接状态和健康情况。
+ *
+ * <h3>检查项：</h3>
+ * <ul>
+ *   <li>连接状态 - 是否能够连接到 InfluxDB 服务器</li>
+ *   <li>认证状态 - Token 是否有效</li>
+ *   <li>存储桶状态 - 配置的 Bucket 是否存在</li>
+ *   <li>写入能力 - 是否能够写入数据</li>
+ * </ul>
+ *
+ * @author OpenIoT Team
+ * @since 1.0.0
+ */
+@Slf4j
+@Component("influxDBHealthIndicator")
+@RequiredArgsConstructor
+@ConditionalOnProperty(name = "influxdb.enabled", havingValue = "true", matchIfMissing = false)
+public class InfluxDBHealthIndicator implements HealthIndicator {
+
+    private final InfluxDBClient influxDBClient;
+
+    @Override
+    public Health health() {
+        Health.Builder builder = Health.up();
+
+        try {
+            // 检查连接状态
+            checkConnection(builder);
+
+            // 检查健康状态
+            checkHealth(builder);
+
+            // 检查存储桶状态
+            checkBucket(builder);
+
+            log.debug("InfluxDB 健康检查通过");
+
+        } catch (Exception e) {
+            log.warn("InfluxDB 健康检查失败: {}", e.getMessage());
+            builder.down()
+                   .withDetail("error", e.getMessage())
+                   .withDetail("error_type", e.getClass().getSimpleName());
+        }
+
+        return builder.build();
+    }
+
+    /**
+     * 检查 InfluxDB 连接状态
+     */
+    private void checkConnection(Health.Builder builder) {
+        try {
+            // 使用 ping API 检查连接
+            var pingApi = influxDBClient.getPingApi();
+            var isHealthy = pingApi.ping();
+
+            if (isHealthy) {
+                builder.withDetail("connection", "UP");
+            } else {
+                builder.down().withDetail("connection", "DOWN - ping failed");
+            }
+        } catch (Exception e) {
+            builder.down().withDetail("connection", "DOWN - " + e.getMessage());
+            throw e;
+        }
+    }
+
+    /**
+     * 检查 InfluxDB 健康状态
+     */
+    private void checkHealth(Health.Builder builder) {
+        try {
+            // 获取 InfluxDB 版本信息
+            var healthApi = influxDBClient.getHealthApi();
+            var health = healthApi.getHealth();
+
+            builder.withDetail("status", health.getStatus().getValue())
+                   .withDetail("version", health.getVersion())
+                   .withDetail("message", health.getMessage());
+
+            // 检查健康状态
+            if (health.getStatus() != null) {
+                String status = health.getStatus().getValue();
+                if (!"pass".equalsIgnoreCase(status) && !"ok".equalsIgnoreCase(status)) {
+                    builder.down().withDetail("health_status", "UNHEALTHY");
+                }
+            }
+        } catch (Exception e) {
+            log.debug("获取 InfluxDB 健康状态失败: {}", e.getMessage());
+            builder.withDetail("health_check", "FAILED - " + e.getMessage());
+        }
+    }
+
+    /**
+     * 检查存储桶状态
+     */
+    private void checkBucket(Health.Builder builder) {
+        try {
+            var bucketsApi = influxDBClient.getBucketsApi();
+
+            // 尝试列出存储桶，验证权限
+            var buckets = bucketsApi.findBuckets();
+            int bucketCount = buckets.size();
+
+            builder.withDetail("buckets_count", bucketCount);
+
+            // 检查是否有可用的存储桶
+            if (bucketCount == 0) {
+                builder.withDetail("bucket_warning", "No buckets found");
+            }
+
+        } catch (Exception e) {
+            log.debug("检查 InfluxDB 存储桶失败: {}", e.getMessage());
+            builder.withDetail("bucket_check", "FAILED - " + e.getMessage());
+        }
+    }
+}

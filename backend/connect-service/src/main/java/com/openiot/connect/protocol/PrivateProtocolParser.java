@@ -3,6 +3,7 @@ package com.openiot.connect.protocol;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openiot.common.kafka.model.EventEnvelope;
+import com.openiot.connect.metrics.ConnectMetrics;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -14,7 +15,16 @@ import java.util.UUID;
 
 /**
  * 私有协议解析器
- * 协议格式: TOKEN|JSON_DATA
+ *
+ * <p>协议格式: TOKEN|JSON_DATA
+ *
+ * <p>支持的指标：
+ * <ul>
+ *   <li>forward.success.count - 转发成功数</li>
+ *   <li>forward.failure.count - 转发失败数</li>
+ * </ul>
+ *
+ * @author OpenIoT Team
  */
 @Slf4j
 @Component
@@ -23,6 +33,7 @@ public class PrivateProtocolParser implements ProtocolAdapter {
 
     private final KafkaTemplate<String, EventEnvelope> kafkaTemplate;
     private final ObjectMapper objectMapper;
+    private final ConnectMetrics connectMetrics;
 
     private static final String DEVICE_EVENTS_TOPIC = "device-events";
 
@@ -84,8 +95,19 @@ public class PrivateProtocolParser implements ProtocolAdapter {
                     if (ex != null) {
                         log.error("TCP数据发送到Kafka失败: deviceId={}, eventType={}",
                                 result.getDeviceId(), result.getEventType(), ex);
+                        // 记录转发失败指标
+                        connectMetrics.recordForwardFailure(
+                                result.getTenantId(),
+                                result.getDeviceId(),
+                                result.getEventType(),
+                                ex.getClass().getSimpleName());
                         return;
                     }
+                    // 记录转发成功指标
+                    connectMetrics.recordForwardSuccess(
+                            result.getTenantId(),
+                            result.getDeviceId(),
+                            result.getEventType());
                     log.debug("TCP数据发送到Kafka成功: deviceId={}, eventType={}, partition={}, offset={}",
                             result.getDeviceId(),
                             result.getEventType(),

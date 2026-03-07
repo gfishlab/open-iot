@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.openiot.common.core.exception.BusinessException;
+import com.openiot.common.redis.util.RedisUtil;
 import com.openiot.common.security.context.TenantContext;
 import com.openiot.device.entity.Device;
 import com.openiot.device.entity.Product;
@@ -12,6 +13,7 @@ import com.openiot.device.mapper.DeviceMapper;
 import com.openiot.device.mapper.ProductMapper;
 import com.openiot.device.vo.ProductCreateVO;
 import com.openiot.device.vo.ProductUpdateVO;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -19,11 +21,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 产品服务
+ *
+ * <p>提供产品的 CRUD 操作，支持 Redis 缓存。
+ *
+ * <h3>缓存策略：</h3>
+ * <ul>
+ *   <li>缓存 Key 格式：product:info:{productId}</li>
+ *   <li>TTL: 30 分钟</li>
+ *   <li>更新/删除时自动清除缓存</li>
+ * </ul>
  *
  * @author open-iot
  */
@@ -34,7 +44,22 @@ public class ProductService extends ServiceImpl<ProductMapper, Product> {
 
     private final DeviceMapper deviceMapper;
     private final ThingModelService thingModelService;
+    private final RedisUtil redisUtil;
     private final SecureRandom random = new SecureRandom();
+
+    // ==================== 缓存配置 ====================
+
+    /**
+     * 产品信息缓存 Key 前缀
+     */
+    private static final String PRODUCT_CACHE_KEY_PREFIX = "product:info:";
+
+    /**
+     * 缓存过期时间（秒）- 30 分钟
+     */
+    private static final long CACHE_TTL_SECONDS = 30 * 60;
+
+    // ==================== CRUD 操作 ====================
 
     /**
      * 创建产品
@@ -69,6 +94,9 @@ public class ProductService extends ServiceImpl<ProductMapper, Product> {
 
         // 保存产品
         this.save(product);
+
+        // 缓存产品信息
+        cacheProduct(product);
 
         log.info("创建产品成功: {} (tenant={}, key={})",
             product.getProductName(), tenantId, productKey);
@@ -118,6 +146,9 @@ public class ProductService extends ServiceImpl<ProductMapper, Product> {
 
         this.updateById(product);
 
+        // 更新缓存
+        cacheProduct(product);
+
         log.info("更新产品成功: {} (id={})", product.getProductName(), id);
 
         return product;
@@ -151,16 +182,29 @@ public class ProductService extends ServiceImpl<ProductMapper, Product> {
         // 软删除
         this.removeById(id);
 
+        // 清除缓存
+        evictProductCache(id);
+
         log.info("删除产品成功: {} (id={})", product.getProductName(), id);
     }
 
     /**
-     * 根据ID查询产品
+     * 根据ID查询产品（带缓存）
      *
      * @param id 产品ID
      * @return 产品实体
      */
     public Product getProductById(Long id) {
+        // 尝试从缓存获取
+        String cacheKey = getCacheKey(id);
+        Product cachedProduct = redisUtil.get(cacheKey, Product.class);
+
+        if (cachedProduct != null) {
+            log.debug("从缓存获取产品: id={}", id);
+            return cachedProduct;
+        }
+
+        // 从数据库查询
         Product product = this.getById(id);
         if (product == null) {
             throw BusinessException.notFound("产品不存在: " + id);
@@ -168,6 +212,9 @@ public class ProductService extends ServiceImpl<ProductMapper, Product> {
 
         // 检查租户权限
         checkTenantAccess(product);
+
+        // 缓存产品信息
+        cacheProduct(product);
 
         return product;
     }
