@@ -29,8 +29,33 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      # Windows: 使用本地路径挂载，开发环境持久化数据
+      - ${POSTGRES_DATA_PATH:-./data/postgres}:/var/lib/postgresql/data
     restart: unless-stopped
+    networks:
+      - open-iot-network
+
+  # PostgreSQL 初始化脚本（自动创建多个数据库）
+  postgres-init:
+    image: postgres:16-alpine
+    container_name: open-iot-postgres-init
+    depends_on:
+      - postgres
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_USER=openiot
+      - POSTGRES_PASSWORD=openiot123
+      - POSTGRES_DB=openiot
+    volumes:
+      - ./scripts/init-postgres.sh:/docker-entrypoint-initdb.d/init-postgres.sh:ro
+    command: >
+      sh -c "
+      echo 'Waiting for PostgreSQL...' &&
+      sleep 10 &&
+      echo 'Running initialization script...' &&
+      psql -h postgres -U openiot -d openiot -f /docker-entrypoint-initdb.d/init-postgres.sh &&
+      echo 'PostgreSQL initialization completed!'
+      "
     networks:
       - open-iot-network
 
@@ -42,7 +67,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - redis-data:/data
+      - ${REDIS_DATA_PATH:-./data/redis}:/data
     restart: unless-stopped
     networks:
       - open-iot-network
@@ -57,12 +82,14 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - mongo-data:/data/db
+      - ${MONGO_DATA_PATH:-./data/mongo}:/data/db
+      - ${MONGO_CONFIG_PATH:-./data/mongo/config}:/data/config
     restart: unless-stopped
     networks:
       - open-iot-network
 
   # ==================== Zookeeper (Kafka 依赖) ====================
+  # Windows 兼容：使用本地路径挂载
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.3
     container_name: open-iot-zookeeper
@@ -70,13 +97,14 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     volumes:
-      - zookeeper-data:/var/lib/zookeeper/data
-      - zookeeper-logs:/var/lib/zookeeper/log
+      - ${ZOOKEEPER_DATA_PATH:-./data/zookeeper/data}:/var/lib/zookeeper/data
+      - ${ZOOKEEPER_LOGS_PATH:-./data/zookeeper/log}:/var/lib/zookeeper/log
     restart: unless-stopped
     networks:
       - open-iot-network
 
   # ==================== Kafka (消息队列) ====================
+  # Windows 兼容：使用本地路径挂载
   kafka:
     image: confluentinc/cp-kafka:7.5.3
     container_name: open-iot-kafka
@@ -96,7 +124,7 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     volumes:
-      - kafka-data:/var/lib/kafka/data
+      - ${KAFKA_DATA_PATH:-./data/kafka}:/var/lib/kafka/data
     restart: unless-stopped
     networks:
       - open-iot-network
@@ -146,8 +174,8 @@ services:
     ports:
       - "8086:8086"
     volumes:
-      - influxdb-data:/var/lib/influxdb2
-      - influxdb-config:/etc/influxdb2
+      - ${INFLUXDB_DATA_PATH:-./data/influxdb}:/var/lib/influxdb2
+      - ${INFLUXDB_CONFIG_PATH:-./data/influxdb/config}:/etc/influxdb2
     environment:
       - DOCKER_INFLUXDB_INIT_MODE=setup
       - DOCKER_INFLUXDB_INIT_USERNAME=admin
@@ -162,15 +190,3 @@ services:
 networks:
   open-iot-network:
     driver: bridge
-
-volumes:
-  nacos-data:
-  postgres-data:
-  redis-data:
-  mongo-data:
-  zookeeper-data:
-  zookeeper-logs:
-  kafka-data:
-  emqx-data:
-  influxdb-data:
-  influxdb-config:

@@ -34,6 +34,8 @@ public class OpenApiConfig {
                                 - **死信队列处理**：失败消息重放
                                 - **数据重放**：历史数据回放功能
                                 - **历史数据查询**：基于 InfluxDB 的时序数据查询
+                                - **数据转发**：多目标数据转发（HTTP、Kafka、MQTT）
+                                - **告警管理**：智能告警规则配置和告警记录管理
 
                                 ### 认证方式
                                 所有接口需要通过 Sa-Token 认证，请求头携带：
@@ -102,6 +104,28 @@ public class OpenApiConfig {
                             "/api/v1/devices/*/status/**",
                             "/api/v1/devices/*/events/**",
                             "/api/v1/devices/*/influxdb/**")
+                .build();
+    }
+
+    /**
+     * 数据转发 API 分组
+     */
+    @Bean
+    public GroupedOpenApi dataForwardApi() {
+        return GroupedOpenApi.builder()
+                .group("05-数据转发")
+                .pathsToMatch("/api/v1/forward/**")
+                .build();
+    }
+
+    /**
+     * 告警管理 API 分组
+     */
+    @Bean
+    public GroupedOpenApi alarmApi() {
+        return GroupedOpenApi.builder()
+                .group("06-告警管理")
+                .pathsToMatch("/api/v1/alarms/**")
                 .build();
     }
 }
