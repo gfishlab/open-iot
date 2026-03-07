@@ -71,6 +71,12 @@
             <artifactId>js</artifactId>
             <type>pom</type>
         </dependency>
+
+        <!-- Aviator - Expression Engine (用于映射规则公式计算) -->
+        <dependency>
+            <groupId>com.googlecode.aviator</groupId>
+            <artifactId>aviator</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
