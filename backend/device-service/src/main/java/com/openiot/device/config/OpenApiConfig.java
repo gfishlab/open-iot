@@ -163,4 +163,15 @@ public class OpenApiConfig {
                 .pathsToMatch("/api/replay/**")
                 .build();
     }
+
+    /**
+     * 设备轨迹 API 分组
+     */
+    @Bean
+    public GroupedOpenApi trajectoryApi() {
+        return GroupedOpenApi.builder()
+                .group("09-设备轨迹")
+                .pathsToMatch("/api/v1/devices/*/trajectory/**")
+                .build();
+    }
 }
