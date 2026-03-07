@@ -35,6 +35,93 @@ tests/
 # UI设计：使用UI/UX Pro Max skill进行前端界面设计和代码生成
 # 启动前端开发服务器：cd frontend && npm run dev
 
+---
+
+## 前后端联调规范
+
+### 架构原则
+
+**所有前后端联调 MUST 通过 Gateway 网关服务进行路由，禁止直接调用后端微服务。**
+
+```
+┌─────────┐      ┌─────────┐      ┌─────────────────┐
+│  前端    │ ──→  │ Gateway │ ──→  │  后端微服务集群   │
+│  Vue3   │      │  网关   │      │ tenant/device/  │
+└─────────┘      └─────────┘      └─────────────────┘
+```
+
+### 为什么必须走网关
+
+1. **统一认证**：Gateway 统一处理 Sa-Token 认证，注入租户信息到请求头
+2. **路由分发**：Gateway 负责将请求路由到正确的微服务
+3. **租户隔离**：Gateway 自动注入 `X-Tenant-Id`、`X-User-Id`、`X-User-Role` 请求头
+4. **安全防护**：Gateway 提供统一的 API 网关安全策略
+
+### 开发环境配置
+
+#### 前端代理配置 (vite.config.ts)
+
+```typescript
+export default defineConfig({
+  server: {
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',  // Gateway 地址
+        changeOrigin: true,
+        rewrite: (path) => path
+      }
+    }
+  }
+})
+```
+
+#### Gateway 路由配置
+
+```yaml
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: tenant-service
+          uri: lb://tenant-service
+          predicates:
+            - Path=/api/v1/auth/**,/api/v1/tenants/**,/api/v1/users/**
+        - id: device-service
+          uri: lb://device-service
+          predicates:
+            - Path=/api/v1/products/**,/api/v1/devices/**
+```
+
+### 请求流程
+
+```
+1. 前端发起请求 → /api/v1/products
+2. Vite 代理转发 → http://localhost:8080/api/v1/products
+3. Gateway 认证  → 验证 Sa-Token，解析用户信息
+4. Gateway 注入  → 添加 X-Tenant-Id, X-User-Id, X-User-Role 请求头
+5. Gateway 路由  → 转发到 device-service
+6. 后端处理     → TenantContextFilter 从请求头读取租户信息
+```
+
+### 禁止事项
+
+- ❌ 前端直接调用 `http://localhost:8081/api/products`（绕过 Gateway）
+- ❌ 前端直接调用 `http://localhost:8086/api/v1/auth/login`（绕过 Gateway）
+- ❌ 在生产环境暴露微服务端口（只暴露 Gateway 端口）
+
+### 端口规划
+
+| 服务 | 端口 | 说明 |
+|------|------|------|
+| Gateway | 8080 | 唯一对外暴露的端口 |
+| tenant-service | 8086 | 内部服务，不对外 |
+| device-service | 8081 | 内部服务，不对外 |
+| data-service | 8082 | 内部服务，不对外 |
+| connect-service | 8083 | 内部服务，不对外 |
+| rule-service | 8084 | 内部服务，不对外 |
+| 前端 (dev) | 5173 | Vite 开发服务器 |
+
 ## Code Style
 
 JDK 21 (LTS，支持虚拟线程): Follow standard conventions
