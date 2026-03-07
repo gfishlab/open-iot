@@ -31,31 +31,9 @@ services:
     volumes:
       # Windows: 使用本地路径挂载，开发环境持久化数据
       - ${POSTGRES_DATA_PATH:-./data/postgres}:/var/lib/postgresql/data
+      # 初始化脚本：PostgreSQL 官方推荐方式，在容器首次启动时自动执行
+      - ./scripts/init-postgres.sql:/docker-entrypoint-initdb.d/init-postgres.sql:ro
     restart: unless-stopped
-    networks:
-      - open-iot-network
-
-  # PostgreSQL 初始化脚本（自动创建多个数据库）
-  postgres-init:
-    image: postgres:16-alpine
-    container_name: open-iot-postgres-init
-    depends_on:
-      - postgres
-    environment:
-      - POSTGRES_HOST=postgres
-      - POSTGRES_USER=openiot
-      - POSTGRES_PASSWORD=openiot123
-      - POSTGRES_DB=openiot
-    volumes:
-      - ./scripts/init-postgres.sh:/docker-entrypoint-initdb.d/init-postgres.sh:ro
-    command: >
-      sh -c "
-      echo 'Waiting for PostgreSQL...' &&
-      sleep 10 &&
-      echo 'Running initialization script...' &&
-      psql -h postgres -U openiot -d openiot -f /docker-entrypoint-initdb.d/init-postgres.sh &&
-      echo 'PostgreSQL initialization completed!'
-      "
     networks:
       - open-iot-network
 
