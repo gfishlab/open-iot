@@ -377,7 +377,7 @@ async function loadProducts(): Promise<void> {
     if (searchForm.protocolType) {
       params.protocolType = searchForm.protocolType
     }
-    const data = await request.get('/products', { params })
+    const data = await request.get('/api/products', { params })
     products.value = data.records || data.list || []
     total.value = data.total || 0
   } catch (error) {
@@ -437,10 +437,10 @@ async function handleSubmit(): Promise<void> {
     await formRef.value?.validate()
     submitLoading.value = true
     if (editingId.value) {
-      await request.put(`/products/${editingId.value}`, formData)
+      await request.put(`/api/products/${editingId.value}`, formData)
       ElMessage.success('更新成功')
     } else {
-      await request.post('/products', formData)
+      await request.post('/api/products', formData)
       ElMessage.success('创建成功')
     }
     dialogVisible.value = false

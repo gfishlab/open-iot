@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -252,6 +252,35 @@ public class ProductController {
     @Data
     public static class StatusUpdateRequest {
         private String status;  // 1-启用，0-禁用
+    }
+
+    /**
+     * 获取产品物模型
+     */
+    @GetMapping("/{id}/thing-model")
+    @Operation(summary = "获取物模型", description = "获取产品的物模型定义")
+    public ApiResponse<Object> getThingModel(
+            @Parameter(description = "产品ID") @PathVariable Long id) {
+
+        log.info("获取产品物模型: productId={}", id);
+
+        Product product = productService.getProductById(id);
+        return ApiResponse.success(product.getThingModel());
+    }
+
+    /**
+     * 更新产品物模型
+     */
+    @PutMapping("/{id}/thing-model")
+    @Operation(summary = "更新物模型", description = "更新产品的物模型定义")
+    public ApiResponse<Void> updateThingModel(
+            @Parameter(description = "产品ID") @PathVariable Long id,
+            @RequestBody JsonNode thingModel) {
+
+        log.info("更新产品物模型: productId={}", id);
+
+        productService.updateThingModel(id, thingModel);
+        return ApiResponse.success("物模型更新成功", null);
     }
 
     /**
