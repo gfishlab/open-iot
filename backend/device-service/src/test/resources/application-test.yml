@@ -1,0 +1,46 @@
+# 测试环境配置
+
+# 服务端口
+server:
+  port: 0  # 随机端口，避免冲突
+
+# Spring 配置
+spring:
+  application:
+    name: device-service-test
+
+  # 数据源配置（使用 H2 内存数据库进行测试）
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+
+  # JPA 配置
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+  # Kafka 配置（使用 embedded Kafka 或 mock）
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+# MyBatis Plus 配置
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: deleteFlag
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# 日志配置
+logging:
+  level:
+    com.openiot: DEBUG
+    com.baomidou.mybatisplus: DEBUG
