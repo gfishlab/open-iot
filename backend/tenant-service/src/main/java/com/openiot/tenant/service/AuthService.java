@@ -56,7 +56,8 @@ public class AuthService {
         StpUtil.login(user.getId());
 
         // 存储会话信息
-        StpUtil.getSession().set("tenantId", user.getTenantId() != null ? String.valueOf(user.getTenantId()) : null);
+        Long tenantId = user.getTenantId();
+        StpUtil.getSession().set("tenantId", tenantId != null ? String.valueOf(tenantId) : null);
         StpUtil.getSession().set("username", user.getUsername());
 
         // 从数据库动态加载角色和权限（支持多角色）
