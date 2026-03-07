@@ -11,9 +11,12 @@ Auto-generated from all feature plans. Last updated: 2026-02-25
 - 分布式事务：Alibaba Seata（AT 模式）
 
 ### 前端
-- Vue 3 + Vite + Element Plus
-- UI设计工具：UI/UX Pro Max skill（已安装）
+- Vue 3 + Vite + TypeScript
+- UI 框架：Element Plus
+- CSS 框架：Tailwind CSS
 - 状态管理：Pinia
+- HTTP 客户端：Axios
+- UI设计工具：UI/UX Pro Max skill（已安装）
 
 ## Project Structure
 

@@ -1,8 +1,8 @@
 <template>
-  <div class="product-detail-page">
+  <div class="p-6">
     <el-page-header @back="goBack" :title="product.productName || '产品详情'">
       <template #content>
-        <span class="text-large font-600 mr-3">{{ product.productName || '加载中...' }}</span>
+        <span class="text-lg font-semibold mr-3">{{ product.productName || '加载中...' }}</span>
         <el-tag :type="product.status === '1' ? 'success' : 'danger'" size="small">
           {{ product.status === '1' ? '启用' : '禁用' }}
         </el-tag>
@@ -14,10 +14,10 @@
     <el-skeleton :loading="loading" animated>
       <template #default>
         <!-- 基本信息 -->
-        <el-card class="info-card">
+        <el-card class="mb-6">
           <template #header>
-            <div class="card-header">
-              <span>基本信息</span>
+            <div class="flex justify-between items-center">
+              <span class="font-semibold">基本信息</span>
               <el-button type="primary" size="small" @click="handleEdit">编辑</el-button>
             </div>
           </template>
@@ -36,16 +36,21 @@
         </el-card>
 
         <!-- 物模型 -->
-        <el-card class="info-card">
+        <el-card class="mb-6">
           <template #header>
-            <div class="card-header">
-              <span>物模型定义</span>
+            <div class="flex justify-between items-center">
+              <span class="font-semibold">物模型定义</span>
               <el-button type="primary" size="small" @click="handleEditThingModel">编辑物模型</el-button>
             </div>
           </template>
           <el-tabs v-model="thingModelTab">
             <el-tab-pane label="属性" name="properties">
-              <el-table :data="thingModel.properties" border size="small" v-if="thingModel.properties?.length">
+              <el-table
+                :data="thingModel.properties"
+                border
+                size="small"
+                v-if="thingModel.properties?.length"
+              >
                 <el-table-column prop="identifier" label="标识符" width="150" />
                 <el-table-column prop="name" label="名称" width="150" />
                 <el-table-column prop="dataType" label="数据类型" width="100" />
@@ -56,11 +61,16 @@
               <el-empty description="暂无属性定义" v-else />
             </el-tab-pane>
             <el-tab-pane label="事件" name="events">
-              <el-table :data="thingModel.events" border size="small" v-if="thingModel.events?.length">
+              <el-table
+                :data="thingModel.events"
+                border
+                size="small"
+                v-if="thingModel.events?.length"
+              >
                 <el-table-column prop="identifier" label="标识符" width="200" />
                 <el-table-column prop="name" label="名称" width="200" />
                 <el-table-column prop="type" label="事件类型" width="120">
-                  <template #default="{ row }">
+                  <template #default="{ row }: { row: EventDefinition }">
                     <el-tag :type="row.type === 'info' ? 'info' : row.type === 'alert' ? 'warning' : 'danger'">
                       {{ row.type === 'info' ? '信息' : row.type === 'alert' ? '告警' : '故障' }}
                     </el-tag>
@@ -70,11 +80,16 @@
               <el-empty description="暂无事件定义" v-else />
             </el-tab-pane>
             <el-tab-pane label="服务" name="services">
-              <el-table :data="thingModel.services" border size="small" v-if="thingModel.services?.length">
+              <el-table
+                :data="thingModel.services"
+                border
+                size="small"
+                v-if="thingModel.services?.length"
+              >
                 <el-table-column prop="identifier" label="标识符" width="200" />
                 <el-table-column prop="name" label="名称" width="200" />
                 <el-table-column prop="callType" label="调用方式" width="120">
-                  <template #default="{ row }">
+                  <template #default="{ row }: { row: ServiceDefinition }">
                     <el-tag>{{ row.callType === 'sync' ? '同步' : '异步' }}</el-tag>
                   </template>
                 </el-table-column>
@@ -85,10 +100,10 @@
         </el-card>
 
         <!-- 关联设备 -->
-        <el-card class="info-card">
+        <el-card>
           <template #header>
-            <div class="card-header">
-              <span>关联设备 ({{ devices.length }} 台)</span>
+            <div class="flex justify-between items-center">
+              <span class="font-semibold">关联设备 ({{ devices.length }} 台)</span>
               <el-button type="primary" size="small" @click="handleAddDevice">添加设备</el-button>
             </div>
           </template>
@@ -97,7 +112,7 @@
             <el-table-column prop="deviceName" label="设备名称" width="180" />
             <el-table-column prop="protocolType" label="协议类型" width="100" />
             <el-table-column prop="status" label="状态" width="80">
-              <template #default="{ row }">
+              <template #default="{ row }: { row: Device }">
                 <el-tag :type="row.status === '1' ? 'success' : 'danger'" size="small">
                   {{ row.status === '1' ? '启用' : '禁用' }}
                 </el-tag>
@@ -105,7 +120,7 @@
             </el-table-column>
             <el-table-column prop="createTime" label="创建时间" width="180" />
             <el-table-column label="操作" width="120">
-              <template #default="{ row }">
+              <template #default="{ row }: { row: Device }">
                 <el-button type="primary" size="small" link @click="viewDevice(row)">查看</el-button>
               </template>
             </el-table-column>
@@ -123,6 +138,57 @@ import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import request from '@/utils/request'
 
+// 类型定义
+interface Product {
+  id: number
+  productKey: string
+  productName: string
+  productType: string
+  protocolType: string
+  nodeType: string
+  dataFormat: string
+  status: string
+  createTime: string
+  updateTime: string
+  thingModel?: ThingModel
+}
+
+interface Device {
+  id: number
+  deviceKey: string
+  deviceName: string
+  protocolType: string
+  status: string
+  createTime: string
+}
+
+interface PropertyDefinition {
+  identifier: string
+  name: string
+  dataType: string
+  unit: string
+  min: string
+  max: string
+}
+
+interface EventDefinition {
+  identifier: string
+  name: string
+  type: string
+}
+
+interface ServiceDefinition {
+  identifier: string
+  name: string
+  callType: string
+}
+
+interface ThingModel {
+  properties: PropertyDefinition[]
+  events: EventDefinition[]
+  services: ServiceDefinition[]
+}
+
 const route = useRoute()
 const router = useRouter()
 
@@ -131,7 +197,8 @@ const devicesLoading = ref(false)
 const productId = ref<number>(0)
 
 // 产品信息
-const product = reactive<any>({
+const product = reactive<Product>({
+  id: 0,
   productKey: '',
   productName: '',
   productType: '',
@@ -145,32 +212,33 @@ const product = reactive<any>({
 
 // 物模型
 const thingModelTab = ref('properties')
-const thingModel = reactive<any>({
+const thingModel = reactive<ThingModel>({
   properties: [],
   events: [],
   services: []
 })
 
 // 关联设备
-const devices = ref<any[]>([])
+const devices = ref<Device[]>([])
 
 // 返回
-function goBack() {
+function goBack(): void {
   router.push('/product')
 }
 
 // 加载产品详情
-async function loadProduct() {
+async function loadProduct(): Promise<void> {
   try {
     loading.value = true
-    const data = await request.get(`/products/${productId.value}`)
+    const data = await request.get(`/api/products/${productId.value}`)
     Object.assign(product, data)
     // 加载物模型
     if (data.thingModel) {
       Object.assign(thingModel, data.thingModel)
     }
-  } catch (error: any) {
-    ElMessage.error(error.message || '加载产品详情失败')
+  } catch (error: unknown) {
+    const err = error as Error
+    ElMessage.error(err.message || '加载产品详情失败')
     goBack()
   } finally {
     loading.value = false
@@ -178,12 +246,12 @@ async function loadProduct() {
 }
 
 // 加载关联设备
-async function loadDevices() {
+async function loadDevices(): Promise<void> {
   try {
     devicesLoading.value = true
-    const data = await request.get(`/products/${productId.value}/devices`)
+    const data = await request.get(`/api/products/${productId.value}/devices`)
     devices.value = data || []
-  } catch (error) {
+  } catch {
     devices.value = []
   } finally {
     devicesLoading.value = false
@@ -191,22 +259,22 @@ async function loadDevices() {
 }
 
 // 编辑产品
-function handleEdit() {
+function handleEdit(): void {
   router.push(`/product/${productId.value}/edit`)
 }
 
 // 编辑物模型
-function handleEditThingModel() {
+function handleEditThingModel(): void {
   router.push(`/product/${productId.value}/thing-model`)
 }
 
 // 添加设备
-function handleAddDevice() {
+function handleAddDevice(): void {
   router.push(`/device/create?productId=${productId.value}`)
 }
 
 // 查看设备
-function viewDevice(row: any) {
+function viewDevice(row: Device): void {
   router.push(`/device/${row.id}`)
 }
 
@@ -221,17 +289,3 @@ onMounted(() => {
   loadDevices()
 })
 </script>
-
-<style scoped>
-.product-detail-page {
-  padding: 20px;
-}
-.info-card {
-  margin-bottom: 20px;
-}
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-</style>
