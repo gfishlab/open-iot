@@ -6,6 +6,10 @@
           <el-icon><Monitor /></el-icon>
           <span>设备监控</span>
         </el-menu-item>
+        <el-menu-item index="/product">
+          <el-icon><Box /></el-icon>
+          <span>产品管理</span>
+        </el-menu-item>
         <el-menu-item index="/devices">
           <el-icon><List /></el-icon>
           <span>设备管理</span>
@@ -44,6 +48,7 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import { Monitor, List, OfficeBuilding, Box, ArrowDown } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()

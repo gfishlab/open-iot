@@ -43,22 +43,39 @@ JDK 21 (LTS，支持虚拟线程): Follow standard conventions
 
 <!-- MANUAL ADDITIONS START -->
 
-## 数据库迁移规范（Flyway）
+## 数据库架构设计
 
-### 架构设计
+### 独立数据库架构
 
-**共享数据库 + 集中式迁移管理**
+本项目采用**独立数据库架构**，每个微服务拥有独立的 PostgreSQL 数据库：
 
-本项目采用**共享数据库**架构，所有微服务共享同一个 PostgreSQL 数据库：
-- **数据库名**：`openiot`
-- **迁移管理服务**：`tenant-service`（唯一启用 Flyway 的服务）
-- **其他服务**：`device-service`、`data-service`（禁用 Flyway，仅做 CRUD 操作）
+| 服务 | 数据库名 | 说明 |
+|------|---------|------|
+| tenant-service | `openiot_tenant` | 租户、用户、RBAC 权限表 |
+| device-service | `openiot_device` | 设备、产品、属性、事件、服务调用表 |
+| data-service | `openiot_data` | 设备轨迹、历史数据表 |
+| connect-service | `openiot_connect` | 设备连接会话表 |
+
+每个服务独立管理自己的 Flyway 迁移脚本，位于 `src/main/resources/db/migration/` 目录。
+
+### PostgreSQL MCP 配置
+
+项目已配置 PostgreSQL MCP 服务，支持直接通过 MCP 操作数据库：
+
+- **mcp__postgres-tenant__query**: 操作 `openiot_tenant` 数据库
+- **mcp__postgres-device__query**: 操作 `openiot_device` 数据库
+- **mcp__postgres-data__query**: 操作 `openiot_data` 数据库
+- **mcp__postgres-connect__query**: 操作 `openiot_connect` 数据库
+
+**使用示例**：
+```
+# 查询设备数据库中的表
+mcp__postgres-device__query: "SELECT * FROM device LIMIT 10"
+```
 
 ### Flyway 配置规范
 
-#### **tenant-service（数据库迁移管理服务）**
-
-✅ **启用 Flyway**，负责统一管理所有业务表的 DDL：
+每个服务独立配置 Flyway：
 
 ```yaml
 # application.yml
@@ -66,30 +83,7 @@ spring.flyway:
   enabled: true
   locations: classpath:db/migration
   baseline-on-migrate: true
-  validate-on-migrate: true
-  out-of-order: false  # 禁止乱序执行
 ```
-
-**迁移脚本位置**：`backend/tenant-service/src/main/resources/db/migration/`
-
-**包含的表**：
-- `tenant` - 租户表
-- `sys_user` - 系统用户表
-- `device` - 设备表
-- `device_trajectory` - 设备轨迹表
-- 其他所有业务表...
-
-#### **其他服务（device-service、data-service）**
-
-❌ **禁用 Flyway**，避免重复迁移导致冲突：
-
-```yaml
-# application.yml
-spring.flyway:
-  enabled: false
-```
-
-这些服务只负责 CRUD 操作，不执行数据库迁移。
 
 ### 迁移脚本命名规范
 

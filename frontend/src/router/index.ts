@@ -32,6 +32,16 @@ const routes = [
         name: 'Tenants',
         component: () => import('@/views/tenant/TenantList.vue'),
         meta: { requiresAdmin: true }
+      },
+      {
+        path: 'product',
+        name: 'ProductList',
+        component: () => import('@/views/product/ProductList.vue')
+      },
+      {
+        path: 'product/:id',
+        name: 'ProductDetail',
+        component: () => import('@/views/product/ProductDetail.vue')
       }
     ]
   }
