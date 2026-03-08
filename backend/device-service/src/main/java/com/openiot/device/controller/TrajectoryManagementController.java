@@ -18,13 +18,15 @@ import java.util.Map;
 /**
  * 设备轨迹管理控制器
  *
+ * 负责轨迹上报、存储等写操作
+ *
  * @author OpenIoT Team
  */
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/devices/{deviceId}/trajectory")
 @RequiredArgsConstructor
-@Tag(name = "设备轨迹管理", description = "设备轨迹存储、查询和统计接口")
+@Tag(name = "设备轨迹上报", description = "设备轨迹上报和存储接口")
 public class TrajectoryManagementController {
 
     private final DeviceTrajectoryStorageService trajectoryStorageService;
@@ -162,10 +164,10 @@ public class TrajectoryManagementController {
     }
 
     /**
-     * 轨迹统计
+     * 轨迹统计（距离、速度等）
      */
-    @GetMapping("/statistics")
-    @Operation(summary = "轨迹统计", description = "统计设备轨迹信息")
+    @GetMapping("/distance-stats")
+    @Operation(summary = "轨迹距离统计", description = "统计设备轨迹距离、速度等信息")
     public ApiResponse<DeviceTrajectoryStorageService.TrajectoryStatisticsVO> getTrajectoryStatistics(
             @Parameter(description = "设备ID") @PathVariable Long deviceId,
             @Parameter(description = "开始时间") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,

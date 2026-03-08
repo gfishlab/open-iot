@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.openiot.common.core.exception.BusinessException;
 import com.openiot.device.entity.Product;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,11 +27,18 @@ import java.util.Set;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class ThingModelService {
 
     private final ObjectMapper objectMapper;
     private final ProductService productService;
+
+    /**
+     * 构造器注入，使用 @Lazy 打破循环依赖
+     */
+    public ThingModelService(ObjectMapper objectMapper, @Lazy ProductService productService) {
+        this.objectMapper = objectMapper;
+        this.productService = productService;
+    }
 
     /**
      * 验证物模型定义
