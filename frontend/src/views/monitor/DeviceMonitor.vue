@@ -308,7 +308,6 @@ function renderCharts() {
         data: [12, 18, 15, 23, 20, 16, 23]
       }]
     }
-    }
     alertTrendChartInstance.setOption(trendOption)
   }
 }
