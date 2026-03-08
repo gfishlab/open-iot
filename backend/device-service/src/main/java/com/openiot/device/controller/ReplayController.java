@@ -64,7 +64,7 @@ public class ReplayController {
 
         ReplayService.ReplayTask task = replayService.getTaskStatus(taskId);
         if (task == null) {
-            return ApiResponse.error("任务不存在", null);
+            return ApiResponse.error(404, "任务不存在");
         }
 
         return ApiResponse.success(task);
@@ -82,7 +82,7 @@ public class ReplayController {
         if (success) {
             return ApiResponse.success("任务已停止", null);
         } else {
-            return ApiResponse.error("任务不存在或无法停止", null);
+            return ApiResponse.error(404, "任务不存在或无法停止");
         }
     }
 

@@ -144,30 +144,19 @@ public class DeviceDataService extends ServiceImpl<DeviceDataMapper, DeviceData>
      * @param data      上报数据
      */
     private void validateDataWithThingModel(Long productId, Map<String, Object> data) {
-        // 查询产品属性定义
-        List<ProductProperty> properties = thingModelService.getProperties(productId);
+        // 使用 ThingModelService 的物模型校验功能
+        // 获取产品的物模型定义（JsonNode 格式）
+        JsonNode thingModel = thingModelService.getThingModel(productId);
+        if (thingModel == null || thingModel.isNull()) {
+            return; // 没有物模型定义，跳过校验
+        }
 
         // 校验每个属性
         for (Map.Entry<String, Object> entry : data.entrySet()) {
             String propertyIdentifier = entry.getKey();
             Object value = entry.getValue();
 
-            // 查找属性定义
-            ProductProperty property = properties.stream()
-                    .filter(p -> p.getPropertyIdentifier().equals(propertyIdentifier))
-                    .findFirst()
-                    .orElse(null);
-
-            if (property == null) {
-                log.warn("未定义的属性: {}, 产品: {}", propertyIdentifier, productId);
-                continue; // 允许未定义的属性（兼容性）
-            }
-
-            // 校验数据类型
-            validateDataType(property, value);
-
-            // 校验取值范围（如果有定义）
-            validateDataRange(property, value);
+            // 校验属性是否            thingModelService.validateProperty(productId, propertyIdentifier, value);
         }
     }
 
@@ -223,7 +212,7 @@ public class DeviceDataService extends ServiceImpl<DeviceDataMapper, DeviceData>
      */
     private void validateDataRange(ProductProperty property, Object value) {
         JsonNode spec = property.getSpec();
-        if (spec == null || !value instanceof Number) {
+        if (spec == null || !(value instanceof Number)) {
             return;
         }
 

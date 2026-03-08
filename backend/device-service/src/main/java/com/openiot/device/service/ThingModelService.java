@@ -494,4 +494,26 @@ public class ThingModelService {
         JsonNode services = product.getThingModel().get("services");
         return services != null ? services : objectMapper.createArrayNode();
     }
+
+    /**
+     * 获取产品的物模型定义
+     */
+    public JsonNode getThingModel(Long productId) {
+        Product product = productService.getProductById(productId);
+        if (product == null) {
+            return null;
+        }
+        return product.getThingModel();
+    }
+
+    /**
+     * 校验单个属性值
+     */
+    public void validateProperty(Long productId, String propertyIdentifier, Object value) {
+        Product product = productService.getProductById(productId);
+        if (product == null || product.getThingModel() == null) {
+            return;
+        }
+        validatePropertyData(product, propertyIdentifier, value);
+    }
 }

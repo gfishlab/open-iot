@@ -5,12 +5,15 @@ import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.QueryApi;
 import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
+import jakarta.persistence.Column;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -178,7 +181,10 @@ public class InfluxDBRepository {
         }
 
         try {
-            deleteApi.delete(startTime, endTime, predicate.toString(), properties.org(), properties.bucket());
+            // Instant 转 OffsetDateTime
+            OffsetDateTime start = OffsetDateTime.ofInstant(startTime, ZoneOffset.UTC);
+            OffsetDateTime end = OffsetDateTime.ofInstant(endTime, ZoneOffset.UTC);
+            deleteApi.delete(start, end, predicate.toString(), properties.org(), properties.bucket());
             log.info("删除 InfluxDB 数据成功: measurement={}, predicate={}", measurement, predicate);
         } catch (Exception e) {
             log.error("删除 InfluxDB 数据失败: {}", e.getMessage(), e);
