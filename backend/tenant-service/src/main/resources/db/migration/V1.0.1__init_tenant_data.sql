@@ -5,9 +5,10 @@
 -- ========================================
 
 -- 插入平台管理员（密码：admin123，使用 BCrypt 加密）
+-- 注意： BCrypt 密码格式为 $2a$10$<22字符盐>$
 INSERT INTO sys_user (tenant_id, username, password, real_name, role, status, delete_flag, create_time)
 VALUES
-    (NULL, 'admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKljKGyC', '系统管理员', 'ADMIN', '1', '0', CURRENT_TIMESTAMP);
+    (NULL, 'admin', '$2a$10$Lq2wT6Y9vPKLvQW0XxHzPqN8xGf4xWKLqBVe5rQfKlZ.VaGKKa7G', '系统管理员', 'ADMIN', '1', '0', CURRENT_TIMESTAMP);
 
 -- 插入测试租户
 INSERT INTO tenant (tenant_code, tenant_name, contact_email, status, delete_flag, create_time)
@@ -19,7 +20,7 @@ INSERT INTO sys_user (tenant_id, username, password, real_name, role, status, de
 SELECT
     id,
     'tenant_admin',
-    '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKljKGyC',
+    '$2a$10$Lq2wT6Y9vPKLvQW0XxHzPqN8xGf4xWKLqBVe5rQfKlZ.VaGKKa7G',
     '租户管理员',
     'TENANT_ADMIN',
     '1',
