@@ -1,75 +1,67 @@
 <template>
   <div class="alert-page">
     <!-- 统计卡片 -->
-    <el-row :gutter="20" class="mb-6">
-      <el-col :span="6">
-        <el-card class="stat-card">
-          <div class="stat-content">
-            <div class="stat-icon bg-blue-100">
-              <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-            </div>
-            <div class="stat-text">
-              <div class="stat-label">总告警数</div>
-              <div class="stat-value">{{ statistics.totalCount || 0 }}</div>
-            </div>
+    <div class="stat-row">
+      <el-card class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon stat-icon--blue">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
           </div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="stat-card">
-          <div class="stat-content">
-            <div class="stat-icon bg-yellow-100">
-              <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
-            </div>
-            <div class="stat-text">
-              <div class="stat-label">待处理</div>
-              <div class="stat-value text-yellow-600">{{ statistics.pendingCount || 0 }}</div>
-            </div>
+          <div class="stat-text">
+            <div class="stat-label">总告警数</div>
+            <div class="stat-value">{{ statistics.totalCount || 0 }}</div>
           </div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="stat-card">
-          <div class="stat-content">
-            <div class="stat-icon bg-green-100">
-              <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div class="stat-text">
-              <div class="stat-label">已处理</div>
-              <div class="stat-value text-green-600">{{ statistics.resolvedCount || 0 }}</div>
-            </div>
+        </div>
+      </el-card>
+      <el-card class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon stat-icon--yellow">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
           </div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="stat-card">
-          <div class="stat-content">
-            <div class="stat-icon bg-red-100">
-              <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div class="stat-text">
-              <div class="stat-label">严重告警</div>
-              <div class="stat-value text-red-600">{{ statistics.criticalCount || 0 }}</div>
-            </div>
+          <div class="stat-text">
+            <div class="stat-label">待处理</div>
+            <div class="stat-value stat-value--yellow">{{ statistics.pendingCount || 0 }}</div>
           </div>
-        </el-card>
-      </el-col>
-    </el-row>
+        </div>
+      </el-card>
+      <el-card class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon stat-icon--green">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="stat-text">
+            <div class="stat-label">已处理</div>
+            <div class="stat-value stat-value--green">{{ statistics.resolvedCount || 0 }}</div>
+          </div>
+        </div>
+      </el-card>
+      <el-card class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon stat-icon--red">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="stat-text">
+            <div class="stat-label">严重告警</div>
+            <div class="stat-value stat-value--red">{{ statistics.criticalCount || 0 }}</div>
+          </div>
+        </div>
+      </el-card>
+    </div>
 
     <!-- 告警列表 -->
     <el-card>
       <template #header>
-        <div class="flex justify-between items-center">
+        <div class="card-header">
           <span>告警列表</span>
-          <div class="flex gap-2">
+          <div class="header-actions">
             <el-button size="small" @click="handleBatchHandle" :disabled="selectedIds.length === 0">
               批量处理
             </el-button>
@@ -79,16 +71,16 @@
       </template>
 
       <!-- 筛选条件 -->
-      <el-form :inline="true" :model="searchForm" class="mb-4">
+      <el-form :inline="true" :model="searchForm" class="search-form">
         <el-form-item label="告警级别">
-          <el-select v-model="searchForm.level" placeholder="全部" clearable class="w-32">
+          <el-select v-model="searchForm.level" placeholder="全部" clearable style="width: 128px">
             <el-option label="严重" value="critical" />
             <el-option label="警告" value="warning" />
             <el-option label="信息" value="info" />
           </el-select>
         </el-form-item>
         <el-form-item label="状态">
-          <el-select v-model="searchForm.status" placeholder="全部" clearable class="w-32">
+          <el-select v-model="searchForm.status" placeholder="全部" clearable style="width: 128px">
             <el-option label="待处理" value="pending" />
             <el-option label="处理中" value="processing" />
             <el-option label="已解决" value="resolved" />
@@ -96,7 +88,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="设备">
-          <el-input v-model="searchForm.deviceName" placeholder="设备名称" clearable class="w-40" />
+          <el-input v-model="searchForm.deviceName" placeholder="设备名称" clearable style="width: 160px" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">搜索</el-button>
@@ -110,7 +102,7 @@
         :data="alerts"
         v-loading="loading"
         @selection-change="handleSelectionChange"
-        class="w-full"
+        style="width: 100%"
       >
         <el-table-column type="selection" width="55" />
         <el-table-column prop="alertTitle" label="告警标题" min-width="200" />
@@ -153,7 +145,7 @@
       </el-table>
 
       <!-- 分页 -->
-      <div class="flex justify-end mt-4">
+      <div class="pagination-wrap">
         <el-pagination
           v-model:current-page="currentPage"
           v-model:page-size="pageSize"
@@ -406,13 +398,21 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* ===== 页面容器 ===== */
 .alert-page {
   padding: 20px;
 }
 
+/* ===== 统计卡片行 ===== */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
 .stat-card {
   border: none;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .stat-content {
@@ -421,13 +421,41 @@ onMounted(() => {
   gap: 16px;
 }
 
+/* 图标容器 */
 .stat-icon {
   width: 48px;
   height: 48px;
+  min-width: 48px;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.stat-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* 四种颜色变体 */
+.stat-icon--blue {
+  background: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
+}
+
+.stat-icon--yellow {
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+}
+
+.stat-icon--green {
+  background: rgba(52, 211, 153, 0.15);
+  color: #34d399;
+}
+
+.stat-icon--red {
+  background: rgba(248, 113, 113, 0.15);
+  color: #f87171;
 }
 
 .stat-text {
@@ -435,13 +463,43 @@ onMounted(() => {
 }
 
 .stat-label {
-  font-size: 14px;
-  color: #6b7280;
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 4px;
 }
 
 .stat-value {
-  font-size: 24px;
-  font-weight: 600;
-  color: #1f2937;
+  font-size: 26px;
+  font-weight: 700;
+  color: #f1f5f9;
+  line-height: 1;
+}
+
+.stat-value--yellow { color: #fbbf24; }
+.stat-value--green  { color: #34d399; }
+.stat-value--red    { color: #f87171; }
+
+/* ===== 告警列表 card header ===== */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ===== 搜索表单 ===== */
+.search-form {
+  margin-bottom: 16px;
+}
+
+/* ===== 分页 ===== */
+.pagination-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
 }
 </style>

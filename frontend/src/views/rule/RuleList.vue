@@ -1,75 +1,67 @@
 <template>
   <div class="rule-page">
     <!-- 顶部统计卡片 -->
-    <el-row :gutter="20" class="mb-6">
-      <el-col :span="6">
-        <el-card class="stat-card">
-          <div class="stat-content">
-            <div class="stat-icon bg-blue-100">
-              <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <div class="stat-text">
-              <div class="stat-label">总规则数</div>
-              <div class="stat-value">{{ statistics.totalCount || 0 }}</div>
-            </div>
+    <div class="stat-row">
+      <el-card class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon stat-icon--blue">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
           </div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="stat-card">
-          <div class="stat-content">
-            <div class="stat-icon bg-green-100">
-              <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div class="stat-text">
-              <div class="stat-label">已启用</div>
-              <div class="stat-value text-green-600">{{ statistics.enabledCount || 0 }}</div>
-            </div>
+          <div class="stat-text">
+            <div class="stat-label">总规则数</div>
+            <div class="stat-value">{{ statistics.totalCount || 0 }}</div>
           </div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="stat-card">
-          <div class="stat-content">
-            <div class="stat-icon bg-gray-100">
-              <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div class="stat-text">
-              <div class="stat-label">已禁用</div>
-              <div class="stat-value text-gray-600">{{ statistics.disabledCount || 0 }}</div>
-            </div>
+        </div>
+      </el-card>
+      <el-card class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon stat-icon--green">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
           </div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="stat-card">
-          <div class="stat-content">
-            <div class="stat-icon bg-purple-100">
-              <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
-            <div class="stat-text">
-              <div class="stat-label">今日触发</div>
-              <div class="stat-value text-purple-600">{{ statistics.todayTriggerCount || 0 }}</div>
-            </div>
+          <div class="stat-text">
+            <div class="stat-label">已启用</div>
+            <div class="stat-value stat-value--green">{{ statistics.enabledCount || 0 }}</div>
           </div>
-        </el-card>
-      </el-col>
-    </el-row>
+        </div>
+      </el-card>
+      <el-card class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon stat-icon--gray">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="stat-text">
+            <div class="stat-label">已禁用</div>
+            <div class="stat-value stat-value--gray">{{ statistics.disabledCount || 0 }}</div>
+          </div>
+        </div>
+      </el-card>
+      <el-card class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon stat-icon--purple">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <div class="stat-text">
+            <div class="stat-label">今日触发</div>
+            <div class="stat-value stat-value--purple">{{ statistics.todayTriggerCount || 0 }}</div>
+          </div>
+        </div>
+      </el-card>
+    </div>
 
     <!-- 规则列表 -->
     <el-card>
       <template #header>
-        <div class="flex justify-between items-center">
+        <div class="card-header">
           <span>规则列表</span>
-          <div class="flex gap-2">
+          <div class="header-actions">
             <el-button size="small" @click="handleBatchDelete" :disabled="selectedIds.length === 0">
               批量删除
             </el-button>
@@ -81,18 +73,18 @@
       </template>
 
       <!-- 筛选条件 -->
-      <el-form :inline="true" :model="searchForm" class="mb-4">
+      <el-form :inline="true" :model="searchForm" class="search-form">
         <el-form-item label="规则名称">
-          <el-input v-model="searchForm.ruleName" placeholder="请输入" clearable class="w-40" />
+          <el-input v-model="searchForm.ruleName" placeholder="请输入" clearable style="width: 160px" />
         </el-form-item>
         <el-form-item label="规则类型">
-          <el-select v-model="searchForm.ruleType" placeholder="全部" clearable class="w-32">
+          <el-select v-model="searchForm.ruleType" placeholder="全部" clearable style="width: 128px">
             <el-option label="表达式" value="EXPRESSION" />
             <el-option label="脚本" value="SCRIPT" />
           </el-select>
         </el-form-item>
         <el-form-item label="状态">
-          <el-select v-model="searchForm.status" placeholder="全部" clearable class="w-32">
+          <el-select v-model="searchForm.status" placeholder="全部" clearable style="width: 128px">
             <el-option label="已启用" value="1" />
             <el-option label="已禁用" value="0" />
           </el-select>
@@ -109,7 +101,7 @@
         :data="rules"
         v-loading="loading"
         @selection-change="handleSelectionChange"
-        class="w-full"
+        style="width: 100%"
       >
         <el-table-column type="selection" width="55" />
         <el-table-column prop="ruleName" label="规则名称" min-width="150" />
@@ -122,14 +114,10 @@
           </template>
         </el-table-column>
         <el-table-column prop="productName" label="关联产品" width="120">
-          <template #default="{ row }">
-            {{ row.productName || '-' }}
-          </template>
+          <template #default="{ row }">{{ row.productName || '-' }}</template>
         </el-table-column>
         <el-table-column prop="deviceName" label="关联设备" width="120">
-          <template #default="{ row }">
-            {{ row.deviceName || '-' }}
-          </template>
+          <template #default="{ row }">{{ row.deviceName || '-' }}</template>
         </el-table-column>
         <el-table-column prop="alertLevel" label="告警级别" width="100">
           <template #default="{ row }">
@@ -161,7 +149,7 @@
       </el-table>
 
       <!-- 分页 -->
-      <div class="flex justify-end mt-4">
+      <div class="pagination-wrap">
         <el-pagination
           v-model:current-page="currentPage"
           v-model:page-size="pageSize"
@@ -202,7 +190,7 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="规则类型" prop="ruleType">
-              <el-select v-model="ruleForm.ruleType" class="w-full" @change="handleRuleTypeChange">
+              <el-select v-model="ruleForm.ruleType" style="width: 100%" @change="handleRuleTypeChange">
                 <el-option label="表达式规则" value="EXPRESSION" />
                 <el-option label="脚本规则" value="SCRIPT" />
               </el-select>
@@ -210,7 +198,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="告警级别" prop="alertLevel">
-              <el-select v-model="ruleForm.alertLevel" class="w-full">
+              <el-select v-model="ruleForm.alertLevel" style="width: 100%">
                 <el-option label="信息" value="info" />
                 <el-option label="警告" value="warning" />
                 <el-option label="严重" value="critical" />
@@ -225,7 +213,7 @@
             placeholder="请选择产品（可选）"
             clearable
             filterable
-            class="w-full"
+            style="width: 100%"
           >
             <el-option
               v-for="product in products"
@@ -242,7 +230,7 @@
             placeholder="请选择设备（可选）"
             clearable
             filterable
-            class="w-full"
+            style="width: 100%"
             :disabled="!ruleForm.productId"
           >
             <el-option
@@ -257,14 +245,14 @@
         <!-- 表达式规则 -->
         <template v-if="ruleForm.ruleType === 'EXPRESSION'">
           <el-form-item label="触发条件" prop="expression">
-            <div class="w-full">
+            <div style="width: 100%">
               <el-input
                 v-model="ruleForm.expression"
                 type="textarea"
                 :rows="3"
                 placeholder='Aviator 表达式，如：temperature > 50 && humidity < 20'
               />
-              <div class="text-xs text-gray-500 mt-1">
+              <div class="form-hint">
                 支持的数据字段：设备属性（temperature, humidity, pressure 等）
               </div>
             </div>
@@ -274,7 +262,7 @@
         <!-- 脚本规则 -->
         <template v-if="ruleForm.ruleType === 'SCRIPT'">
           <el-form-item label="脚本内容" prop="scriptContent">
-            <div class="w-full">
+            <div style="width: 100%">
               <el-input
                 v-model="ruleForm.scriptContent"
                 type="textarea"
@@ -294,7 +282,7 @@ function execute(data) {
   return { matched: false };
 }"
               />
-              <div class="text-xs text-gray-500 mt-1">
+              <div class="form-hint">
                 使用 GraalJS 执行 JavaScript 脚本，返回匹配结果和告警信息
               </div>
             </div>
@@ -306,7 +294,7 @@ function execute(data) {
             v-model="ruleForm.alertTemplate"
             placeholder="告警消息模板，如：设备 {deviceName} 温度过高：{temperature}℃"
           />
-          <div class="text-xs text-gray-500 mt-1">
+          <div class="form-hint">
             可用变量：{deviceName}、{propertyValue}、{threshold} 等
           </div>
         </el-form-item>
@@ -363,17 +351,17 @@ function execute(data) {
           </el-descriptions-item>
         </el-descriptions>
 
-        <div v-if="testResult.result" class="mt-4">
-          <div class="text-sm font-medium mb-2">返回结果：</div>
-          <pre class="bg-gray-100 p-3 rounded text-sm overflow-auto">{{ JSON.stringify(testResult.result, null, 2) }}</pre>
+        <div v-if="testResult.result" class="result-block">
+          <div class="result-label">返回结果：</div>
+          <pre class="result-pre">{{ JSON.stringify(testResult.result, null, 2) }}</pre>
         </div>
 
-        <div v-if="testResult.error" class="mt-4">
-          <div class="text-sm font-medium mb-2 text-red-600">错误信息：</div>
-          <pre class="bg-red-50 p-3 rounded text-sm text-red-600 overflow-auto">{{ testResult.error }}</pre>
+        <div v-if="testResult.error" class="result-block">
+          <div class="result-label result-label--error">错误信息：</div>
+          <pre class="result-pre result-pre--error">{{ testResult.error }}</pre>
         </div>
       </div>
-      <div v-else class="text-center text-gray-400 py-8">
+      <div v-else class="test-empty">
         点击"执行测试"查看结果
       </div>
 
@@ -396,13 +384,13 @@ function execute(data) {
         <el-table-column prop="executionTime" label="执行耗时(ms)" width="100" />
         <el-table-column prop="errorMsg" label="错误信息" min-width="200">
           <template #default="{ row }">
-            <span v-if="row.errorMsg" class="text-red-600">{{ row.errorMsg }}</span>
-            <span v-else class="text-gray-400">-</span>
+            <span v-if="row.errorMsg" style="color: #f87171">{{ row.errorMsg }}</span>
+            <span v-else style="color: #64748b">-</span>
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="执行时间" width="160" />
       </el-table>
-      <div class="flex justify-end mt-4">
+      <div class="pagination-wrap">
         <el-pagination
           v-model:current-page="logsCurrentPage"
           v-model:page-size="logsPageSize"
@@ -511,9 +499,7 @@ const devices = ref<any[]>([])
 const testDialogVisible = ref(false)
 const testing = ref(false)
 const currentTestRule = ref<Rule | null>(null)
-const testForm = reactive({
-  deviceData: ''
-})
+const testForm = reactive({ deviceData: '' })
 const testResult = ref<RuleTestResponse | null>(null)
 
 // 日志对话框
@@ -537,7 +523,7 @@ async function loadRules() {
     if (searchForm.ruleType) params.ruleType = searchForm.ruleType
     if (searchForm.status) params.status = searchForm.status
 
-    const data = await ruleApi.getRuleList(params)
+    const data = await ruleApi.getRuleList(params as any)
     rules.value = data.records || []
     total.value = data.total || 0
   } catch (error) {
@@ -548,59 +534,42 @@ async function loadRules() {
 }
 
 // 加载统计数据
-async function loadStatistics() {
-  try {
-    // 这里暂时使用模拟数据，实际应该调用后端统计接口
-    statistics.value = {
-      totalCount: rules.value.length,
-      enabledCount: rules.value.filter(r => r.status === '1').length,
-      disabledCount: rules.value.filter(r => r.status === '0').length,
-      todayTriggerCount: 0
-    }
-  } catch (error) {
-    console.error('加载统计数据失败', error)
+function loadStatistics() {
+  statistics.value = {
+    totalCount: rules.value.length,
+    enabledCount: rules.value.filter(r => r.status === '1').length,
+    disabledCount: rules.value.filter(r => r.status === '0').length,
+    todayTriggerCount: 0
   }
 }
 
-// 加载产品列表
-async function loadProducts() {
-  try {
-    // 这里应该调用产品列表接口，暂时使用模拟数据
-    products.value = [
-      { id: 1, name: '温湿度传感器' },
-      { id: 2, name: '智能网关' },
-      { id: 3, name: '烟雾报警器' }
+// 加载产品列表（模拟数据）
+function loadProducts() {
+  products.value = [
+    { id: 1, name: '温湿度传感器' },
+    { id: 2, name: '智能网关' },
+    { id: 3, name: '烟雾报警器' }
+  ]
+}
+
+// 加载设备列表（模拟数据）
+function loadDevices(productId?: number) {
+  if (productId) {
+    devices.value = [
+      { id: 1, deviceName: '设备001', productId: 1 },
+      { id: 2, deviceName: '设备002', productId: 1 },
+      { id: 3, deviceName: '网关001', productId: 2 }
     ]
-  } catch (error) {
-    console.error('加载产品列表失败', error)
+  } else {
+    devices.value = []
   }
 }
 
-// 加载设备列表
-async function loadDevices(productId?: number) {
-  try {
-    // 这里应该调用设备列表接口，暂时使用模拟数据
-    if (productId) {
-      devices.value = [
-        { id: 1, deviceName: '设备001', productId: 1 },
-        { id: 2, deviceName: '设备002', productId: 1 },
-        { id: 3, deviceName: '网关001', productId: 2 }
-      ]
-    } else {
-      devices.value = []
-    }
-  } catch (error) {
-    console.error('加载设备列表失败', error)
-  }
-}
-
-// 搜索
 function handleSearch() {
   currentPage.value = 1
   loadRules()
 }
 
-// 重置
 function handleReset() {
   searchForm.ruleName = ''
   searchForm.ruleType = ''
@@ -609,14 +578,13 @@ function handleReset() {
   loadRules()
 }
 
-// 选择变化
 function handleSelectionChange(selection: Rule[]) {
   selectedIds.value = selection.map(item => item.id)
 }
 
-// 新增
 function handleCreate() {
   Object.assign(ruleForm, {
+    id: undefined,
     ruleName: '',
     ruleCode: '',
     ruleType: 'EXPRESSION',
@@ -632,44 +600,21 @@ function handleCreate() {
   dialogVisible.value = true
 }
 
-// 编辑
 function handleEdit(row: Rule) {
-  Object.assign(ruleForm, {
-    id: row.id,
-    ruleName: row.ruleName,
-    ruleCode: row.ruleCode,
-    ruleType: row.ruleType,
-    expression: row.expression,
-    scriptContent: row.scriptContent,
-    productId: row.productId,
-    deviceId: row.deviceId,
-    alertLevel: row.alertLevel,
-    alertTemplate: row.alertTemplate,
-    status: row.status,
-    description: row.description
-  })
-
-  // 加载关联设备
-  if (row.productId) {
-    loadDevices(row.productId)
-  }
-
+  Object.assign(ruleForm, { ...row })
+  if (row.productId) loadDevices(row.productId)
   dialogVisible.value = true
 }
 
-// 保存
 async function handleSave() {
   if (!formRef.value) return
-
   try {
     await formRef.value.validate()
     saving.value = true
-
     const data = { ...ruleForm }
-    delete data.id
-    delete data.createTime
-    delete data.updateTime
-
+    delete (data as any).id
+    delete (data as any).createTime
+    delete (data as any).updateTime
     if (ruleForm.id) {
       await ruleApi.updateRule(ruleForm.id, data)
       ElMessage.success('更新成功')
@@ -677,26 +622,21 @@ async function handleSave() {
       await ruleApi.createRule(data)
       ElMessage.success('创建成功')
     }
-
     dialogVisible.value = false
     loadRules()
     loadStatistics()
   } catch (error: any) {
-    if (error !== false) {
-      ElMessage.error('保存失败')
-    }
+    if (error !== false) ElMessage.error('保存失败')
   } finally {
     saving.value = false
   }
 }
 
-// 对话框关闭
 function handleDialogClose() {
   formRef.value?.resetFields()
   devices.value = []
 }
 
-// 删除
 async function handleDelete(row: Rule) {
   try {
     await ElMessageBox.confirm(`确定删除规则 ${row.ruleName} 吗？`, '提示', {
@@ -708,15 +648,11 @@ async function handleDelete(row: Rule) {
     ElMessage.success('删除成功')
     loadRules()
     loadStatistics()
-  } catch (error) {
-    // 取消删除
-  }
+  } catch {}
 }
 
-// 批量删除
 async function handleBatchDelete() {
   if (selectedIds.value.length === 0) return
-
   try {
     await ElMessageBox.confirm(`确定删除选中的 ${selectedIds.value.length} 条规则吗？`, '提示', {
       confirmButtonText: '确定',
@@ -727,17 +663,12 @@ async function handleBatchDelete() {
     ElMessage.success('删除成功')
     loadRules()
     loadStatistics()
-  } catch (error) {
-    // 取消删除
-  }
+  } catch {}
 }
 
-// 状态切换
 async function handleStatusChange(row: Rule) {
   try {
-    // @ts-ignore - 添加临时 loading 状态
-    row.statusChanging = true
-
+    (row as any).statusChanging = true
     if (row.status === '1') {
       await ruleApi.enableRule(row.id)
       ElMessage.success('规则已启用')
@@ -745,21 +676,16 @@ async function handleStatusChange(row: Rule) {
       await ruleApi.disableRule(row.id)
       ElMessage.success('规则已禁用')
     }
-
     loadStatistics()
-  } catch (error) {
-    // 恢复原状态
+  } catch {
     row.status = row.status === '1' ? '0' : '1'
     ElMessage.error('操作失败')
   } finally {
-    // @ts-ignore
-    row.statusChanging = false
+    (row as any).statusChanging = false
   }
 }
 
-// 规则类型变化
 function handleRuleTypeChange() {
-  // 清空另一个类型的输入
   if (ruleForm.ruleType === 'EXPRESSION') {
     ruleForm.scriptContent = ''
   } else {
@@ -767,36 +693,14 @@ function handleRuleTypeChange() {
   }
 }
 
-// 产品选择变化
-function handleProductChange() {
-  ruleForm.deviceId = undefined
-  devices.value = []
-  if (ruleForm.productId) {
-    loadDevices(ruleForm.productId)
-  }
-}
-
-// 获取告警级别类型
 function getAlertLevelType(level: string) {
-  const map: Record<string, string> = {
-    critical: 'danger',
-    warning: 'warning',
-    info: 'info'
-  }
-  return map[level] || ''
+  return { critical: 'danger', warning: 'warning', info: 'info' }[level] || ''
 }
 
-// 获取告警级别文本
 function getAlertLevelText(level: string) {
-  const map: Record<string, string> = {
-    critical: '严重',
-    warning: '警告',
-    info: '信息'
-  }
-  return map[level] || level
+  return { critical: '严重', warning: '警告', info: '信息' }[level] || level
 }
 
-// 测试规则
 function handleTest(row: Rule) {
   currentTestRule.value = row
   testForm.deviceData = ''
@@ -804,20 +708,15 @@ function handleTest(row: Rule) {
   testDialogVisible.value = true
 }
 
-// 填充示例数据
 function fillSampleData() {
   testForm.deviceData = JSON.stringify({
-    temperature: 55,
-    humidity: 15,
-    pressure: 1013,
+    temperature: 55, humidity: 15, pressure: 1013,
     timestamp: new Date().toISOString()
   }, null, 2)
 }
 
-// 执行测试
 async function runTest() {
   if (!currentTestRule.value) return
-
   let deviceData: Record<string, any>
   try {
     deviceData = JSON.parse(testForm.deviceData)
@@ -825,28 +724,24 @@ async function runTest() {
     ElMessage.error('设备数据格式错误，请使用 JSON 格式')
     return
   }
-
   try {
     testing.value = true
     testResult.value = null
-
-    const request: RuleTestRequest = {
+    const req: RuleTestRequest = {
       ruleId: currentTestRule.value.id,
       ruleType: currentTestRule.value.ruleType,
       expression: currentTestRule.value.expression,
       scriptContent: currentTestRule.value.scriptContent,
       deviceData
     }
-
-    testResult.value = await ruleApi.testRule(request)
-  } catch (error) {
+    testResult.value = await ruleApi.testRule(req)
+  } catch {
     ElMessage.error('测试执行失败')
   } finally {
     testing.value = false
   }
 }
 
-// 查看日志
 function handleViewLogs(row: Rule) {
   currentLogRuleId.value = row.id
   logsCurrentPage.value = 1
@@ -855,10 +750,8 @@ function handleViewLogs(row: Rule) {
   loadLogs()
 }
 
-// 加载日志
 async function loadLogs() {
   if (!currentLogRuleId.value) return
-
   try {
     logsLoading.value = true
     const data = await ruleApi.getRuleLogs({
@@ -868,7 +761,7 @@ async function loadLogs() {
     })
     logs.value = data.records || []
     logsTotal.value = data.total || 0
-  } catch (error) {
+  } catch {
     ElMessage.error('加载日志失败')
   } finally {
     logsLoading.value = false
@@ -877,20 +770,25 @@ async function loadLogs() {
 
 onMounted(() => {
   loadRules()
-  loadStatistics()
   loadProducts()
 })
 </script>
 
 <style scoped>
+/* ===== 页面容器 ===== */
 .rule-page {
   padding: 20px;
 }
 
-.stat-card {
-  border: none;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+/* ===== 统计卡片行 ===== */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 20px;
 }
+
+.stat-card { border: none; }
 
 .stat-content {
   display: flex;
@@ -901,33 +799,108 @@ onMounted(() => {
 .stat-icon {
   width: 48px;
   height: 48px;
+  min-width: 48px;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.stat-text {
-  flex: 1;
+.stat-icon svg {
+  width: 24px;
+  height: 24px;
 }
 
+.stat-icon--blue   { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
+.stat-icon--green  { background: rgba(52, 211, 153, 0.15); color: #34d399; }
+.stat-icon--gray   { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
+.stat-icon--purple { background: rgba(167, 139, 250, 0.15); color: #a78bfa; }
+
+.stat-text { flex: 1; }
+
 .stat-label {
-  font-size: 14px;
-  color: #6b7280;
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 4px;
 }
 
 .stat-value {
-  font-size: 24px;
-  font-weight: 600;
-  color: #1f2937;
+  font-size: 26px;
+  font-weight: 700;
+  color: #f1f5f9;
+  line-height: 1;
 }
 
-.test-result {
-  min-height: 100px;
+.stat-value--green  { color: #34d399; }
+.stat-value--gray   { color: #94a3b8; }
+.stat-value--purple { color: #a78bfa; }
+
+/* ===== Card header ===== */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-pre {
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ===== 搜索表单 ===== */
+.search-form {
+  margin-bottom: 16px;
+}
+
+/* ===== 分页 ===== */
+.pagination-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+/* ===== 表单提示 ===== */
+.form-hint {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+/* ===== 测试结果 ===== */
+.test-result { min-height: 100px; }
+
+.test-empty {
+  text-align: center;
+  color: #64748b;
+  padding: 32px 0;
+}
+
+.result-block { margin-top: 16px; }
+
+.result-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+
+.result-label--error { color: #f87171; }
+
+.result-pre {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 13px;
+  color: #94a3b8;
+  overflow: auto;
   white-space: pre-wrap;
   word-wrap: break-word;
+}
+
+.result-pre--error {
+  background: rgba(248, 113, 113, 0.08);
+  border-color: rgba(248, 113, 113, 0.2);
+  color: #f87171;
 }
 </style>

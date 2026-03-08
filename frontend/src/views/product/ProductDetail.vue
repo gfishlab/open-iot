@@ -1,8 +1,8 @@
 <template>
-  <div class="p-6">
+  <div class="product-detail-page">
     <el-page-header @back="goBack" :title="product.productName || '产品详情'">
       <template #content>
-        <span class="text-lg font-semibold mr-3">{{ product.productName || '加载中...' }}</span>
+        <span class="product-title">{{ product.productName || '加载中...' }}</span>
         <el-tag :type="product.status === '1' ? 'success' : 'danger'" size="small">
           {{ product.status === '1' ? '启用' : '禁用' }}
         </el-tag>
@@ -14,10 +14,10 @@
     <el-skeleton :loading="loading" animated>
       <template #default>
         <!-- 基本信息 -->
-        <el-card class="mb-6">
+        <el-card style="margin-bottom: 24px">
           <template #header>
-            <div class="flex justify-between items-center">
-              <span class="font-semibold">基本信息</span>
+            <div class="card-header">
+              <span class="card-title">基本信息</span>
               <el-button type="primary" size="small" @click="handleEdit">编辑</el-button>
             </div>
           </template>
@@ -36,10 +36,10 @@
         </el-card>
 
         <!-- 物模型 -->
-        <el-card class="mb-6">
+        <el-card style="margin-bottom: 24px">
           <template #header>
-            <div class="flex justify-between items-center">
-              <span class="font-semibold">物模型定义</span>
+            <div class="card-header">
+              <span class="card-title">物模型定义</span>
               <el-button type="primary" size="small" @click="handleEditThingModel">编辑物模型</el-button>
             </div>
           </template>
@@ -102,8 +102,8 @@
         <!-- 关联设备 -->
         <el-card>
           <template #header>
-            <div class="flex justify-between items-center">
-              <span class="font-semibold">关联设备 ({{ devices.length }} 台)</span>
+            <div class="card-header">
+              <span class="card-title">关联设备 ({{ devices.length }} 台)</span>
               <el-button type="primary" size="small" @click="handleAddDevice">添加设备</el-button>
             </div>
           </template>
@@ -289,3 +289,27 @@ onMounted(() => {
   loadDevices()
 })
 </script>
+
+<style scoped>
+.product-detail-page {
+  padding: 24px;
+}
+
+.product-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-right: 12px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-title {
+  font-weight: 600;
+  color: #f1f5f9;
+}
+</style>

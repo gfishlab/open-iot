@@ -1,10 +1,10 @@
 <template>
   <div class="device-detail-page">
     <!-- 头部信息 -->
-    <el-page-header @back="goBack" class="mb-6">
+    <el-page-header @back="goBack" style="margin-bottom: 24px">
       <template #content>
-        <div class="flex items-center gap-4">
-          <span class="text-lg font-semibold">{{ deviceInfo.deviceName }}</span>
+        <div class="header-content">
+          <span class="device-title">{{ deviceInfo.deviceName }}</span>
           <el-tag :type="deviceInfo.online ? 'success' : 'info'">
             {{ deviceInfo.online ? '在线' : '离线' }}
           </el-tag>
@@ -18,7 +18,7 @@
     <el-row :gutter="20">
       <!-- 左侧：设备基本信息 -->
       <el-col :span="8">
-        <el-card class="mb-4">
+        <el-card style="margin-bottom: 16px">
           <template #header>
             <span>设备信息</span>
           </template>
@@ -39,7 +39,7 @@
           <template #header>
             <span>设备操作</span>
           </template>
-          <div class="flex flex-col gap-3">
+          <div class="action-btns">
             <el-button type="primary" :disabled="!deviceInfo.online" @click="handleControl">
               设备控制
             </el-button>
@@ -57,22 +57,22 @@
           <el-tab-pane label="实时数据" name="data">
             <el-card>
               <template #header>
-                <div class="flex justify-between items-center">
+                <div class="card-header">
                   <span>设备属性</span>
                   <el-button size="small" @click="refreshData">刷新数据</el-button>
                 </div>
               </template>
-              <div v-loading="dataLoading" class="min-h-[300px]">
+              <div v-loading="dataLoading" style="min-height: 300px">
                 <el-descriptions v-if="properties.length > 0" :column="2" border>
                   <el-descriptions-item
                     v-for="prop in properties"
                     :key="prop.identifier"
                     :label="prop.name"
                   >
-                    <span class="text-lg font-medium" :class="getPropertyClass(prop.value)">
+                    <span class="prop-value" :style="getPropertyStyle(prop.value)">
                       {{ formatValue(prop.value, prop.dataType) }}
                     </span>
-                    <span v-if="prop.unit" class="text-gray-500 ml-1">{{ prop.unit }}</span>
+                    <span v-if="prop.unit" class="prop-unit">{{ prop.unit }}</span>
                   </el-descriptions-item>
                 </el-descriptions>
                 <el-empty v-else description="暂无数据" />
@@ -83,8 +83,8 @@
           <!-- 数据历史 -->
           <el-tab-pane label="数据历史" name="history">
             <el-card>
-              <div class="mb-4 flex gap-2">
-                <el-select v-model="selectedProperty" placeholder="选择属性" class="w-40">
+              <div class="history-toolbar">
+                <el-select v-model="selectedProperty" placeholder="选择属性" style="width: 160px">
                   <el-option
                     v-for="prop in properties"
                     :key="prop.identifier"
@@ -98,12 +98,12 @@
                   range-separator="-"
                   start-placeholder="开始时间"
                   end-placeholder="结束时间"
-                  class="w-80"
+                  style="width: 320px"
                 />
                 <el-button type="primary" @click="loadHistoryData">查询</el-button>
               </div>
-              <div v-loading="historyLoading" class="min-h-[300px]">
-                <div v-if="historyData.length > 0" ref="chartContainer" class="h-[300px]"></div>
+              <div v-loading="historyLoading" style="min-height: 300px">
+                <div v-if="historyData.length > 0" ref="chartContainer" style="height: 300px"></div>
                 <el-empty v-else description="暂无历史数据" />
               </div>
             </el-card>
@@ -117,7 +117,7 @@
               </template>
               <el-form :model="serviceForm" label-width="120px">
                 <el-form-item label="选择服务">
-                  <el-select v-model="serviceForm.serviceId" placeholder="请选择服务" class="w-full">
+                  <el-select v-model="serviceForm.serviceId" placeholder="请选择服务" style="width: 100%">
                     <el-option
                       v-for="service in services"
                       :key="service.id"
@@ -154,7 +154,7 @@
                   placement="top"
                 >
                   <el-tag :type="getEventType(event.level)" size="small">{{ event.level }}</el-tag>
-                  <span class="ml-2">{{ event.content }}</span>
+                  <span class="event-content">{{ event.content }}</span>
                 </el-timeline-item>
                 <el-empty v-if="events.length === 0" description="暂无事件记录" />
               </el-timeline>
@@ -322,12 +322,12 @@ function formatValue(value: any, dataType: string) {
   return String(value)
 }
 
-// 获取属性值的样式类
-function getPropertyClass(value: any) {
+// 获取属性值的内联样式（替代 Tailwind 颜色类）
+function getPropertyStyle(value: any) {
   if (typeof value === 'boolean') {
-    return value ? 'text-green-600' : 'text-gray-600'
+    return { color: value ? '#34d399' : '#94a3b8' }
   }
-  return ''
+  return {}
 }
 
 // 加载历史数据
@@ -508,5 +508,59 @@ onMounted(() => {
 <style scoped>
 .device-detail-page {
   padding: 20px;
+}
+
+/* 页面头部 */
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.device-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+/* 操作按钮列 */
+.action-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 卡片标题 */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 属性值 */
+.prop-value {
+  font-size: 16px;
+  font-weight: 500;
+  color: #f1f5f9;
+}
+
+.prop-unit {
+  color: #64748b;
+  margin-left: 4px;
+  font-size: 13px;
+}
+
+/* 历史查询工具栏 */
+.history-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+
+/* 事件内容 */
+.event-content {
+  margin-left: 8px;
+  color: #94a3b8;
 }
 </style>

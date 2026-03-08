@@ -1,20 +1,20 @@
 <template>
-  <div class="p-6">
+  <div class="product-list-page">
     <el-card>
       <template #header>
-        <div class="flex justify-between items-center">
-          <span class="text-lg font-semibold">产品列表</span>
+        <div class="card-header">
+          <span class="card-title">产品列表</span>
           <el-button type="primary" @click="handleAdd">新增产品</el-button>
         </div>
       </template>
 
       <!-- 搜索栏 -->
-      <el-form :inline="true" :model="searchForm" class="mb-4">
+      <el-form :inline="true" :model="searchForm" style="margin-bottom: 16px">
         <el-form-item label="产品名称">
-          <el-input v-model="searchForm.productName" placeholder="请输入产品名称" clearable class="w-48" />
+          <el-input v-model="searchForm.productName" placeholder="请输入产品名称" clearable style="width: 192px" />
         </el-form-item>
         <el-form-item label="协议类型">
-          <el-select v-model="searchForm.protocolType" placeholder="请选择" clearable class="w-32">
+          <el-select v-model="searchForm.protocolType" placeholder="请选择" clearable style="width: 128px">
             <el-option label="MQTT" value="MQTT" />
             <el-option label="HTTP" value="HTTP" />
             <el-option label="CoAP" value="CoAP" />
@@ -29,7 +29,7 @@
       </el-form>
 
       <!-- 产品列表 -->
-      <el-table :data="products" v-loading="loading" class="w-full">
+      <el-table :data="products" v-loading="loading" style="width: 100%">
         <el-table-column prop="productKey" label="产品Key" width="150" />
         <el-table-column prop="productName" label="产品名称" width="180" />
         <el-table-column prop="productType" label="产品类型" width="100">
@@ -63,7 +63,7 @@
       </el-table>
 
       <!-- 分页 -->
-      <div class="flex justify-end mt-4">
+      <div class="pagination-wrap">
         <el-pagination
           v-model:current-page="currentPage"
           v-model:page-size="pageSize"
@@ -93,13 +93,13 @@
           <el-input v-model="formData.productName" placeholder="请输入产品名称" />
         </el-form-item>
         <el-form-item label="产品类型" prop="productType">
-          <el-select v-model="formData.productType" placeholder="请选择产品类型" class="w-full">
+          <el-select v-model="formData.productType" placeholder="请选择产品类型" style="width: 100%">
             <el-option label="设备" value="DEVICE" />
             <el-option label="网关" value="GATEWAY" />
           </el-select>
         </el-form-item>
         <el-form-item label="协议类型" prop="protocolType">
-          <el-select v-model="formData.protocolType" placeholder="请选择协议类型" class="w-full">
+          <el-select v-model="formData.protocolType" placeholder="请选择协议类型" style="width: 100%">
             <el-option label="MQTT" value="MQTT" />
             <el-option label="HTTP" value="HTTP" />
             <el-option label="CoAP" value="CoAP" />
@@ -108,13 +108,13 @@
           </el-select>
         </el-form-item>
         <el-form-item label="节点类型" prop="nodeType">
-          <el-select v-model="formData.nodeType" placeholder="请选择节点类型" class="w-full">
+          <el-select v-model="formData.nodeType" placeholder="请选择节点类型" style="width: 100%">
             <el-option label="直连设备" value="DIRECT" />
             <el-option label="网关设备" value="GATEWAY" />
           </el-select>
         </el-form-item>
         <el-form-item label="数据格式" prop="dataFormat">
-          <el-select v-model="formData.dataFormat" placeholder="请选择数据格式" class="w-full">
+          <el-select v-model="formData.dataFormat" placeholder="请选择数据格式" style="width: 100%">
             <el-option label="JSON" value="JSON" />
             <el-option label="XML" value="XML" />
             <el-option label="二进制" value="BINARY" />
@@ -143,8 +143,8 @@
     >
       <el-tabs v-model="thingModelTab">
         <el-tab-pane label="属性定义" name="properties">
-          <div class="min-h-[200px]">
-            <el-button type="primary" size="small" @click="addProperty" class="mb-2">
+          <div style="min-height: 200px">
+            <el-button type="primary" size="small" @click="addProperty" style="margin-bottom: 8px">
               添加属性
             </el-button>
             <el-table :data="thingModelData.properties" border size="small">
@@ -192,8 +192,8 @@
           </div>
         </el-tab-pane>
         <el-tab-pane label="事件定义" name="events">
-          <div class="min-h-[200px]">
-            <el-button type="primary" size="small" @click="addEvent" class="mb-2">
+          <div style="min-height: 200px">
+            <el-button type="primary" size="small" @click="addEvent" style="margin-bottom: 8px">
               添加事件
             </el-button>
             <el-table :data="thingModelData.events" border size="small">
@@ -225,8 +225,8 @@
           </div>
         </el-tab-pane>
         <el-tab-pane label="服务定义" name="services">
-          <div class="min-h-[200px]">
-            <el-button type="primary" size="small" @click="addService" class="mb-2">
+          <div style="min-height: 200px">
+            <el-button type="primary" size="small" @click="addService" style="margin-bottom: 8px">
               添加服务
             </el-button>
             <el-table :data="thingModelData.services" border size="small">
@@ -567,3 +567,30 @@ onMounted(() => {
   loadProducts()
 })
 </script>
+
+<style scoped>
+/* 页面容器 */
+.product-list-page {
+  padding: 24px;
+}
+
+/* 卡片标题行 */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+/* 分页容器 */
+.pagination-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+</style>
