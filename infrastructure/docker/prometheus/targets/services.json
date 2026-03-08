@@ -33,5 +33,12 @@
       "service": "connect-service",
       "__metrics_path__": "/actuator/prometheus"
     }
+  },
+  {
+    "targets": ["host.docker.internal:8088"],
+    "labels": {
+      "service": "rule-service",
+      "__metrics_path__": "/actuator/prometheus"
+    }
   }
 ]
