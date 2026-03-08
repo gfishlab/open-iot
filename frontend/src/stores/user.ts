@@ -21,11 +21,16 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function logout() {
-    await request.post('/auth/logout')
-    token.value = ''
-    userInfo.value = null
-    permissions.value = []
-    localStorage.removeItem('token')
+    try {
+      await request.post('/auth/logout')
+    } catch {
+      // 忽略登出接口错误
+    } finally {
+      token.value = ''
+      userInfo.value = null
+      permissions.value = []
+      localStorage.removeItem('token')
+    }
   }
 
   async function fetchUserInfo() {
