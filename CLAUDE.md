@@ -119,7 +119,7 @@ spring:
 | device-service | 8081 | 内部服务，不对外 |
 | data-service | 8082 | 内部服务，不对外 |
 | connect-service | 8083 | 内部服务，不对外 |
-| rule-service | 8084 | 内部服务，不对外 |
+| rule-service | 8088 | 内部服务，不对外 |
 | 前端 (dev) | 5173 | Vite 开发服务器 |
 
 ## Code Style
