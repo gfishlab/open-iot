@@ -4,9 +4,9 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.context.annotation.Bean;
 
 import javax.sql.DataSource;
@@ -15,7 +15,7 @@ import javax.sql.DataSource;
  * HikariCP 指标配置
  *
  * <p>配置 HikariCP 连接池指标的自动采集。
- * 指标前缀：hikaricp
+ * 仅当 DataSource bean 存在时才启用。
  *
  * <h3>关键指标：</h3>
  * <ul>
@@ -34,6 +34,7 @@ import javax.sql.DataSource;
 @Slf4j
 @AutoConfiguration
 @ConditionalOnClass({HikariDataSource.class, MeterRegistry.class})
+@ConditionalOnBean(DataSource.class)
 @ConditionalOnProperty(prefix = "openiot.observability.metrics", name = "hikari-enabled", havingValue = "true", matchIfMissing = true)
 public class HikariMetricsConfig {
 
