@@ -31,7 +31,7 @@ import java.util.Map;
 public class InfluxDBRepository {
 
     private final InfluxDBClient influxDBClient;
-    private final InfluxDBConfig.InfluxDBProperties properties;
+    private final InfluxDBProperties properties;
 
     /**
      * 查询设备状态历史轨迹
@@ -184,7 +184,7 @@ public class InfluxDBRepository {
             // Instant 转 OffsetDateTime
             OffsetDateTime start = OffsetDateTime.ofInstant(startTime, ZoneOffset.UTC);
             OffsetDateTime end = OffsetDateTime.ofInstant(endTime, ZoneOffset.UTC);
-            deleteApi.delete(start, end, predicate.toString(), properties.org(), properties.bucket());
+            deleteApi.delete(start, end, predicate.toString(), properties.orgName(), properties.bucket());
             log.info("删除 InfluxDB 数据成功: measurement={}, predicate={}", measurement, predicate);
         } catch (Exception e) {
             log.error("删除 InfluxDB 数据失败: {}", e.getMessage(), e);
@@ -201,7 +201,7 @@ public class InfluxDBRepository {
      */
     private <T> List<T> query(String flux, Class<T> clazz) {
         QueryApi queryApi = influxDBClient.getQueryApi();
-        List<FluxTable> tables = queryApi.query(flux, properties.org());
+        List<FluxTable> tables = queryApi.query(flux, properties.orgName());
 
         List<T> results = new ArrayList<>();
         for (FluxTable table : tables) {
@@ -227,7 +227,7 @@ public class InfluxDBRepository {
      */
     private List<Map<String, Object>> queryRaw(String flux) {
         QueryApi queryApi = influxDBClient.getQueryApi();
-        List<FluxTable> tables = queryApi.query(flux, properties.org());
+        List<FluxTable> tables = queryApi.query(flux, properties.orgName());
 
         List<Map<String, Object>> results = new ArrayList<>();
         for (FluxTable table : tables) {

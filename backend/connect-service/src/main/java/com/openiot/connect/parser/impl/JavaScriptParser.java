@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.HostAccess;
 import org.graalvm.polyglot.PolyglotException;
+import org.graalvm.polyglot.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -124,7 +125,7 @@ public class JavaScriptParser implements ParseRuleEngine {
                 .allowCreateThread(false)
                 .allowCreateProcess(false)
                 .allowHostClassLoading(false)
-                .allowHostClassLookup(false)
+                .allowHostClassLookup(className -> false)  // 禁止所有类查找
                 .allowInnerContextOptions(false)
                 // 允许基本的宿主访问（用于返回结果）
                 .allowHostAccess(HostAccess.ALL)
@@ -141,19 +142,19 @@ public class JavaScriptParser implements ParseRuleEngine {
             context.eval("js", script);
 
             // 获取 parse 函数
-            var parseFn = context.getBindings("js").getMember("parse");
+            Value parseFn = context.getBindings("js").getMember("parse");
             if (parseFn == null) {
                 throw ParseException.configError("脚本必须定义 parse(rawData) 函数");
             }
 
             // 调用 parse 函数
-            var result = parseFn.execute(rawData);
+            Value result = parseFn.execute(rawData);
 
             // 转换结果
             return convertResult(result);
 
         } catch (PolyglotException e) {
-            if (e.isTimedOut()) {
+            if (e.isCancelled()) {
                 throw ParseException.timeout("JavaScript 执行超时");
             }
             if (e.isSyntaxError()) {
@@ -165,6 +166,7 @@ public class JavaScriptParser implements ParseRuleEngine {
 
     /**
      * 将 GraalJS 执行结果转换为 Map
+     * 简化实现：将结果转为 JSON 字符串，然后用 Jackson 解析
      */
     @SuppressWarnings("unchecked")
     private Map<String, Object> convertResult(Object result) throws ParseException {
@@ -178,19 +180,23 @@ public class JavaScriptParser implements ParseRuleEngine {
         }
 
         // 如果结果是 GraalJS 的 Value 对象
-        if (result instanceof org.graalvm.polyglot.Value value) {
+        if (result instanceof Value value) {
             if (value.isNull()) {
                 return new HashMap<>();
             }
 
+            // 如果是对象，转为 JSON 字符串后解析
             if (value.hasHashEntries()) {
-                Map<String, Object> map = new HashMap<>();
-                for (var entry : value.getHashEntriesIterator()) {
-                    String key = entry.get(0).asString();
-                    Object val = convertValue(entry.get(1));
-                    map.put(key, val);
+                try {
+                    // 使用 JSON.stringify 将结果转为字符串
+                    String jsonResult = value.toString();
+                    // 尝试解析为 JSON
+                    return objectMapper.readValue(jsonResult,
+                            objectMapper.getTypeFactory().constructMapType(Map.class, String.class, Object.class));
+                } catch (JsonProcessingException e) {
+                    // 如果 toString() 不是有效 JSON，尝试手动构建
+                    log.warn("无法直接解析 Value，尝试手动转换: {}", e.getMessage());
                 }
-                return map;
             }
         }
 
@@ -201,31 +207,5 @@ public class JavaScriptParser implements ParseRuleEngine {
         } catch (JsonProcessingException e) {
             throw ParseException.dataFormatError("脚本返回值无法转换为 Map: " + e.getMessage());
         }
-    }
-
-    /**
-     * 转换 GraalJS Value 为 Java 对象
-     */
-    private Object convertValue(org.graalvm.polyglot.Value value) {
-        if (value.isNull()) {
-            return null;
-        }
-        if (value.isBoolean()) {
-            return value.asBoolean();
-        }
-        if (value.isNumber()) {
-            if (value.fitsInInt()) {
-                return value.asInt();
-            }
-            if (value.fitsInLong()) {
-                return value.asLong();
-            }
-            return value.asDouble();
-        }
-        if (value.isString()) {
-            return value.asString();
-        }
-        // 其他类型转为字符串
-        return value.toString();
     }
 }

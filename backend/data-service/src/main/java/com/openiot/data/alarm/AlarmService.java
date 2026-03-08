@@ -1,5 +1,6 @@
 package com.openiot.data.alarm;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,19 +57,13 @@ public class AlarmService {
     public void processDeviceData(Long tenantId, Long deviceId, String deviceCode,
                                   Long productId, Map<String, Object> propertyData) {
         // 查询启用的告警规则
-        List<AlarmRule> rules = ruleMapper.lambdaQuery()
-                .eq(AlarmRule::getTenantId, tenantId)
-                .eq(AlarmRule::getStatus, "1")
-                .eq(AlarmRule::getDelFlag, "0")
-                .and(wrapper -> wrapper
-                        .isNull(AlarmRule::getDeviceId)
-                        .or()
-                        .eq(AlarmRule::getDeviceId, deviceId))
-                .and(wrapper -> wrapper
-                        .isNull(AlarmRule::getProductId)
-                        .or()
-                        .eq(AlarmRule::getProductId, productId))
-                .list();
+        LambdaQueryWrapper<AlarmRule> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(AlarmRule::getTenantId, tenantId)
+               .eq(AlarmRule::getStatus, "1")
+               .eq(AlarmRule::getDelFlag, "0")
+               .and(w -> w.isNull(AlarmRule::getDeviceId).or().eq(AlarmRule::getDeviceId, deviceId))
+               .and(w -> w.isNull(AlarmRule::getProductId).or().eq(AlarmRule::getProductId, productId));
+        List<AlarmRule> rules = ruleMapper.selectList(wrapper);
 
         for (AlarmRule rule : rules) {
             try {
@@ -211,11 +206,11 @@ public class AlarmService {
         String cacheKey = rule.getId() + "_" + deviceId;
 
         // 检查是否已存在活动告警
-        AlarmRecord activeAlarm = recordMapper.lambdaQuery()
-                .eq(AlarmRecord::getRuleId, rule.getId())
-                .eq(AlarmRecord::getDeviceId, deviceId)
-                .in(AlarmRecord::getAlarmStatus, Arrays.asList("active", "pending"))
-                .one();
+        LambdaQueryWrapper<AlarmRecord> activeWrapper = new LambdaQueryWrapper<>();
+        activeWrapper.eq(AlarmRecord::getRuleId, rule.getId())
+                    .eq(AlarmRecord::getDeviceId, deviceId)
+                    .in(AlarmRecord::getAlarmStatus, Arrays.asList("active", "pending"));
+        AlarmRecord activeAlarm = recordMapper.selectOne(activeWrapper);
 
         if (activeAlarm != null) {
             // 已有活动告警，更新触发值
@@ -227,14 +222,14 @@ public class AlarmService {
 
         // 检查静默期
         if (rule.getSilenceEnabled() != null && rule.getSilenceEnabled()) {
-            LocalDateTime lastAlarmTime = recordMapper.lambdaQuery()
-                    .eq(AlarmRecord::getRuleId, rule.getId())
-                    .eq(AlarmRecord::getDeviceId, deviceId)
-                    .orderByDesc(AlarmRecord::getAlarmTime)
-                    .last("LIMIT 1")
-                    .oneOpt()
-                    .map(AlarmRecord::getAlarmTime)
-                    .orElse(null);
+            LambdaQueryWrapper<AlarmRecord> silenceWrapper = new LambdaQueryWrapper<>();
+            silenceWrapper.eq(AlarmRecord::getRuleId, rule.getId())
+                         .eq(AlarmRecord::getDeviceId, deviceId)
+                         .orderByDesc(AlarmRecord::getAlarmTime)
+                         .last("LIMIT 1");
+            AlarmRecord lastAlarm = recordMapper.selectOne(silenceWrapper);
+
+            LocalDateTime lastAlarmTime = lastAlarm != null ? lastAlarm.getAlarmTime() : null;
 
             if (lastAlarmTime != null) {
                 long silenceSeconds = rule.getSilenceSeconds() != null ? rule.getSilenceSeconds() : 300;
@@ -290,11 +285,11 @@ public class AlarmService {
     private void handleAlarmRecovered(AlarmRule rule, Long deviceId, String deviceCode,
                                       Long productId, Map<String, Object> propertyData) {
         // 查询活动告警
-        List<AlarmRecord> activeAlarms = recordMapper.lambdaQuery()
-                .eq(AlarmRecord::getRuleId, rule.getId())
-                .eq(AlarmRecord::getDeviceId, deviceId)
-                .in(AlarmRecord::getAlarmStatus, Arrays.asList("active", "pending"))
-                .list();
+        LambdaQueryWrapper<AlarmRecord> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(AlarmRecord::getRuleId, rule.getId())
+               .eq(AlarmRecord::getDeviceId, deviceId)
+               .in(AlarmRecord::getAlarmStatus, Arrays.asList("active", "pending"));
+        List<AlarmRecord> activeAlarms = recordMapper.selectList(wrapper);
 
         if (activeAlarms.isEmpty()) {
             return;

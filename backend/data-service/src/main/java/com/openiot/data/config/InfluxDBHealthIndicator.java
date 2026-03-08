@@ -1,6 +1,7 @@
 package com.openiot.data.config;
 
 import com.influxdb.client.InfluxDBClient;
+import com.influxdb.client.domain.HealthCheck;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.actuate.health.Health;
@@ -12,14 +13,6 @@ import org.springframework.stereotype.Component;
  * InfluxDB 健康检查指示器
  *
  * <p>检查 InfluxDB 时序数据库的连接状态和健康情况。
- *
- * <h3>检查项：</h3>
- * <ul>
- *   <li>连接状态 - 是否能够连接到 InfluxDB 服务器</li>
- *   <li>认证状态 - Token 是否有效</li>
- *   <li>存储桶状态 - 配置的 Bucket 是否存在</li>
- *   <li>写入能力 - 是否能够写入数据</li>
- * </ul>
  *
  * @author OpenIoT Team
  * @since 1.0.0
@@ -37,10 +30,7 @@ public class InfluxDBHealthIndicator implements HealthIndicator {
         Health.Builder builder = Health.up();
 
         try {
-            // 检查连接状态
-            checkConnection(builder);
-
-            // 检查健康状态
+            // 检查连接状态 - 使用 health() 方法
             checkHealth(builder);
 
             // 检查存储桶状态
@@ -59,48 +49,27 @@ public class InfluxDBHealthIndicator implements HealthIndicator {
     }
 
     /**
-     * 检查 InfluxDB 连接状态
-     */
-    private void checkConnection(Health.Builder builder) {
-        try {
-            // 使用 ping API 检查连接
-            var pingApi = influxDBClient.getPingApi();
-            var isHealthy = pingApi.ping();
-
-            if (isHealthy) {
-                builder.withDetail("connection", "UP");
-            } else {
-                builder.down().withDetail("connection", "DOWN - ping failed");
-            }
-        } catch (Exception e) {
-            builder.down().withDetail("connection", "DOWN - " + e.getMessage());
-            throw e;
-        }
-    }
-
-    /**
      * 检查 InfluxDB 健康状态
      */
     private void checkHealth(Health.Builder builder) {
         try {
-            // 获取 InfluxDB 版本信息
-            var healthApi = influxDBClient.getHealthApi();
-            var health = healthApi.getHealth();
+            // 使用 health() 方法检查健康状态
+            HealthCheck health = influxDBClient.health();
 
-            builder.withDetail("status", health.getStatus().getValue())
-                   .withDetail("version", health.getVersion())
-                   .withDetail("message", health.getMessage());
+            String status = health.getStatus() != null ? health.getStatus().name() : "UNKNOWN";
+            builder.withDetail("status", status)
+                   .withDetail("message", health.getMessage() != null ? health.getMessage() : "N/A");
 
             // 检查健康状态
             if (health.getStatus() != null) {
-                String status = health.getStatus().getValue();
-                if (!"pass".equalsIgnoreCase(status) && !"ok".equalsIgnoreCase(status)) {
+                // HealthCheck.Status 枚举值：PASS, FAIL
+                if (health.getStatus() == HealthCheck.StatusEnum.FAIL) {
                     builder.down().withDetail("health_status", "UNHEALTHY");
                 }
             }
         } catch (Exception e) {
             log.debug("获取 InfluxDB 健康状态失败: {}", e.getMessage());
-            builder.withDetail("health_check", "FAILED - " + e.getMessage());
+            builder.down().withDetail("connection", "DOWN - " + e.getMessage());
         }
     }
 

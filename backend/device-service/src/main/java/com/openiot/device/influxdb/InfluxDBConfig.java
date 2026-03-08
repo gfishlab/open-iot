@@ -4,7 +4,8 @@ import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.InfluxDBClientFactory;
 import com.influxdb.client.WriteApi;
 import com.influxdb.client.domain.WritePrecision;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -15,10 +16,11 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author OpenIoT Team
  */
-@Slf4j
 @Configuration
 @ConditionalOnProperty(prefix = "influxdb", name = "enabled", havingValue = "true", matchIfMissing = false)
 public class InfluxDBConfig {
+
+    private static final Logger log = LoggerFactory.getLogger(InfluxDBConfig.class);
 
     @Value("${influxdb.url:http://localhost:8086}")
     private String url;
@@ -62,11 +64,5 @@ public class InfluxDBConfig {
     @Bean
     public InfluxDBProperties influxDBProperties() {
         return new InfluxDBProperties(org, bucket);
-    }
-
-    /**
-     * InfluxDB 配置属性类
-     */
-    public record InfluxDBProperties(String org, String bucket) {
     }
 }

@@ -1,9 +1,7 @@
 package com.openiot.device.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.openiot.common.core.result.ApiResponse;
-import com.openiot.device.entity.ProductEvent;
-import com.openiot.device.entity.ProductProperty;
-import com.openiot.device.entity.ProductService;
 import com.openiot.device.service.ThingModelService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,16 +51,22 @@ public class ThingModelController {
 
         log.info("查询物模型: productId={}", productId);
 
-        List<ProductProperty> properties = thingModelService.getProperties(productId);
-        List<ProductEvent> events = thingModelService.getEvents(productId);
-        List<ProductService> services = thingModelService.getServices(productId);
+        JsonNode thingModel = thingModelService.getThingModel(productId);
+        if (thingModel == null) {
+            // 返回空物模型结构
+            Map<String, Object> emptyModel = new HashMap<>();
+            emptyModel.put("properties", thingModelService.getProperties(productId));
+            emptyModel.put("events", thingModelService.getEvents(productId));
+            emptyModel.put("services", thingModelService.getServices(productId));
+            return ApiResponse.success(emptyModel);
+        }
 
-        Map<String, Object> thingModel = new HashMap<>();
-        thingModel.put("properties", properties);
-        thingModel.put("events", events);
-        thingModel.put("services", services);
+        Map<String, Object> result = new HashMap<>();
+        result.put("properties", thingModelService.getProperties(productId));
+        result.put("events", thingModelService.getEvents(productId));
+        result.put("services", thingModelService.getServices(productId));
 
-        return ApiResponse.success(thingModel);
+        return ApiResponse.success(result);
     }
 
     /**
@@ -84,11 +87,11 @@ public class ThingModelController {
      */
     @GetMapping("/properties")
     @Operation(summary = "查询属性列表", description = "查询产品的属性定义列表")
-    public ApiResponse<List<ProductProperty>> getProperties(
+    public ApiResponse<JsonNode> getProperties(
             @Parameter(description = "产品ID") @PathVariable Long productId) {
 
         log.info("查询属性列表: productId={}", productId);
-        List<ProductProperty> properties = thingModelService.getProperties(productId);
+        JsonNode properties = thingModelService.getProperties(productId);
         return ApiResponse.success(properties);
     }
 
@@ -97,11 +100,11 @@ public class ThingModelController {
      */
     @GetMapping("/events")
     @Operation(summary = "查询事件列表", description = "查询产品的事件定义列表")
-    public ApiResponse<List<ProductEvent>> getEvents(
+    public ApiResponse<JsonNode> getEvents(
             @Parameter(description = "产品ID") @PathVariable Long productId) {
 
         log.info("查询事件列表: productId={}", productId);
-        List<ProductEvent> events = thingModelService.getEvents(productId);
+        JsonNode events = thingModelService.getEvents(productId);
         return ApiResponse.success(events);
     }
 
@@ -110,11 +113,11 @@ public class ThingModelController {
      */
     @GetMapping("/services")
     @Operation(summary = "查询服务列表", description = "查询产品的服务定义列表")
-    public ApiResponse<List<ProductService>> getServices(
+    public ApiResponse<JsonNode> getServices(
             @Parameter(description = "产品ID") @PathVariable Long productId) {
 
         log.info("查询服务列表: productId={}", productId);
-        List<ProductService> services = thingModelService.getServices(productId);
+        JsonNode services = thingModelService.getServices(productId);
         return ApiResponse.success(services);
     }
 }

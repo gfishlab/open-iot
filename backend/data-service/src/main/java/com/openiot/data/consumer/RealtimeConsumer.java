@@ -39,48 +39,53 @@ public class RealtimeConsumer {
         log.debug("实时消费事件: eventId={}, deviceId={}", event.getEventId(), event.getDeviceId());
 
         try {
-            // 更新设备状态
-            deviceStatusService.updateOnlineStatus(
-                    event.getTenantId(),
-                    event.getDeviceId(),
-                    true
-            );
-
-            // 处理轨迹数据
-            if ("TELEMETRY".equals(event.getEventType())) {
-                trajectoryService.saveTrajectory(event);
-            }
-
-            // 数据转发到外部系统
-            Map<String, Object> data = new HashMap<>();
-            data.put("eventId", event.getEventId());
-            data.put("eventType", event.getEventType());
-            data.put("timestamp", event.getTimestamp());
-            if (event.getPayload() != null) {
-                data.putAll(event.getPayload());
-            }
-
-            dataForwardService.forwardData(
-                    event.getTenantId(),
-                    event.getDeviceId(),
-                    event.getDeviceCode(),
-                    event.getEventType().toLowerCase(),
-                    data
-            );
-
-            // 告警检测
-            if ("TELEMETRY".equals(event.getEventType()) && event.getPayload() != null) {
-                alarmService.processDeviceData(
+                // 更新设备状态
+                deviceStatusService.updateOnlineStatus(
                         event.getTenantId(),
                         event.getDeviceId(),
-                        event.getDeviceCode(),
-                        event.getProductId(),
-                        event.getPayload()
+                        true
                 );
-            }
 
-            // 确认消息
-            ack.acknowledge();
+                // 处理轨迹数据
+                if ("TELEMETRY".equals(event.getEventType())) {
+                    trajectoryService.saveTrajectory(event);
+                }
+
+                // 数据转发到外部系统
+                Map<String, Object> data = new HashMap<>();
+                data.put("eventId", event.getEventId());
+                data.put("eventType", event.getEventType());
+                data.put("timestamp", event.getTimestamp());
+                Object payload = event.getPayload();
+                if (payload instanceof Map) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> payloadMap = (Map<String, Object>) payload;
+                    data.putAll(payloadMap);
+                }
+
+                dataForwardService.forwardData(
+                        Long.parseLong(event.getTenantId()),
+                        Long.parseLong(event.getDeviceId()),
+                        event.getDeviceCode(),
+                        event.getEventType().toLowerCase(),
+                        data
+                );
+
+                // 告警检测
+                if ("TELEMETRY".equals(event.getEventType()) && payload instanceof Map) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> payloadMap = (Map<String, Object>) payload;
+                    alarmService.processDeviceData(
+                            Long.parseLong(event.getTenantId()),
+                            Long.parseLong(event.getDeviceId()),
+                            event.getDeviceCode(),
+                            event.getProductId() != null ? Long.parseLong(event.getProductId()) : null,
+                            payloadMap
+                    );
+                }
+
+                // 确认消息
+                ack.acknowledge();
 
         } catch (Exception e) {
             log.error("实时消费异常: eventId={}", event.getEventId(), e);

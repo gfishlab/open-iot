@@ -154,7 +154,8 @@ public class AlertService extends ServiceImpl<AlertRecordMapper, AlertRecord> {
             wrapper.set(AlertRecord::getHandledBy, userId);
         }
 
-        int count = this.update(wrapper);
+        boolean updated = this.update(wrapper);
+        int count = updated ? alertIds.size() : 0;
 
         // 记录告警批量处理指标
         alertMetrics.recordAlarmBatchHandled(tenantId, count, status);
@@ -183,7 +184,7 @@ public class AlertService extends ServiceImpl<AlertRecordMapper, AlertRecord> {
         List<AlertRecord> allAlerts = this.list(wrapper);
 
         AlertStatisticsVO statistics = new AlertStatisticsVO();
-        statistics.setTotalCount(allAlerts.size());
+        statistics.setTotalCount((long) allAlerts.size());
 
         // 按级别统计
         Map<String, Long> levelCount = new HashMap<>();

@@ -1,5 +1,6 @@
 package com.openiot.data.forward;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,11 +56,11 @@ public class DataForwardService {
     public void forwardData(Long tenantId, Long deviceId, String deviceCode,
                             String dataType, Map<String, Object> data) {
         // 查询启用的转发配置
-        List<DataForwardConfig> configs = configMapper.lambdaQuery()
-                .eq(DataForwardConfig::getTenantId, tenantId)
-                .eq(DataForwardConfig::getStatus, "1")
-                .eq(DataForwardConfig::getDelFlag, "0")
-                .list();
+        LambdaQueryWrapper<DataForwardConfig> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(DataForwardConfig::getTenantId, tenantId)
+               .eq(DataForwardConfig::getStatus, "1")
+               .eq(DataForwardConfig::getDelFlag, "0");
+        List<DataForwardConfig> configs = configMapper.selectList(wrapper);
 
         if (configs.isEmpty()) {
             return;

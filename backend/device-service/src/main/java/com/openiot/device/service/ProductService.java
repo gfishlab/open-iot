@@ -483,24 +483,3 @@ public class ProductService extends ServiceImpl<ProductMapper, Product> {
         return statistics;
     }
 }
-
-/**
- * 产品详情 VO
- */
-@Data
-class ProductDetailVO {
-    private Product product;
-    private Long deviceCount;
-}
-
-/**
- * 产品统计 VO
- */
-@Data
-class ProductStatisticsVO {
-    private Long productId;
-    private String productName;
-    private Long totalDevices;
-    private Long onlineDevices;
-    private Long offlineDevices;
-}

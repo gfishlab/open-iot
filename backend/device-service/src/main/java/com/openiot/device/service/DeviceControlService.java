@@ -49,16 +49,25 @@ public class DeviceControlService extends ServiceImpl<ServiceCallRecordMapper, S
             throw BusinessException.notFound("设备不存在");
         }
 
-        // 2. 查询服务定义
-        com.openiot.device.entity.ProductService productServiceDef = thingModelService.getServices(device.getProductId())
-                .stream()
-                .filter(s -> s.getServiceIdentifier().equals(serviceIdentifier))
-                .findFirst()
-                .orElse(null);
+        // 2. 查询服务定义（从 JsonNode 中查找）
+        JsonNode servicesNode = thingModelService.getServices(device.getProductId());
+        JsonNode serviceDef = null;
+        if (servicesNode != null && servicesNode.isArray()) {
+            for (JsonNode node : servicesNode) {
+                if (node.has("identifier") && node.get("identifier").asText().equals(serviceIdentifier)) {
+                    serviceDef = node;
+                    break;
+                }
+            }
+        }
 
-        if (productServiceDef == null) {
+        if (serviceDef == null) {
             throw BusinessException.badRequest("服务不存在: " + serviceIdentifier);
         }
+
+        // 获取服务名称和调用类型
+        String serviceName = serviceDef.has("name") ? serviceDef.get("name").asText() : serviceIdentifier;
+        String callType = serviceDef.has("callType") ? serviceDef.get("callType").asText() : "async";
 
         // 3. 创建调用记录
         ServiceCallRecord record = new ServiceCallRecord();
@@ -66,9 +75,9 @@ public class DeviceControlService extends ServiceImpl<ServiceCallRecordMapper, S
         record.setDeviceId(deviceId);
         record.setProductId(device.getProductId());
         record.setServiceIdentifier(serviceIdentifier);
-        record.setServiceName(productServiceDef.getServiceName());
+        record.setServiceName(serviceName);
         record.setInputParams(objectMapper.valueToTree(inputParams));
-        record.setCallType(productServiceDef.getCallType());
+        record.setCallType(callType);
         record.setStatus("pending");
         record.setCallTime(LocalDateTime.now());
 
@@ -98,19 +107,28 @@ public class DeviceControlService extends ServiceImpl<ServiceCallRecordMapper, S
             throw BusinessException.notFound("设备不存在");
         }
 
-        // 2. 查询属性定义（校验可写权限）
-        ProductProperty property = thingModelService.getProperties(device.getProductId())
-                .stream()
-                .filter(p -> p.getPropertyIdentifier().equals(propertyIdentifier))
-                .findFirst()
-                .orElse(null);
+        // 2. 查询属性定义（从 JsonNode 中查找，校验可写权限）
+        JsonNode propertiesNode = thingModelService.getProperties(device.getProductId());
+        JsonNode propertyDef = null;
+        if (propertiesNode != null && propertiesNode.isArray()) {
+            for (JsonNode node : propertiesNode) {
+                if (node.has("identifier") && node.get("identifier").asText().equals(propertyIdentifier)) {
+                    propertyDef = node;
+                    break;
+                }
+            }
+        }
 
-        if (property == null) {
+        if (propertyDef == null) {
             throw BusinessException.badRequest("属性不存在: " + propertyIdentifier);
         }
 
+        // 获取属性名称和读写权限
+        String propertyName = propertyDef.has("name") ? propertyDef.get("name").asText() : propertyIdentifier;
+        String readWriteFlag = propertyDef.has("accessMode") ? propertyDef.get("accessMode").asText() : "rw";
+
         // 检查是否可写
-        if ("r".equals(property.getReadWriteFlag())) {
+        if ("r".equals(readWriteFlag)) {
             throw BusinessException.badRequest("属性只读，无法设置: " + propertyIdentifier);
         }
 
@@ -120,7 +138,7 @@ public class DeviceControlService extends ServiceImpl<ServiceCallRecordMapper, S
         record.setDeviceId(deviceId);
         record.setProductId(device.getProductId());
         record.setPropertyIdentifier(propertyIdentifier);
-        record.setPropertyName(property.getPropertyName());
+        record.setPropertyName(propertyName);
         record.setNewValue(objectMapper.valueToTree(value));
         record.setSetType("user"); // 用户设置
         record.setStatus("pending");

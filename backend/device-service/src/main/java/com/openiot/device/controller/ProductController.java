@@ -7,7 +7,9 @@ import com.openiot.device.entity.Device;
 import com.openiot.device.entity.Product;
 import com.openiot.device.mapper.DeviceMapper;
 import com.openiot.device.service.DeviceService;
+import com.openiot.device.service.ProductDetailVO;
 import com.openiot.device.service.ProductService;
+import com.openiot.device.service.ProductStatisticsVO;
 import com.openiot.device.vo.ProductCreateVO;
 import com.openiot.device.vo.ProductUpdateVO;
 import com.openiot.device.vo.ProductVO;
@@ -283,26 +285,5 @@ public class ProductController {
 
         productService.updateThingModel(id, thingModel);
         return ApiResponse.success("物模型更新成功", null);
-    }
-
-    /**
-     * 产品详情 VO
-     */
-    @Data
-    public static class ProductDetailVO {
-        private Product product;
-        private Long deviceCount;
-    }
-
-    /**
-     * 产品统计 VO
-     */
-    @Data
-    public static class ProductStatisticsVO {
-        private Long productId;
-        private String productName;
-        private Long totalDevices;
-        private Long onlineDevices;
-        private Long offlineDevices;
     }
 }
