@@ -2,28 +2,33 @@ package com.openiot.data.config;
 
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.domain.HealthCheck;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 /**
  * InfluxDB 健康检查指示器
  *
  * <p>检查 InfluxDB 时序数据库的连接状态和健康情况。
+ * 仅在 InfluxDBClient bean 存在时才启用。
  *
  * @author OpenIoT Team
  * @since 1.0.0
  */
 @Slf4j
 @Component("influxDBHealthIndicator")
-@RequiredArgsConstructor
-@ConditionalOnProperty(name = "influxdb.enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnBean(InfluxDBClient.class)
 public class InfluxDBHealthIndicator implements HealthIndicator {
 
     private final InfluxDBClient influxDBClient;
+
+    @Autowired
+    public InfluxDBHealthIndicator(InfluxDBClient influxDBClient) {
+        this.influxDBClient = influxDBClient;
+    }
 
     @Override
     public Health health() {
