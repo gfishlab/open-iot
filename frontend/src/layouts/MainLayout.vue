@@ -434,8 +434,17 @@ onClickOutside(dropdownRef, () => {
 /* 内容区域 */
 .content-area {
   flex: 1;
+  min-height: 0;
   overflow: auto;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* router-view 需要填满父容器 */
+.content-area :deep(> div) {
+  flex: 1;
+  min-height: 0;
 }
 
 /* 过渡动画 */

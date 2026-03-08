@@ -371,7 +371,9 @@ onUnmounted(() => {
 .monitor-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
   background: #0f172a;
   padding: 24px;
   gap: 24px;
