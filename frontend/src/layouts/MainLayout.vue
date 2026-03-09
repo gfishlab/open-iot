@@ -54,7 +54,7 @@
     <!-- ===== 右侧主区域 ===== -->
     <div class="main-wrapper">
       <!-- 顶部 Header -->
-      <header class="header">
+      <header class="header glass-header">
         <!-- 左侧：折叠按钮 + 面包屑 -->
         <div class="header-left">
           <!-- 折叠/展开侧边栏按钮 -->

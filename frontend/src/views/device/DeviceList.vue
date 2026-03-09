@@ -8,7 +8,7 @@
         </div>
       </template>
 
-      <el-table :data="devices" style="width: 100%" v-loading="loading">
+      <el-table :data="devices" style="width: 100%" v-loading="loading" class="glass-card">
         <el-table-column prop="deviceCode" label="设备编码" width="150" />
         <el-table-column prop="deviceName" label="设备名称" width="180" />
         <el-table-column prop="protocolType" label="协议类型" width="120">
@@ -26,8 +26,8 @@
         <el-table-column prop="createTime" label="创建时间" width="180" />
         <el-table-column label="操作" fixed="right" width="200">
           <template #default="{ row }">
-            <el-button size="small" @click="handleEdit(row)">编辑</el-button>
-            <el-button size="small" type="danger" @click="handleDelete(row)">删除</el-button>
+            <el-button class="glass-button" size="small" @click="handleEdit(row)">编辑</el-button>
+            <el-button class="glass-button" size="small" type="danger" @click="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -40,6 +40,7 @@
         layout="total, sizes, prev, pager, next, jumper"
         @size-change="loadDevices"
         @current-change="loadDevices"
+        class="glass-pagination"
         style="margin-top: 20px; justify-content: flex-end"
       />
     </el-card>

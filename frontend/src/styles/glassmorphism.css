@@ -1,0 +1,46 @@
+/* 玻璃拟态效果样式 */
+
+/* 样式文件： glassmorphism.css */
+
+/* 样式说明: */
+/* 1. 緻加此文件到全局样式或 main.ts 中引入 */
+/* 2. 在 App.vue 中添加全局样式引用 */
+
+/* ===== 緻加此文件到全局样式 ===== */
+
+/* 示例用法: */
+/* 在 Element Plus 组件的 class 属性中添加 `glass-` 年缀
+/* 例如: */
+/* <el-card class="glass-card"> :class="{ 'my-glass-card' }">
+/*   <div class="content">...</div>
+/* </el-card>
+* */
+
+/* <el-button class="glass-button" @click="...">
+/*   Click
+/* </el-button>
+* */
+
+/* <el-table class="glass-card">
+/*   ...
+/* </el-table>
+* */
+
+/* <el-tag class="glass-tag" :type="success">
+/*   在线
+/* </el-tag>
+* */
+
+/* <el-pagination class="glass-pagination" />
+/*   ...
+/* </el-pagination>
+* */
+
+/* 自定义玻璃效果变量 */
+:root {
+  --glass-blur: blur(12px);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+  --glass-border-hover: 1px solid rgba(99, 102, 241, 0.4);
+}
+
+ }

@@ -108,7 +108,7 @@
         <el-table-column prop="alertTitle" label="告警标题" min-width="200" />
         <el-table-column prop="alertLevel" label="级别" width="100">
           <template #default="{ row }">
-            <el-tag :type="getLevelType(row.alertLevel)" size="small">
+            <el-tag class="glass-tag" :type="getLevelType(row.alertLevel)" size="small">
               {{ getLevelText(row.alertLevel) }}
             </el-tag>
           </template>
@@ -124,7 +124,7 @@
         <el-table-column prop="alertTime" label="告警时间" width="180" />
         <el-table-column label="操作" fixed="right" width="200">
           <template #default="{ row }">
-            <el-button
+            <el-button class="glass-button"
               v-if="row.status === 'pending' || row.status === 'processing'"
               size="small"
               type="success"
@@ -132,14 +132,14 @@
             >
               处理
             </el-button>
-            <el-button
+            <el-button class="glass-button"
               v-if="row.status === 'pending'"
               size="small"
               @click="handleIgnore(row)"
             >
               忽略
             </el-button>
-            <el-button size="small" @click="handleViewDetail(row)">详情</el-button>
+            <el-button class="glass-button" size="small" @click="handleViewDetail(row)">详情</el-button>
           </template>
         </el-table-column>
       </el-table>

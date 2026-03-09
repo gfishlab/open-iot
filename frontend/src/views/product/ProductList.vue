@@ -4,7 +4,7 @@
       <template #header>
         <div class="card-header">
           <span class="card-title">产品列表</span>
-          <el-button type="primary" @click="handleAdd">新增产品</el-button>
+          <el-button class="glass-button" type="primary" @click="handleAdd">新增产品</el-button>
         </div>
       </template>
 
@@ -23,8 +23,8 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleSearch">搜索</el-button>
-          <el-button @click="handleReset">重置</el-button>
+          <el-button class="glass-button" type="primary" @click="handleSearch">搜索</el-button>
+          <el-button class="glass-button" @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
 
@@ -70,6 +70,7 @@
           :total="total"
           :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
+          class="glass-pagination"
           @size-change="loadProducts"
           @current-change="loadProducts"
         />

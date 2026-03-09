@@ -2,7 +2,7 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
-import './styles/element-dark.css'  // 深色主题覆盖，必须在 element-plus 之后加载
+import './styles/glassmorphism.css'  // 深色主题覆盖，必须在 element-plus 之后加载
 import App from './App.vue'
 import router from './router'
 import { setupPermissionDirectives } from './directives/permission'
