@@ -50,9 +50,11 @@ public class AlertService extends ServiceImpl<AlertRecordMapper, AlertRecord> {
         Page<AlertRecord> pageParam = new Page<>(page, size);
         LambdaQueryWrapper<AlertRecord> wrapper = new LambdaQueryWrapper<>();
 
-        // 租户隔离
-        String tenantId = TenantContext.getTenantId();
-        wrapper.eq(AlertRecord::getTenantId, Long.valueOf(tenantId));
+        // 租户隔离：平台管理员可查看所有租户的告警
+        if (!TenantContext.isPlatformAdmin()) {
+            String tenantId = TenantContext.getTenantId();
+            wrapper.eq(AlertRecord::getTenantId, Long.valueOf(tenantId));
+        }
 
         // 条件过滤
         if (deviceId != null) {
@@ -82,10 +84,12 @@ public class AlertService extends ServiceImpl<AlertRecordMapper, AlertRecord> {
             throw BusinessException.notFound("告警记录不存在");
         }
 
-        // 租户权限检查
-        String tenantId = TenantContext.getTenantId();
-        if (!alert.getTenantId().toString().equals(tenantId)) {
-            throw BusinessException.forbidden("无权访问该告警记录");
+        // 租户权限检查：平台管理员可访问任意租户的告警
+        if (!TenantContext.isPlatformAdmin()) {
+            String tenantId = TenantContext.getTenantId();
+            if (!alert.getTenantId().toString().equals(tenantId)) {
+                throw BusinessException.forbidden("无权访问该告警记录");
+            }
         }
 
         return alert;
@@ -145,9 +149,14 @@ public class AlertService extends ServiceImpl<AlertRecordMapper, AlertRecord> {
         Long userId = TenantContext.getUserId() != null ? Long.valueOf(TenantContext.getUserId()) : null;
 
         LambdaUpdateWrapper<AlertRecord> wrapper = new LambdaUpdateWrapper<>();
-        wrapper.in(AlertRecord::getId, alertIds)
-               .eq(AlertRecord::getTenantId, Long.valueOf(tenantId))
-               .set(AlertRecord::getStatus, status)
+        wrapper.in(AlertRecord::getId, alertIds);
+
+        // 租户隔离：非平台管理员只能批量处理本租户告警
+        if (!TenantContext.isPlatformAdmin()) {
+            wrapper.eq(AlertRecord::getTenantId, Long.valueOf(tenantId));
+        }
+
+        wrapper.set(AlertRecord::getStatus, status)
                .set(AlertRecord::getHandledTime, LocalDateTime.now());
 
         if (userId != null) {
@@ -172,10 +181,13 @@ public class AlertService extends ServiceImpl<AlertRecordMapper, AlertRecord> {
      * @return 统计数据
      */
     public AlertStatisticsVO getStatistics(Long deviceId) {
-        String tenantId = TenantContext.getTenantId();
-
         LambdaQueryWrapper<AlertRecord> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(AlertRecord::getTenantId, Long.valueOf(tenantId));
+
+        // 租户隔离：平台管理员统计所有租户
+        if (!TenantContext.isPlatformAdmin()) {
+            String tenantId = TenantContext.getTenantId();
+            wrapper.eq(AlertRecord::getTenantId, Long.valueOf(tenantId));
+        }
 
         if (deviceId != null) {
             wrapper.eq(AlertRecord::getDeviceId, deviceId);
@@ -203,6 +215,10 @@ public class AlertService extends ServiceImpl<AlertRecordMapper, AlertRecord> {
 
         // 待处理告警
         statistics.setPendingCount(statusCount.getOrDefault("pending", 0L));
+        // 已解决告警
+        statistics.setResolvedCount(statusCount.getOrDefault("resolved", 0L));
+        // 严重告警
+        statistics.setCriticalCount(levelCount.getOrDefault("critical", 0L));
 
         return statistics;
     }
@@ -214,11 +230,15 @@ public class AlertService extends ServiceImpl<AlertRecordMapper, AlertRecord> {
      * @return 告警列表
      */
     public List<AlertRecord> getRecentAlerts(int limit) {
-        String tenantId = TenantContext.getTenantId();
-
         LambdaQueryWrapper<AlertRecord> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(AlertRecord::getTenantId, Long.valueOf(tenantId))
-               .in(AlertRecord::getStatus, "pending", "processing")
+
+        // 租户隔离：平台管理员查看所有租户待处理告警
+        if (!TenantContext.isPlatformAdmin()) {
+            String tenantId = TenantContext.getTenantId();
+            wrapper.eq(AlertRecord::getTenantId, Long.valueOf(tenantId));
+        }
+
+        wrapper.in(AlertRecord::getStatus, "pending", "processing")
                .orderByDesc(AlertRecord::getCreateTime)
                .last("LIMIT " + limit);
 
@@ -239,9 +259,12 @@ public class AlertService extends ServiceImpl<AlertRecordMapper, AlertRecord> {
             throw BusinessException.notFound("设备不存在");
         }
 
-        String tenantId = TenantContext.getTenantId();
-        if (!device.getTenantId().toString().equals(tenantId)) {
-            throw BusinessException.forbidden("无权访问该设备");
+        // 验证设备权限：平台管理员可访问任意设备
+        if (!TenantContext.isPlatformAdmin()) {
+            String tenantId = TenantContext.getTenantId();
+            if (!device.getTenantId().toString().equals(tenantId)) {
+                throw BusinessException.forbidden("无权访问该设备");
+            }
         }
 
         LambdaQueryWrapper<AlertRecord> wrapper = new LambdaQueryWrapper<>();
@@ -271,7 +294,9 @@ public class AlertService extends ServiceImpl<AlertRecordMapper, AlertRecord> {
     public static class AlertStatisticsVO {
         private Long totalCount;
         private Map<String, Long> levelCount;    // critical, warning, info
-        private Map<String, Long> statusCount;  // pending, processing, resolved, ignored
+        private Map<String, Long> statusCount;   // pending, processing, resolved, ignored
         private Long pendingCount;
+        private Long resolvedCount;
+        private Long criticalCount;
     }
 }

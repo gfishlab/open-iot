@@ -45,6 +45,7 @@ sa-token:
 spring.flyway:
   enabled: true
   clean-disabled: false  # 开发环境允许清理
+  validate-on-migrate: false  # 开发环境跳过 checksum 校验（避免迁移文件修改后阻止启动）
 
 # 可观测性配置（开发环境）
 openiot:

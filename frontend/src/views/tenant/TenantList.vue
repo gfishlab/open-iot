@@ -62,7 +62,7 @@ async function loadTenants() {
         size: pageSize.value
       }
     })
-    tenants.value = data.list || []
+    tenants.value = data.records || data.list || []
     total.value = data.total || 0
   } catch (error) {
     ElMessage.error('加载租户列表失败')

@@ -47,7 +47,7 @@ export function getRuleList(params: {
   ruleType?: string
   status?: string
 }) {
-  return request.get('/rules/page', { params })
+  return request.get('/rules', { params })
 }
 
 /**
