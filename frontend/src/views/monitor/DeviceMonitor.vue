@@ -5,15 +5,20 @@
       <div class="stat-card devices">
         <div class="stat-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 3v2m6-2a9 9 0 011.996 3.684A9 9 0 01-9-3.684A9 9 0 013.996 0 9z" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M15 12a3 3 0 11-3-3 3 3 0 013 3-3 3 3 0 013 3 3-3 3 3 0 013 3 3z" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="4" y="4" width="16" height="16" rx="2"/>
+            <circle cx="9" cy="9" r="1"/>
+            <circle cx="15" cy="9" r="1"/>
+            <circle cx="9" cy="15" r="1"/>
+            <circle cx="15" cy="15" r="1"/>
           </svg>
         </div>
         <div class="stat-info">
           <span class="stat-label">设备总数</span>
           <span class="stat-value">{{ dashboardData.totalDevices }}</span>
           <span class="stat-trend up">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l5-5M5 5m4.586-4.586a2 2 0 00-2.828 0L5 5l4.586-4.586z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
             较上周 +12%
           </span>
         </div>
@@ -23,15 +28,17 @@
         <div class="stat-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="3"/>
-            <path d="M12 7v2m0 10a2 2 0 010-2-2z"/>
-            <path d="M12 2a10 10 0 0110 10 10 10 10 0 01-10 10A10 10 0 0110-10z"/>
+            <path d="M12 2v4m0 12v4M2 12h4m12 0h4"/>
+            <circle cx="12" cy="12" r="9"/>
           </svg>
         </div>
         <div class="stat-info">
           <span class="stat-label">在线设备</span>
           <span class="stat-value online">{{ dashboardData.onlineDevices }}</span>
           <span class="stat-trend up">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l5-5M5 5m4.586-4.586a2 2 0 00-2.828 0L5 5l4.586-4.586z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
             {{ onlineRate }}% 在线率
           </span>
         </div>
@@ -40,8 +47,8 @@
       <div class="stat-card alerts">
         <div class="stat-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 9v2m0 4m0 4h.01m-.167-3.22A5.02 5.02 0 00-5 4.1 4.1 0 00-1.9 3.16L6.1 8.6a5.02 5.02 0 00-5 4.1 4.1 0 00-1.9 3.16z"/>
-            <path d="M15 17H9l3-3 3 3z"/>
+            <path d="M12 9v2m0 4h.01" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
         <div class="stat-info">
@@ -141,7 +148,11 @@
           <div class="info-body">
             <div v-if="deviceStatus.length === 0" class="empty-state">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M9 3v2m6-2a9 9 0 011.996 3.684A9 9 0 0124.996 5.684L21 12l-3.004 3.316A9 9 0 01-9 3.684M15 12a3 3 0 11-3-3 3 3 0 013 3z" stroke-linecap="round" stroke-linejoin="round"/>
+                <rect x="4" y="4" width="16" height="16" rx="2"/>
+                <circle cx="9" cy="9" r="1" fill="currentColor"/>
+                <circle cx="15" cy="9" r="1" fill="currentColor"/>
+                <circle cx="9" cy="15" r="1" fill="currentColor"/>
+                <circle cx="15" cy="15" r="1" fill="currentColor"/>
               </svg>
               <span>暂无设备</span>
             </div>

@@ -4,8 +4,9 @@ import request from '@/utils/request'
 
 export const useUserStore = defineStore('user', () => {
   const token = ref(localStorage.getItem('token') || '')
-  const userInfo = ref<any>(null)
-  const permissions = ref<string[]>([])
+  // 从 localStorage 恢复用户信息，避免刷新后 isAdmin 等计算属性失效
+  const userInfo = ref<any>(JSON.parse(localStorage.getItem('userInfo') || 'null'))
+  const permissions = ref<string[]>(JSON.parse(localStorage.getItem('permissions') || '[]'))
 
   const isLoggedIn = computed(() => !!token.value)
   const isAdmin = computed(() => userInfo.value?.role === 'ADMIN')
@@ -16,7 +17,10 @@ export const useUserStore = defineStore('user', () => {
     token.value = data.token
     userInfo.value = data
     permissions.value = data.permissions || []
+    // 持久化到 localStorage，避免刷新后丢失
     localStorage.setItem('token', data.token)
+    localStorage.setItem('userInfo', JSON.stringify(data))
+    localStorage.setItem('permissions', JSON.stringify(data.permissions || []))
     return data
   }
 
@@ -30,12 +34,15 @@ export const useUserStore = defineStore('user', () => {
       userInfo.value = null
       permissions.value = []
       localStorage.removeItem('token')
+      localStorage.removeItem('userInfo')
+      localStorage.removeItem('permissions')
     }
   }
 
   async function fetchUserInfo() {
     const data = await request.get('/users/me')
     userInfo.value = data
+    localStorage.setItem('userInfo', JSON.stringify(data))
     // 如果登录响应中没有权限列表，需要单独获取
     if (!permissions.value.length && data.role) {
       await fetchPermissions()

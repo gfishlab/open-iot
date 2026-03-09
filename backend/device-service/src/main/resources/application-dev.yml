@@ -52,3 +52,8 @@ openiot:
       business-enabled: true
       hikari-enabled: true
       redis-enabled: true
+  # API 限流配置（开发环境放宽）
+  rate-limit:
+    enabled: true
+    permits-per-second: 100  # 开发环境放宽到 100/秒
+    cache-expire-minutes: 5

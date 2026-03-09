@@ -3,6 +3,22 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue'
+import { useUserStore } from '@/stores/user'
+
+const userStore = useUserStore()
+
+// 应用启动时，若 token 存在但 userInfo 缺失（如旧 session 或首次修复后），
+// 自动从服务器拉取用户信息，保证 isAdmin 等计算属性正确
+onMounted(async () => {
+  if (userStore.token && !userStore.userInfo) {
+    try {
+      await userStore.fetchUserInfo()
+    } catch {
+      // 拉取失败（token 过期等），忽略——路由守卫会处理跳转登录
+    }
+  }
+})
 </script>
 
 <style>

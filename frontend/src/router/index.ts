@@ -72,8 +72,21 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
+
+  // token 存在但 userInfo 缺失时（如页面刷新且旧 session 未缓存 userInfo），
+  // 先从服务器拉取用户信息，保证 isAdmin 等计算属性正确
+  if (userStore.token && !userStore.userInfo) {
+    try {
+      await userStore.fetchUserInfo()
+    } catch {
+      // token 无效或过期，清除后跳转登录
+      localStorage.removeItem('token')
+      next('/login')
+      return
+    }
+  }
 
   if (to.meta.requiresAuth && !userStore.isLoggedIn) {
     next('/login')
