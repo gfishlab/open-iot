@@ -39,7 +39,7 @@ public class DeviceStatusController {
     @GetMapping("/{deviceId}")
     @Operation(summary = "查询设备状态", description = "查询单个设备的在线状态")
     public ApiResponse<DeviceStatusService.DeviceStatusVO> getDeviceStatus(
-            @Parameter(description = "设备ID") @PathVariable Long deviceId) {
+            @Parameter(description = "设备ID") @PathVariable(name = "deviceId") Long deviceId) {
         log.info("查询设备状态: deviceId={}", deviceId);
 
         DeviceStatusService.DeviceStatusVO status = deviceStatusService.getStatus(deviceId);
@@ -105,7 +105,7 @@ public class DeviceStatusController {
     @GetMapping("/{deviceId}/online")
     @Operation(summary = "检查设备在线状态", description = "检查指定设备是否在线")
     public ApiResponse<Map<String, Boolean>> isOnline(
-            @Parameter(description = "设备ID") @PathVariable Long deviceId) {
+            @Parameter(description = "设备ID") @PathVariable(name = "deviceId") Long deviceId) {
 
         boolean online = deviceStatusService.isOnline(deviceId);
 
@@ -122,8 +122,8 @@ public class DeviceStatusController {
     @GetMapping("/{deviceId}/history")
     @Operation(summary = "查询设备状态历史", description = "查询设备最近的状态变化历史")
     public ApiResponse<List<DeviceStatusService.StatusHistoryVO>> getStatusHistory(
-            @Parameter(description = "设备ID") @PathVariable Long deviceId,
-            @Parameter(description = "数量限制") @RequestParam(defaultValue = "10") int limit) {
+            @Parameter(description = "设备ID") @PathVariable(name = "deviceId") Long deviceId,
+            @Parameter(description = "数量限制") @RequestParam(name = "limit", defaultValue = "10") int limit) {
 
         List<DeviceStatusService.StatusHistoryVO> history = deviceStatusService.getStatusHistory(deviceId, limit);
 
@@ -139,7 +139,7 @@ public class DeviceStatusController {
     @PostMapping("/{deviceId}/heartbeat")
     @Operation(summary = "刷新设备心跳", description = "刷新设备在线心跳，延长在线时间")
     public ApiResponse<Void> refreshHeartbeat(
-            @Parameter(description = "设备ID") @PathVariable Long deviceId) {
+            @Parameter(description = "设备ID") @PathVariable(name = "deviceId") Long deviceId) {
 
         deviceStatusService.refreshHeartbeat(deviceId);
 

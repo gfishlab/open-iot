@@ -42,7 +42,7 @@ public class DeadLetterController {
      * 重试单条死信
      */
     @PostMapping("/retry/{deadLetterId}")
-    public ApiResponse<Void> retrySingle(@PathVariable String deadLetterId) {
+    public ApiResponse<Void> retrySingle(@PathVariable(value = "deadLetterId") String deadLetterId) {
         boolean success = retryService.retrySingle(deadLetterId);
         if (success) {
             return ApiResponse.success("重试成功", null);
@@ -55,7 +55,7 @@ public class DeadLetterController {
      * 强制重试（忽略重试次数限制）
      */
     @PostMapping("/retry/{deadLetterId}/force")
-    public ApiResponse<Void> forceRetry(@PathVariable String deadLetterId) {
+    public ApiResponse<Void> forceRetry(@PathVariable(value = "deadLetterId") String deadLetterId) {
         boolean success = retryService.forceRetry(deadLetterId);
         if (success) {
             return ApiResponse.success("强制重试成功", null);

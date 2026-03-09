@@ -62,7 +62,7 @@ public class ProductController {
     @GetMapping("/{id}")
     @Operation(summary = "查询产品详情", description = "根据产品ID查询产品详细信息")
     public ApiResponse<ProductVO> getProductById(
-        @Parameter(description = "产品ID") @PathVariable Long id) {
+        @Parameter(description = "产品ID") @PathVariable(name = "id") Long id) {
         log.info("查询产品详情: id={}", id);
         Product product = productService.getProductById(id);
         ProductVO productVO = convertToVO(product);
@@ -80,7 +80,7 @@ public class ProductController {
     @PutMapping("/{id}")
     @Operation(summary = "更新产品", description = "更新产品信息")
     public ApiResponse<ProductVO> updateProduct(
-        @Parameter(description = "产品ID") @PathVariable Long id,
+        @Parameter(description = "产品ID") @PathVariable(name = "id") Long id,
         @Valid @RequestBody ProductUpdateVO vo) {
         log.info("更新产品请求: id={}, name={}", id, vo.getProductName());
         Product product = productService.updateProduct(id, vo);
@@ -94,7 +94,7 @@ public class ProductController {
     @DeleteMapping("/{id}")
     @Operation(summary = "删除产品", description = "删除产品（检查关联设备）")
     public ApiResponse<Void> deleteProduct(
-        @Parameter(description = "产品ID") @PathVariable Long id) {
+        @Parameter(description = "产品ID") @PathVariable(name = "id") Long id) {
         log.info("删除产品请求: id={}", id);
         productService.deleteProduct(id);
         return ApiResponse.success(null);
@@ -106,11 +106,11 @@ public class ProductController {
     @GetMapping
     @Operation(summary = "分页查询产品", description = "支持按名称、协议类型、状态过滤")
     public ApiResponse<Page<ProductVO>> getProductList(
-        @Parameter(description = "页码") @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
-        @Parameter(description = "每页大小") @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
-        @Parameter(description = "产品名称") @RequestParam(value = "productName", required = false) String productName,
-        @Parameter(description = "协议类型") @RequestParam(value = "protocolType", required = false) String protocolType,
-        @Parameter(description = "状态") @RequestParam(value = "status", required = false) String status) {
+        @Parameter(description = "页码") @RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
+        @Parameter(description = "每页大小") @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
+        @Parameter(description = "产品名称") @RequestParam(name = "productName", required = false) String productName,
+        @Parameter(description = "协议类型") @RequestParam(name = "protocolType", required = false) String protocolType,
+        @Parameter(description = "状态") @RequestParam(name = "status", required = false) String status) {
 
         log.info("查询产品列表: pageNum={}, pageSize={}, name={}, protocol={}, status={}",
             pageNum, pageSize, productName, protocolType, status);
@@ -144,7 +144,7 @@ public class ProductController {
     @GetMapping("/{id}/devices")
     @Operation(summary = "查询产品设备", description = "查询指定产品关联的所有设备")
     public ApiResponse<List<Device>> getProductDevices(
-        @Parameter(description = "产品ID") @PathVariable Long id) {
+        @Parameter(description = "产品ID") @PathVariable(name = "id") Long id) {
 
         log.info("查询产品设备列表: productId={}", id);
 
@@ -197,7 +197,7 @@ public class ProductController {
     @GetMapping("/{id}/detail")
     @Operation(summary = "查询产品详情", description = "查询产品详细信息及统计")
     public ApiResponse<ProductDetailVO> getProductDetail(
-            @Parameter(description = "产品ID") @PathVariable Long id) {
+            @Parameter(description = "产品ID") @PathVariable(name = "id") Long id) {
 
         log.info("查询产品详情: productId={}", id);
 
@@ -211,9 +211,9 @@ public class ProductController {
     @GetMapping("/{id}/devices/page")
     @Operation(summary = "查询产品设备（分页）", description = "分页查询产品关联的设备")
     public ApiResponse<Page<Device>> getProductDevicesPage(
-            @Parameter(description = "产品ID") @PathVariable Long id,
-            @Parameter(description = "页码") @RequestParam(defaultValue = "1") int pageNum,
-            @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") int pageSize) {
+            @Parameter(description = "产品ID") @PathVariable(name = "id") Long id,
+            @Parameter(description = "页码") @RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
+            @Parameter(description = "每页大小") @RequestParam(name = "pageSize", defaultValue = "10") int pageSize) {
 
         log.info("查询产品设备列表: productId={}, pageNum={}, pageSize={}", id, pageNum, pageSize);
 
@@ -227,7 +227,7 @@ public class ProductController {
     @PutMapping("/{id}/status")
     @Operation(summary = "更新产品状态", description = "启用或禁用产品")
     public ApiResponse<Void> updateStatus(
-            @Parameter(description = "产品ID") @PathVariable Long id,
+            @Parameter(description = "产品ID") @PathVariable(name = "id") Long id,
             @RequestBody StatusUpdateRequest request) {
 
         log.info("更新产品状态: productId={}, status={}", id, request.getStatus());
@@ -242,7 +242,7 @@ public class ProductController {
     @GetMapping("/{id}/statistics")
     @Operation(summary = "产品统计", description = "查询产品设备统计信息")
     public ApiResponse<ProductStatisticsVO> getStatistics(
-            @Parameter(description = "产品ID") @PathVariable Long id) {
+            @Parameter(description = "产品ID") @PathVariable(name = "id") Long id) {
 
         log.info("查询产品统计: productId={}", id);
 
@@ -264,7 +264,7 @@ public class ProductController {
     @GetMapping("/{id}/thing-model")
     @Operation(summary = "获取物模型", description = "获取产品的物模型定义")
     public ApiResponse<Object> getThingModel(
-            @Parameter(description = "产品ID") @PathVariable Long id) {
+            @Parameter(description = "产品ID") @PathVariable(name = "id") Long id) {
 
         log.info("获取产品物模型: productId={}", id);
 
@@ -278,7 +278,7 @@ public class ProductController {
     @PutMapping("/{id}/thing-model")
     @Operation(summary = "更新物模型", description = "更新产品的物模型定义")
     public ApiResponse<Void> updateThingModel(
-            @Parameter(description = "产品ID") @PathVariable Long id,
+            @Parameter(description = "产品ID") @PathVariable(name = "id") Long id,
             @RequestBody JsonNode thingModel) {
 
         log.info("更新产品物模型: productId={}", id);

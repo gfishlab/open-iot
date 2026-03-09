@@ -52,10 +52,10 @@ public class RuleController {
     @GetMapping
     @Operation(summary = "查询规则列表", description = "分页查询规则")
     public ApiResponse<Page<Rule>> getRules(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String ruleType,
-            @RequestParam(required = false) Long targetId) {
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "ruleType", required = false) String ruleType,
+            @RequestParam(name = "targetId", required = false) Long targetId) {
 
         Page<Rule> pageParam = new Page<>(page, size);
         LambdaQueryWrapper<Rule> wrapper = new LambdaQueryWrapper<>();
@@ -78,7 +78,7 @@ public class RuleController {
      */
     @GetMapping("/{id}")
     @Operation(summary = "查询规则详情", description = "查询规则及其条件和动作")
-    public ApiResponse<RuleDetailVO> getRuleDetail(@PathVariable Long id) {
+    public ApiResponse<RuleDetailVO> getRuleDetail(@PathVariable(name = "id") Long id) {
         Rule rule = ruleMapper.selectById(id);
         if (rule == null) {
             return ApiResponse.notFound("规则不存在");
@@ -109,7 +109,7 @@ public class RuleController {
     @PostMapping("/{ruleId}/conditions")
     @Operation(summary = "添加规则条件", description = "为规则添加条件")
     public ApiResponse<RuleCondition> addCondition(
-            @PathVariable Long ruleId,
+            @PathVariable(name = "ruleId") Long ruleId,
             @RequestBody RuleCondition condition) {
 
         condition.setRuleId(ruleId);
@@ -124,7 +124,7 @@ public class RuleController {
     @PostMapping("/{ruleId}/actions")
     @Operation(summary = "添加规则动作", description = "为规则添加动作")
     public ApiResponse<RuleAction> addAction(
-            @PathVariable Long ruleId,
+            @PathVariable(name = "ruleId") Long ruleId,
             @RequestBody RuleAction action) {
 
         action.setRuleId(ruleId);
@@ -139,10 +139,10 @@ public class RuleController {
     @GetMapping("/alert-records")
     @Operation(summary = "查询告警记录", description = "分页查询告警记录")
     public ApiResponse<Page<AlertRecord>> getAlertRecords(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) Long deviceId,
-            @RequestParam(required = false) String status) {
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "deviceId", required = false) Long deviceId,
+            @RequestParam(name = "status", required = false) String status) {
 
         Page<AlertRecord> pageParam = new Page<>(page, size);
         LambdaQueryWrapper<AlertRecord> wrapper = new LambdaQueryWrapper<>();

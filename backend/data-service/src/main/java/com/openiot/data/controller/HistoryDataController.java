@@ -37,10 +37,10 @@ public class HistoryDataController {
     @GetMapping("/properties/history")
     @Operation(summary = "属性历史", description = "查询设备属性的历史数据")
     public ApiResponse<List<InfluxDBQueryService.PropertyDataPoint>> queryPropertyHistory(
-            @Parameter(description = "设备ID") @PathVariable Long deviceId,
-            @Parameter(description = "属性标识符") @RequestParam String property,
-            @Parameter(description = "开始时间") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-            @Parameter(description = "结束时间") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
+            @Parameter(description = "设备ID") @PathVariable(value = "deviceId") Long deviceId,
+            @Parameter(description = "属性标识符") @RequestParam(value = "property") String property,
+            @Parameter(description = "开始时间") @RequestParam(value = "startTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
+            @Parameter(description = "结束时间") @RequestParam(value = "endTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
 
         log.info("查询设备属性历史: deviceId={}, property={}, startTime={}, endTime={}",
                 deviceId, property, startTime, endTime);
@@ -61,12 +61,12 @@ public class HistoryDataController {
     @GetMapping("/properties/aggregate")
     @Operation(summary = "属性聚合", description = "查询设备属性的聚合统计数据")
     public ApiResponse<List<InfluxDBQueryService.PropertyDataPoint>> queryPropertyAggregate(
-            @Parameter(description = "设备ID") @PathVariable Long deviceId,
-            @Parameter(description = "属性标识符") @RequestParam String property,
-            @Parameter(description = "开始时间") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-            @Parameter(description = "结束时间") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime,
-            @Parameter(description = "聚合窗口") @RequestParam(defaultValue = "5m") String window,
-            @Parameter(description = "聚合函数") @RequestParam(defaultValue = "mean") String function) {
+            @Parameter(description = "设备ID") @PathVariable(value = "deviceId") Long deviceId,
+            @Parameter(description = "属性标识符") @RequestParam(value = "property") String property,
+            @Parameter(description = "开始时间") @RequestParam(value = "startTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
+            @Parameter(description = "结束时间") @RequestParam(value = "endTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime,
+            @Parameter(description = "聚合窗口") @RequestParam(value = "window", defaultValue = "5m") String window,
+            @Parameter(description = "聚合函数") @RequestParam(value = "function", defaultValue = "mean") String function) {
 
         log.info("查询设备属性聚合: deviceId={}, property={}, window={}, function={}",
                 deviceId, property, window, function);
@@ -87,9 +87,9 @@ public class HistoryDataController {
     @GetMapping("/status/history")
     @Operation(summary = "状态历史", description = "查询设备状态变化历史")
     public ApiResponse<List<InfluxDBQueryService.StatusDataPoint>> queryStatusHistory(
-            @Parameter(description = "设备ID") @PathVariable Long deviceId,
-            @Parameter(description = "开始时间") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-            @Parameter(description = "结束时间") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
+            @Parameter(description = "设备ID") @PathVariable(value = "deviceId") Long deviceId,
+            @Parameter(description = "开始时间") @RequestParam(value = "startTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
+            @Parameter(description = "结束时间") @RequestParam(value = "endTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
 
         log.info("查询设备状态历史: deviceId={}, startTime={}, endTime={}", deviceId, startTime, endTime);
 
@@ -109,9 +109,9 @@ public class HistoryDataController {
     @GetMapping("/events/history")
     @Operation(summary = "事件历史", description = "查询设备事件历史记录")
     public ApiResponse<List<InfluxDBQueryService.EventDataPoint>> queryEventHistory(
-            @Parameter(description = "设备ID") @PathVariable Long deviceId,
-            @Parameter(description = "开始时间") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-            @Parameter(description = "结束时间") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
+            @Parameter(description = "设备ID") @PathVariable(value = "deviceId") Long deviceId,
+            @Parameter(description = "开始时间") @RequestParam(value = "startTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
+            @Parameter(description = "结束时间") @RequestParam(value = "endTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
 
         log.info("查询设备事件历史: deviceId={}, startTime={}, endTime={}", deviceId, startTime, endTime);
 

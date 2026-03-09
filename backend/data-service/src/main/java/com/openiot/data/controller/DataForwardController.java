@@ -44,10 +44,10 @@ public class DataForwardController {
     @GetMapping("/config/page")
     @Operation(summary = "转发配置分页", description = "分页查询数据转发配置列表")
     public ApiResponse<Page<DataForwardConfig>> queryConfigPage(
-            @Parameter(description = "页码") @RequestParam(defaultValue = "1") Integer page,
-            @Parameter(description = "页大小") @RequestParam(defaultValue = "10") Integer size,
-            @Parameter(description = "配置名称") @RequestParam(required = false) String configName,
-            @Parameter(description = "目标类型") @RequestParam(required = false) String targetType) {
+            @Parameter(description = "页码") @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @Parameter(description = "页大小") @RequestParam(value = "size", defaultValue = "10") Integer size,
+            @Parameter(description = "配置名称") @RequestParam(value = "configName", required = false) String configName,
+            @Parameter(description = "目标类型") @RequestParam(value = "targetType", required = false) String targetType) {
 
         Page<DataForwardConfig> pageParam = new Page<>(page, size);
         LambdaQueryWrapper<DataForwardConfig> wrapper = new LambdaQueryWrapper<>();
@@ -97,7 +97,7 @@ public class DataForwardController {
     @PutMapping("/config/{id}")
     @Operation(summary = "更新转发配置", description = "更新已有的数据转发配置")
     public ApiResponse<Void> updateConfig(
-            @Parameter(description = "配置ID") @PathVariable Long id,
+            @Parameter(description = "配置ID") @PathVariable(value = "id") Long id,
             @Valid @RequestBody UpdateConfigRequest request) {
 
         DataForwardConfig config = configMapper.selectById(id);
@@ -144,7 +144,7 @@ public class DataForwardController {
      */
     @DeleteMapping("/config/{id}")
     @Operation(summary = "删除转发配置", description = "删除数据转发配置")
-    public ApiResponse<Void> deleteConfig(@Parameter(description = "配置ID") @PathVariable Long id) {
+    public ApiResponse<Void> deleteConfig(@Parameter(description = "配置ID") @PathVariable(value = "id") Long id) {
         DataForwardConfig config = configMapper.selectById(id);
         if (config == null) {
             return ApiResponse.error("转发配置不存在");
@@ -163,8 +163,8 @@ public class DataForwardController {
     @PutMapping("/config/{id}/status")
     @Operation(summary = "切换配置状态", description = "启用或禁用转发配置")
     public ApiResponse<Void> toggleConfigStatus(
-            @Parameter(description = "配置ID") @PathVariable Long id,
-            @Parameter(description = "状态") @RequestParam String status) {
+            @Parameter(description = "配置ID") @PathVariable(value = "id") Long id,
+            @Parameter(description = "状态") @RequestParam(value = "status") String status) {
 
         DataForwardConfig config = configMapper.selectById(id);
         if (config == null) {
@@ -184,13 +184,13 @@ public class DataForwardController {
     @GetMapping("/log/page")
     @Operation(summary = "转发日志分页", description = "分页查询数据转发日志")
     public ApiResponse<Page<DataForwardLog>> queryLogPage(
-            @Parameter(description = "页码") @RequestParam(defaultValue = "1") Integer page,
-            @Parameter(description = "页大小") @RequestParam(defaultValue = "10") Integer size,
-            @Parameter(description = "配置ID") @RequestParam(required = false) Long configId,
-            @Parameter(description = "设备ID") @RequestParam(required = false) Long deviceId,
-            @Parameter(description = "转发状态") @RequestParam(required = false) String forwardStatus,
-            @Parameter(description = "开始时间") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-            @Parameter(description = "结束时间") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
+            @Parameter(description = "页码") @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @Parameter(description = "页大小") @RequestParam(value = "size", defaultValue = "10") Integer size,
+            @Parameter(description = "配置ID") @RequestParam(value = "configId", required = false) Long configId,
+            @Parameter(description = "设备ID") @RequestParam(value = "deviceId", required = false) Long deviceId,
+            @Parameter(description = "转发状态") @RequestParam(value = "forwardStatus", required = false) String forwardStatus,
+            @Parameter(description = "开始时间") @RequestParam(value = "startTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
+            @Parameter(description = "结束时间") @RequestParam(value = "endTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
 
         Page<DataForwardLog> pageParam = new Page<>(page, size);
         LambdaQueryWrapper<DataForwardLog> wrapper = new LambdaQueryWrapper<>();
@@ -222,8 +222,8 @@ public class DataForwardController {
     @GetMapping("/statistics")
     @Operation(summary = "转发统计", description = "获取数据转发统计信息")
     public ApiResponse<ForwardStatistics> getStatistics(
-            @Parameter(description = "配置ID") @RequestParam(required = false) Long configId,
-            @Parameter(description = "设备ID") @RequestParam(required = false) Long deviceId) {
+            @Parameter(description = "配置ID") @RequestParam(value = "configId", required = false) Long configId,
+            @Parameter(description = "设备ID") @RequestParam(value = "deviceId", required = false) Long deviceId) {
 
         LambdaQueryWrapper<DataForwardLog> wrapper = new LambdaQueryWrapper<>();
         if (configId != null) {

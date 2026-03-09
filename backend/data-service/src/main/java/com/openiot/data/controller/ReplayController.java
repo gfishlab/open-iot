@@ -42,7 +42,7 @@ public class ReplayController {
      * 手动触发单条重放
      */
     @PostMapping("/single/{eventId}")
-    public ApiResponse<Void> replaySingle(@PathVariable String eventId) {
+    public ApiResponse<Void> replaySingle(@PathVariable(value = "eventId") String eventId) {
         boolean success = replayService.replaySingle(eventId);
         if (success) {
             return ApiResponse.success("重放成功", null);
@@ -55,7 +55,7 @@ public class ReplayController {
      * 重新发送到 Kafka
      */
     @PostMapping("/resend/{eventId}")
-    public ApiResponse<Void> resendToKafka(@PathVariable String eventId) {
+    public ApiResponse<Void> resendToKafka(@PathVariable(value = "eventId") String eventId) {
         boolean success = replayService.resendToKafka(eventId);
         if (success) {
             return ApiResponse.success("重新发送成功", null);

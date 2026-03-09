@@ -33,7 +33,7 @@ public class ThingModelController {
     @PutMapping
     @Operation(summary = "保存物模型", description = "保存或更新产品的物模型定义")
     public ApiResponse<Void> saveThingModel(
-            @Parameter(description = "产品ID") @PathVariable Long productId,
+            @Parameter(description = "产品ID") @PathVariable(name = "productId") Long productId,
             @RequestBody String thingModelJson) {
 
         log.info("保存物模型: productId={}", productId);

@@ -44,7 +44,7 @@ public class UserController {
      * 更新用户
      */
     @PutMapping("/{id}")
-    public ApiResponse<SysUser> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequest request) {
+    public ApiResponse<SysUser> updateUser(@PathVariable(value = "id") Long id, @RequestBody UpdateUserRequest request) {
         SysUser user = new SysUser();
         user.setId(id);
         user.setRealName(request.getRealName());
@@ -61,7 +61,7 @@ public class UserController {
      * 删除用户
      */
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> deleteUser(@PathVariable Long id) {
+    public ApiResponse<Void> deleteUser(@PathVariable(value = "id") Long id) {
         userService.deleteUser(id);
         return ApiResponse.success("删除成功", null);
     }
@@ -70,7 +70,7 @@ public class UserController {
      * 获取用户详情
      */
     @GetMapping("/{id}")
-    public ApiResponse<SysUser> getUser(@PathVariable Long id) {
+    public ApiResponse<SysUser> getUser(@PathVariable(value = "id") Long id) {
         SysUser user = userService.getById(id);
         if (user == null) {
             return ApiResponse.error("用户不存在");
@@ -84,11 +84,11 @@ public class UserController {
      */
     @GetMapping
     public ApiResponse<Page<SysUser>> page(
-            @RequestParam(defaultValue = "1") int pageNum,
-            @RequestParam(defaultValue = "10") int pageSize,
-            @RequestParam(required = false) Long tenantId,
-            @RequestParam(required = false) String role,
-            @RequestParam(required = false) String status) {
+            @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+            @RequestParam(value = "tenantId", required = false) Long tenantId,
+            @RequestParam(value = "role", required = false) String role,
+            @RequestParam(value = "status", required = false) String status) {
 
         Page<SysUser> page = userService.page(pageNum, pageSize, tenantId, role, status);
 
@@ -101,7 +101,7 @@ public class UserController {
      * 查询租户下的所有用户
      */
     @GetMapping("/tenant/{tenantId}")
-    public ApiResponse<List<SysUser>> listByTenant(@PathVariable Long tenantId) {
+    public ApiResponse<List<SysUser>> listByTenant(@PathVariable(value = "tenantId") Long tenantId) {
         List<SysUser> list = userService.listByTenantId(tenantId);
         list.forEach(u -> u.setPassword(null));
         return ApiResponse.success(list);
@@ -111,7 +111,7 @@ public class UserController {
      * 更新用户状态
      */
     @PutMapping("/{id}/status")
-    public ApiResponse<Void> updateStatus(@PathVariable Long id, @RequestBody StatusRequest request) {
+    public ApiResponse<Void> updateStatus(@PathVariable(value = "id") Long id, @RequestBody StatusRequest request) {
         userService.updateStatus(id, request.getStatus());
         return ApiResponse.success("状态更新成功", null);
     }
@@ -120,7 +120,7 @@ public class UserController {
      * 重置密码
      */
     @PutMapping("/{id}/password/reset")
-    public ApiResponse<Void> resetPassword(@PathVariable Long id, @RequestBody ResetPasswordRequest request) {
+    public ApiResponse<Void> resetPassword(@PathVariable(value = "id") Long id, @RequestBody ResetPasswordRequest request) {
         userService.resetPassword(id, request.getNewPassword());
         return ApiResponse.success("密码重置成功", null);
     }
@@ -146,7 +146,7 @@ public class UserController {
      * 检查用户名是否可用
      */
     @GetMapping("/check-username")
-    public ApiResponse<Boolean> checkUsername(@RequestParam String username) {
+    public ApiResponse<Boolean> checkUsername(@RequestParam(value = "username") String username) {
         boolean available = userService.isUsernameAvailable(username);
         return ApiResponse.success(available);
     }

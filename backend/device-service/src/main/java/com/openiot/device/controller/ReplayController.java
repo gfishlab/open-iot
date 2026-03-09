@@ -60,7 +60,7 @@ public class ReplayController {
     @GetMapping("/tasks/{taskId}")
     @Operation(summary = "查询任务状态", description = "查询重放任务的执行状态")
     public ApiResponse<ReplayService.ReplayTask> getTaskStatus(
-            @Parameter(description = "任务ID") @PathVariable String taskId) {
+            @Parameter(description = "任务ID") @PathVariable(name = "taskId") String taskId) {
 
         ReplayService.ReplayTask task = replayService.getTaskStatus(taskId);
         if (task == null) {
@@ -76,7 +76,7 @@ public class ReplayController {
     @PostMapping("/tasks/{taskId}/stop")
     @Operation(summary = "停止任务", description = "停止正在执行的重放任务")
     public ApiResponse<Void> stopTask(
-            @Parameter(description = "任务ID") @PathVariable String taskId) {
+            @Parameter(description = "任务ID") @PathVariable(name = "taskId") String taskId) {
 
         boolean success = replayService.stopTask(taskId);
         if (success) {
@@ -102,10 +102,10 @@ public class ReplayController {
     @GetMapping("/dead-letters")
     @Operation(summary = "查询死信消息", description = "查询死信队列中的消息")
     public ApiResponse<List<DeadLetterMessage>> getDeadLetters(
-            @Parameter(description = "原始主题") @RequestParam(required = false) String topic,
-            @Parameter(description = "开始时间") @RequestParam(required = false) LocalDateTime startTime,
-            @Parameter(description = "结束时间") @RequestParam(required = false) LocalDateTime endTime,
-            @Parameter(description = "仅可重试") @RequestParam(required = false, defaultValue = "false") Boolean retryableOnly) {
+            @Parameter(description = "原始主题") @RequestParam(name = "topic", required = false) String topic,
+            @Parameter(description = "开始时间") @RequestParam(name = "startTime", required = false) LocalDateTime startTime,
+            @Parameter(description = "结束时间") @RequestParam(name = "endTime", required = false) LocalDateTime endTime,
+            @Parameter(description = "仅可重试") @RequestParam(name = "retryableOnly", required = false, defaultValue = "false") Boolean retryableOnly) {
 
         List<DeadLetterMessage> messages = replayRecordService.queryDeadLetters(
                 topic, startTime, endTime, retryableOnly);
@@ -129,7 +129,7 @@ public class ReplayController {
     @DeleteMapping("/dead-letters/cleanup")
     @Operation(summary = "清理过期死信", description = "清理指定时间之前的死信消息")
     public ApiResponse<Map<String, Integer>> cleanup(
-            @Parameter(description = "清理此时间之前的消息") @RequestParam LocalDateTime beforeTime) {
+            @Parameter(description = "清理此时间之前的消息") @RequestParam(name = "beforeTime") LocalDateTime beforeTime) {
 
         int count = replayRecordService.cleanupExpired(beforeTime);
         return ApiResponse.success(Map.of("cleanedCount", count));

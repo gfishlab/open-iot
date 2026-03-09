@@ -39,7 +39,7 @@ public class TrajectoryManagementController {
     @PostMapping("/report")
     @Operation(summary = "上报轨迹", description = "设备上报位置信息")
     public ApiResponse<DeviceTrajectory> reportTrajectory(
-            @Parameter(description = "设备ID") @PathVariable Long deviceId,
+            @Parameter(description = "设备ID") @PathVariable(name = "deviceId") Long deviceId,
             @RequestBody TrajectoryReportRequest request) {
 
         log.debug("接收设备轨迹上报: deviceId={}, lat={}, lng={}",
@@ -64,7 +64,7 @@ public class TrajectoryManagementController {
     @PostMapping("/batch")
     @Operation(summary = "批量上报轨迹", description = "批量上报设备位置信息")
     public ApiResponse<Map<String, Object>> batchReportTrajectory(
-            @Parameter(description = "设备ID") @PathVariable Long deviceId,
+            @Parameter(description = "设备ID") @PathVariable(name = "deviceId") Long deviceId,
             @RequestBody List<TrajectoryReportRequest> requests) {
 
         log.info("接收批量设备轨迹上报: deviceId={}, count={}", deviceId, requests.size());
@@ -96,9 +96,9 @@ public class TrajectoryManagementController {
     @GetMapping("/query")
     @Operation(summary = "查询轨迹", description = "查询指定时间范围内的设备轨迹")
     public ApiResponse<List<DeviceTrajectory>> queryTrajectory(
-            @Parameter(description = "设备ID") @PathVariable Long deviceId,
-            @Parameter(description = "开始时间") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-            @Parameter(description = "结束时间") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
+            @Parameter(description = "设备ID") @PathVariable(name = "deviceId") Long deviceId,
+            @Parameter(description = "开始时间") @RequestParam(name = "startTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
+            @Parameter(description = "结束时间") @RequestParam(name = "endTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
 
         log.info("查询设备轨迹: deviceId={}, startTime={}, endTime={}", deviceId, startTime, endTime);
 
@@ -113,11 +113,11 @@ public class TrajectoryManagementController {
     @GetMapping("/page")
     @Operation(summary = "分页查询轨迹", description = "分页查询设备轨迹")
     public ApiResponse<com.baomidou.mybatisplus.extension.plugins.pagination.Page<DeviceTrajectory>> queryTrajectoryPage(
-            @Parameter(description = "设备ID") @PathVariable Long deviceId,
-            @Parameter(description = "开始时间") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-            @Parameter(description = "结束时间") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime,
-            @Parameter(description = "页码") @RequestParam(defaultValue = "1") int pageNum,
-            @Parameter(description = "每页大小") @RequestParam(defaultValue = "100") int pageSize) {
+            @Parameter(description = "设备ID") @PathVariable(name = "deviceId") Long deviceId,
+            @Parameter(description = "开始时间") @RequestParam(name = "startTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
+            @Parameter(description = "结束时间") @RequestParam(name = "endTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime,
+            @Parameter(description = "页码") @RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
+            @Parameter(description = "每页大小") @RequestParam(name = "pageSize", defaultValue = "100") int pageSize) {
 
         log.info("分页查询设备轨迹: deviceId={}, pageNum={}, pageSize={}", deviceId, pageNum, pageSize);
 
@@ -133,7 +133,7 @@ public class TrajectoryManagementController {
     @GetMapping("/latest")
     @Operation(summary = "最新轨迹", description = "获取设备最新的位置信息")
     public ApiResponse<DeviceTrajectory> getLatestTrajectory(
-            @Parameter(description = "设备ID") @PathVariable Long deviceId) {
+            @Parameter(description = "设备ID") @PathVariable(name = "deviceId") Long deviceId) {
 
         log.debug("查询设备最新轨迹: deviceId={}", deviceId);
 
@@ -148,9 +148,9 @@ public class TrajectoryManagementController {
     @GetMapping("/distance")
     @Operation(summary = "轨迹距离", description = "计算指定时间范围内的轨迹总距离")
     public ApiResponse<Map<String, Object>> calculateDistance(
-            @Parameter(description = "设备ID") @PathVariable Long deviceId,
-            @Parameter(description = "开始时间") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-            @Parameter(description = "结束时间") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
+            @Parameter(description = "设备ID") @PathVariable(name = "deviceId") Long deviceId,
+            @Parameter(description = "开始时间") @RequestParam(name = "startTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
+            @Parameter(description = "结束时间") @RequestParam(name = "endTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
 
         log.info("计算设备轨迹距离: deviceId={}, startTime={}, endTime={}", deviceId, startTime, endTime);
 
@@ -171,9 +171,9 @@ public class TrajectoryManagementController {
     @GetMapping("/distance-stats")
     @Operation(summary = "轨迹距离统计", description = "统计设备轨迹距离、速度等信息")
     public ApiResponse<DeviceTrajectoryStorageService.TrajectoryStatisticsVO> getTrajectoryStatistics(
-            @Parameter(description = "设备ID") @PathVariable Long deviceId,
-            @Parameter(description = "开始时间") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-            @Parameter(description = "结束时间") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
+            @Parameter(description = "设备ID") @PathVariable(name = "deviceId") Long deviceId,
+            @Parameter(description = "开始时间") @RequestParam(name = "startTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
+            @Parameter(description = "结束时间") @RequestParam(name = "endTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
 
         log.info("统计设备轨迹: deviceId={}, startTime={}, endTime={}", deviceId, startTime, endTime);
 
@@ -223,9 +223,9 @@ public class TrajectoryManagementController {
     @GetMapping("/statistics")
     @Operation(summary = "数据统计", description = "查询指定时间范围内的数据统计信息")
     public ApiResponse<DataStatisticsVO> getStatistics(
-            @Parameter(description = "设备ID") @PathVariable Long deviceId,
-            @Parameter(description = "开始时间") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-            @Parameter(description = "结束时间") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
+            @Parameter(description = "设备ID") @PathVariable(name = "deviceId") Long deviceId,
+            @Parameter(description = "开始时间") @RequestParam(name = "startTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
+            @Parameter(description = "结束时间") @RequestParam(name = "endTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
 
         log.info("查询设备数据统计: deviceId={}, startTime={}, endTime={}", deviceId, startTime, endTime);
         DataStatisticsVO statistics = trajectoryService.getStatistics(deviceId, startTime, endTime);
@@ -238,11 +238,11 @@ public class TrajectoryManagementController {
     @GetMapping("/trend")
     @Operation(summary = "数据趋势", description = "查询属性值随时间的变化趋势")
     public ApiResponse<List<TrendPointVO>> getTrend(
-            @Parameter(description = "设备ID") @PathVariable Long deviceId,
-            @Parameter(description = "属性标识符") @RequestParam String property,
-            @Parameter(description = "开始时间") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-            @Parameter(description = "结束时间") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime,
-            @Parameter(description = "时间间隔（分钟）") @RequestParam(defaultValue = "5") int interval) {
+            @Parameter(description = "设备ID") @PathVariable(name = "deviceId") Long deviceId,
+            @Parameter(description = "属性标识符") @RequestParam(name = "property") String property,
+            @Parameter(description = "开始时间") @RequestParam(name = "startTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
+            @Parameter(description = "结束时间") @RequestParam(name = "endTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime,
+            @Parameter(description = "时间间隔（分钟）") @RequestParam(name = "interval", defaultValue = "5") int interval) {
 
         log.info("查询设备数据趋势: deviceId={}, property={}, interval={}min", deviceId, property, interval);
         List<TrendPointVO> trend = trajectoryService.getTrend(deviceId, property, startTime, endTime, interval);
@@ -255,11 +255,11 @@ public class TrajectoryManagementController {
     @GetMapping("/distribution")
     @Operation(summary = "数据分布", description = "查询属性值的分布情况")
     public ApiResponse<List<DistributionBucketVO>> getDistribution(
-            @Parameter(description = "设备ID") @PathVariable Long deviceId,
-            @Parameter(description = "属性标识符") @RequestParam String property,
-            @Parameter(description = "开始时间") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-            @Parameter(description = "结束时间") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime,
-            @Parameter(description = "分桶数量") @RequestParam(defaultValue = "10") int buckets) {
+            @Parameter(description = "设备ID") @PathVariable(name = "deviceId") Long deviceId,
+            @Parameter(description = "属性标识符") @RequestParam(name = "property") String property,
+            @Parameter(description = "开始时间") @RequestParam(name = "startTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
+            @Parameter(description = "结束时间") @RequestParam(name = "endTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime,
+            @Parameter(description = "分桶数量") @RequestParam(name = "buckets", defaultValue = "10") int buckets) {
 
         log.info("查询设备数据分布: deviceId={}, property={}, buckets={}", deviceId, property, buckets);
         List<DistributionBucketVO> distribution = trajectoryService.getDistribution(

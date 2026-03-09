@@ -97,7 +97,7 @@ public class DeviceDataController {
     @GetMapping("/{deviceId}/latest")
     @Operation(summary = "查询最新数据", description = "查询设备最新上报的数据")
     public ApiResponse<DeviceData> getLatestData(
-            @Parameter(description = "设备ID") @PathVariable Long deviceId) {
+            @Parameter(description = "设备ID") @PathVariable(name = "deviceId") Long deviceId) {
 
         DeviceData latestData = deviceDataService.getLatest(deviceId);
         return ApiResponse.success(latestData);
@@ -109,11 +109,11 @@ public class DeviceDataController {
     @GetMapping("/{deviceId}/history")
     @Operation(summary = "查询历史数据", description = "分页查询设备历史数据")
     public ApiResponse<Page<DeviceData>> getHistory(
-            @Parameter(description = "设备ID") @PathVariable Long deviceId,
-            @Parameter(description = "页码") @RequestParam(defaultValue = "1") int pageNum,
-            @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") int pageSize,
-            @Parameter(description = "开始时间") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-            @Parameter(description = "结束时间") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
+            @Parameter(description = "设备ID") @PathVariable(name = "deviceId") Long deviceId,
+            @Parameter(description = "页码") @RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
+            @Parameter(description = "每页大小") @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
+            @Parameter(description = "开始时间") @RequestParam(name = "startTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
+            @Parameter(description = "结束时间") @RequestParam(name = "endTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
 
         Page<DeviceData> page = deviceDataService.queryDeviceData(deviceId, pageNum, pageSize, startTime, endTime);
         return ApiResponse.success(page);
@@ -125,10 +125,10 @@ public class DeviceDataController {
     @GetMapping("/{deviceId}/properties/{propertyIdentifier}")
     @Operation(summary = "查询属性数据", description = "查询设备指定属性的历史数据")
     public ApiResponse<List<DeviceDataService.PropertyDataVO>> getPropertyData(
-            @Parameter(description = "设备ID") @PathVariable Long deviceId,
-            @Parameter(description = "属性标识符") @PathVariable String propertyIdentifier,
-            @Parameter(description = "开始时间") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-            @Parameter(description = "结束时间") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
+            @Parameter(description = "设备ID") @PathVariable(name = "deviceId") Long deviceId,
+            @Parameter(description = "属性标识符") @PathVariable(name = "propertyIdentifier") String propertyIdentifier,
+            @Parameter(description = "开始时间") @RequestParam(name = "startTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
+            @Parameter(description = "结束时间") @RequestParam(name = "endTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
 
         List<DeviceDataService.PropertyDataVO> data = deviceDataService.queryPropertyData(
                 deviceId, propertyIdentifier, startTime, endTime);
@@ -142,9 +142,9 @@ public class DeviceDataController {
     @GetMapping("/{deviceId}/statistics")
     @Operation(summary = "查询数据统计", description = "查询设备数据统计信息")
     public ApiResponse<DeviceDataService.DataStatisticsVO> getStatistics(
-            @Parameter(description = "设备ID") @PathVariable Long deviceId,
-            @Parameter(description = "开始时间") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-            @Parameter(description = "结束时间") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
+            @Parameter(description = "设备ID") @PathVariable(name = "deviceId") Long deviceId,
+            @Parameter(description = "开始时间") @RequestParam(name = "startTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
+            @Parameter(description = "结束时间") @RequestParam(name = "endTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
 
         DeviceDataService.DataStatisticsVO statistics = deviceDataService.getStatistics(
                 deviceId, startTime, endTime);

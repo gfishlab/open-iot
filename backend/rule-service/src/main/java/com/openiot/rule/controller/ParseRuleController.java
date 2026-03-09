@@ -51,7 +51,7 @@ public class ParseRuleController {
     @GetMapping("/{id}")
     @Operation(summary = "查询解析规则", description = "根据ID查询解析规则详情")
     public ApiResponse<ParseRuleVO> getParseRule(
-            @Parameter(description = "规则ID") @PathVariable Long id) {
+            @Parameter(description = "规则ID") @PathVariable(value = "id") Long id) {
         ParseRule rule = parseRuleService.getRuleById(id);
         return ApiResponse.success(toVO(rule));
     }
@@ -62,7 +62,7 @@ public class ParseRuleController {
     @PutMapping("/{id}")
     @Operation(summary = "更新解析规则", description = "更新指定ID的解析规则")
     public ApiResponse<ParseRuleVO> updateParseRule(
-            @Parameter(description = "规则ID") @PathVariable Long id,
+            @Parameter(description = "规则ID") @PathVariable(value = "id") Long id,
             @Valid @RequestBody ParseRuleCreateVO vo) {
         ParseRule rule = parseRuleService.updateParseRule(id, vo);
         return ApiResponse.success("更新解析规则成功", toVO(rule));
@@ -74,7 +74,7 @@ public class ParseRuleController {
     @DeleteMapping("/{id}")
     @Operation(summary = "删除解析规则", description = "删除指定ID的解析规则")
     public ApiResponse<Void> deleteParseRule(
-            @Parameter(description = "规则ID") @PathVariable Long id) {
+            @Parameter(description = "规则ID") @PathVariable(value = "id") Long id) {
         parseRuleService.deleteParseRule(id);
         return ApiResponse.success("删除解析规则成功", null);
     }
@@ -85,7 +85,7 @@ public class ParseRuleController {
     @PostMapping("/{id}/test")
     @Operation(summary = "测试解析规则", description = "使用指定规则测试解析原始数据")
     public ApiResponse<ParseTestResultVO> testParseRule(
-            @Parameter(description = "规则ID") @PathVariable Long id,
+            @Parameter(description = "规则ID") @PathVariable(value = "id") Long id,
             @Valid @RequestBody ParseTestRequestVO vo) {
         ParseTestResultVO result = parseRuleService.testParseRule(id, vo);
         return ApiResponse.success(result);
@@ -97,11 +97,11 @@ public class ParseRuleController {
     @GetMapping
     @Operation(summary = "分页查询解析规则", description = "根据条件分页查询解析规则列表")
     public ApiResponse<Page<ParseRuleVO>> getParseRuleList(
-            @Parameter(description = "页码") @RequestParam(defaultValue = "1") int pageNum,
-            @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") int pageSize,
-            @Parameter(description = "产品ID") @RequestParam(required = false) Long productId,
-            @Parameter(description = "规则类型") @RequestParam(required = false) String ruleType,
-            @Parameter(description = "状态") @RequestParam(required = false) String status) {
+            @Parameter(description = "页码") @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+            @Parameter(description = "每页大小") @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+            @Parameter(description = "产品ID") @RequestParam(value = "productId", required = false) Long productId,
+            @Parameter(description = "规则类型") @RequestParam(value = "ruleType", required = false) String ruleType,
+            @Parameter(description = "状态") @RequestParam(value = "status", required = false) String status) {
 
         Page<ParseRule> page = parseRuleService.getParseRuleList(pageNum, pageSize, productId, ruleType, status);
 
@@ -120,7 +120,7 @@ public class ParseRuleController {
     @GetMapping("/product/{productId}")
     @Operation(summary = "查询产品的解析规则", description = "查询指定产品的所有启用的解析规则")
     public ApiResponse<List<ParseRuleVO>> getParseRulesByProductId(
-            @Parameter(description = "产品ID") @PathVariable Long productId) {
+            @Parameter(description = "产品ID") @PathVariable(value = "productId") Long productId) {
 
         List<ParseRule> rules = parseRuleService.getParseRuleByProductId(productId);
 
@@ -137,8 +137,8 @@ public class ParseRuleController {
     @PutMapping("/{id}/status")
     @Operation(summary = "更新规则状态", description = "启用或禁用解析规则")
     public ApiResponse<Void> updateStatus(
-            @Parameter(description = "规则ID") @PathVariable Long id,
-            @Parameter(description = "状态：1-启用，0-禁用") @RequestParam String status) {
+            @Parameter(description = "规则ID") @PathVariable(value = "id") Long id,
+            @Parameter(description = "状态：1-启用，0-禁用") @RequestParam(value = "status") String status) {
 
         parseRuleService.updateStatus(id, status);
         return ApiResponse.success("更新状态成功", null);

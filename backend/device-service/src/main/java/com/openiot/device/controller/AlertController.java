@@ -36,11 +36,11 @@ public class AlertController {
     @GetMapping
     @Operation(summary = "查询告警列表", description = "支持按设备、级别、状态过滤")
     public ApiResponse<Page<AlertRecord>> getAlerts(
-            @Parameter(description = "页码") @RequestParam(defaultValue = "1") int page,
-            @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") int size,
-            @Parameter(description = "设备ID") @RequestParam(required = false) Long deviceId,
-            @Parameter(description = "告警级别") @RequestParam(required = false) String level,
-            @Parameter(description = "处理状态") @RequestParam(required = false) String status) {
+            @Parameter(description = "页码") @RequestParam(name = "page", defaultValue = "1") int page,
+            @Parameter(description = "每页大小") @RequestParam(name = "size", defaultValue = "10") int size,
+            @Parameter(description = "设备ID") @RequestParam(name = "deviceId", required = false) Long deviceId,
+            @Parameter(description = "告警级别") @RequestParam(name = "level", required = false) String level,
+            @Parameter(description = "处理状态") @RequestParam(name = "status", required = false) String status) {
 
         log.info("查询告警列表: page={}, size={}, deviceId={}, level={}, status={}",
                 page, size, deviceId, level, status);
@@ -55,7 +55,7 @@ public class AlertController {
     @GetMapping("/{alertId}")
     @Operation(summary = "查询告警详情", description = "根据告警ID查询详情")
     public ApiResponse<AlertRecord> getAlertDetail(
-            @Parameter(description = "告警ID") @PathVariable Long alertId) {
+            @Parameter(description = "告警ID") @PathVariable(name = "alertId") Long alertId) {
 
         log.info("查询告警详情: alertId={}", alertId);
 
@@ -69,7 +69,7 @@ public class AlertController {
     @PutMapping("/{alertId}/handle")
     @Operation(summary = "处理告警", description = "更新告警处理状态")
     public ApiResponse<AlertRecord> handleAlert(
-            @Parameter(description = "告警ID") @PathVariable Long alertId,
+            @Parameter(description = "告警ID") @PathVariable(name = "alertId") Long alertId,
             @RequestBody HandleRequest request) {
 
         log.info("处理告警: alertId={}, status={}", alertId, request.getStatus());
@@ -103,7 +103,7 @@ public class AlertController {
     @GetMapping("/statistics")
     @Operation(summary = "告警统计", description = "查询告警统计数据")
     public ApiResponse<AlertStatisticsVO> getStatistics(
-            @Parameter(description = "设备ID") @RequestParam(required = false) Long deviceId) {
+            @Parameter(description = "设备ID") @RequestParam(name = "deviceId", required = false) Long deviceId) {
 
         log.info("查询告警统计: deviceId={}", deviceId);
 
@@ -117,7 +117,7 @@ public class AlertController {
     @GetMapping("/pending")
     @Operation(summary = "待处理告警", description = "查询待处理和正在处理的告警")
     public ApiResponse<List<AlertRecord>> getPendingAlerts(
-            @Parameter(description = "条数") @RequestParam(defaultValue = "10") int limit) {
+            @Parameter(description = "条数") @RequestParam(name = "limit", defaultValue = "10") int limit) {
 
         log.info("查询待处理告警: limit={}", limit);
 
@@ -131,8 +131,8 @@ public class AlertController {
     @GetMapping("/device/{deviceId}/history")
     @Operation(summary = "设备告警历史", description = "查询指定设备的告警历史")
     public ApiResponse<List<AlertRecord>> getDeviceAlertHistory(
-            @Parameter(description = "设备ID") @PathVariable Long deviceId,
-            @Parameter(description = "条数") @RequestParam(defaultValue = "20") int limit) {
+            @Parameter(description = "设备ID") @PathVariable(name = "deviceId") Long deviceId,
+            @Parameter(description = "条数") @RequestParam(name = "limit", defaultValue = "20") int limit) {
 
         log.info("查询设备告警历史: deviceId={}, limit={}", deviceId, limit);
 

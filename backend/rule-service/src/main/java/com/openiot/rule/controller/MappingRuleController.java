@@ -58,7 +58,7 @@ public class MappingRuleController {
     @GetMapping("/{id}")
     @Operation(summary = "查询映射规则", description = "根据ID查询映射规则详情")
     public ApiResponse<MappingRuleVO> getMappingRule(
-            @Parameter(description = "规则ID") @PathVariable Long id) {
+            @Parameter(description = "规则ID") @PathVariable(value = "id") Long id) {
         MappingRule rule = mappingRuleService.getRuleById(id);
         return ApiResponse.success(toVO(rule));
     }
@@ -69,7 +69,7 @@ public class MappingRuleController {
     @PutMapping("/{id}")
     @Operation(summary = "更新映射规则", description = "更新指定ID的映射规则")
     public ApiResponse<MappingRuleVO> updateMappingRule(
-            @Parameter(description = "规则ID") @PathVariable Long id,
+            @Parameter(description = "规则ID") @PathVariable(value = "id") Long id,
             @Valid @RequestBody MappingRuleCreateVO vo) {
         MappingRule rule = mappingRuleService.updateMappingRule(id, vo);
         return ApiResponse.success("更新映射规则成功", toVO(rule));
@@ -81,7 +81,7 @@ public class MappingRuleController {
     @DeleteMapping("/{id}")
     @Operation(summary = "删除映射规则", description = "删除指定ID的映射规则")
     public ApiResponse<Void> deleteMappingRule(
-            @Parameter(description = "规则ID") @PathVariable Long id) {
+            @Parameter(description = "规则ID") @PathVariable(value = "id") Long id) {
         mappingRuleService.deleteMappingRule(id);
         return ApiResponse.success("删除映射规则成功", null);
     }
@@ -92,7 +92,7 @@ public class MappingRuleController {
     @PostMapping("/{id}/test")
     @Operation(summary = "测试映射规则", description = "使用指定规则测试映射解析后的数据")
     public ApiResponse<MappingTestResultVO> testMappingRule(
-            @Parameter(description = "规则ID") @PathVariable Long id,
+            @Parameter(description = "规则ID") @PathVariable(value = "id") Long id,
             @Valid @RequestBody MappingTestRequestVO vo) {
         MappingTestResultVO result = mappingRuleService.testMappingRule(id, vo);
         return ApiResponse.success(result);
@@ -104,10 +104,10 @@ public class MappingRuleController {
     @GetMapping
     @Operation(summary = "分页查询映射规则", description = "根据条件分页查询映射规则列表")
     public ApiResponse<Page<MappingRuleVO>> getMappingRuleList(
-            @Parameter(description = "页码") @RequestParam(defaultValue = "1") int pageNum,
-            @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") int pageSize,
-            @Parameter(description = "产品ID") @RequestParam(required = false) Long productId,
-            @Parameter(description = "状态") @RequestParam(required = false) String status) {
+            @Parameter(description = "页码") @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+            @Parameter(description = "每页大小") @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+            @Parameter(description = "产品ID") @RequestParam(value = "productId", required = false) Long productId,
+            @Parameter(description = "状态") @RequestParam(value = "status", required = false) String status) {
 
         Page<MappingRule> page = getMappingRulePage(pageNum, pageSize, productId, status);
 
@@ -126,7 +126,7 @@ public class MappingRuleController {
     @GetMapping("/product/{productId}")
     @Operation(summary = "查询产品的映射规则", description = "查询指定产品的所有启用的映射规则")
     public ApiResponse<List<MappingRuleVO>> getMappingRulesByProductId(
-            @Parameter(description = "产品ID") @PathVariable Long productId) {
+            @Parameter(description = "产品ID") @PathVariable(value = "productId") Long productId) {
 
         List<MappingRule> rules = mappingRuleService.getMappingRuleByProductId(productId);
 
@@ -143,8 +143,8 @@ public class MappingRuleController {
     @PutMapping("/{id}/status")
     @Operation(summary = "更新规则状态", description = "启用或禁用映射规则")
     public ApiResponse<Void> updateStatus(
-            @Parameter(description = "规则ID") @PathVariable Long id,
-            @Parameter(description = "状态：1-启用，0-禁用") @RequestParam String status) {
+            @Parameter(description = "规则ID") @PathVariable(value = "id") Long id,
+            @Parameter(description = "状态：1-启用，0-禁用") @RequestParam(value = "status") String status) {
 
         mappingRuleService.updateStatus(id, status);
         return ApiResponse.success("更新状态成功", null);

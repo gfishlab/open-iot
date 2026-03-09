@@ -48,12 +48,12 @@ public class AlarmController {
     @GetMapping("/rules/page")
     @Operation(summary = "告警规则分页", description = "分页查询告警规则列表")
     public ApiResponse<Page<AlarmRule>> queryRulePage(
-            @Parameter(description = "页码") @RequestParam(defaultValue = "1") Integer page,
-            @Parameter(description = "页大小") @RequestParam(defaultValue = "10") Integer size,
-            @Parameter(description = "规则名称") @RequestParam(required = false) String ruleName,
-            @Parameter(description = "告警级别") @RequestParam(required = false) String alarmLevel,
-            @Parameter(description = "产品ID") @RequestParam(required = false) Long productId,
-            @Parameter(description = "设备ID") @RequestParam(required = false) Long deviceId) {
+            @Parameter(description = "页码") @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @Parameter(description = "页大小") @RequestParam(value = "size", defaultValue = "10") Integer size,
+            @Parameter(description = "规则名称") @RequestParam(value = "ruleName", required = false) String ruleName,
+            @Parameter(description = "告警级别") @RequestParam(value = "alarmLevel", required = false) String alarmLevel,
+            @Parameter(description = "产品ID") @RequestParam(value = "productId", required = false) Long productId,
+            @Parameter(description = "设备ID") @RequestParam(value = "deviceId", required = false) Long deviceId) {
 
         Page<AlarmRule> pageParam = new Page<>(page, size);
         LambdaQueryWrapper<AlarmRule> wrapper = new LambdaQueryWrapper<>();
@@ -113,7 +113,7 @@ public class AlarmController {
     @PutMapping("/rules/{id}")
     @Operation(summary = "更新告警规则", description = "更新已有的告警规则")
     public ApiResponse<Void> updateRule(
-            @Parameter(description = "规则ID") @PathVariable Long id,
+            @Parameter(description = "规则ID") @PathVariable(value = "id") Long id,
             @Valid @RequestBody UpdateRuleRequest request) {
 
         AlarmRule rule = ruleMapper.selectById(id);
@@ -166,7 +166,7 @@ public class AlarmController {
      */
     @DeleteMapping("/rules/{id}")
     @Operation(summary = "删除告警规则", description = "删除告警规则")
-    public ApiResponse<Void> deleteRule(@Parameter(description = "规则ID") @PathVariable Long id) {
+    public ApiResponse<Void> deleteRule(@Parameter(description = "规则ID") @PathVariable(value = "id") Long id) {
         AlarmRule rule = ruleMapper.selectById(id);
         if (rule == null) {
             return ApiResponse.error("告警规则不存在");
@@ -185,8 +185,8 @@ public class AlarmController {
     @PutMapping("/rules/{id}/status")
     @Operation(summary = "切换规则状态", description = "启用或禁用告警规则")
     public ApiResponse<Void> toggleRuleStatus(
-            @Parameter(description = "规则ID") @PathVariable Long id,
-            @Parameter(description = "状态") @RequestParam String status) {
+            @Parameter(description = "规则ID") @PathVariable(value = "id") Long id,
+            @Parameter(description = "状态") @RequestParam(value = "status") String status) {
 
         AlarmRule rule = ruleMapper.selectById(id);
         if (rule == null) {
@@ -208,14 +208,14 @@ public class AlarmController {
     @GetMapping("/records/page")
     @Operation(summary = "告警记录分页", description = "分页查询告警记录列表")
     public ApiResponse<Page<AlarmRecord>> queryRecordPage(
-            @Parameter(description = "页码") @RequestParam(defaultValue = "1") Integer page,
-            @Parameter(description = "页大小") @RequestParam(defaultValue = "10") Integer size,
-            @Parameter(description = "规则ID") @RequestParam(required = false) Long ruleId,
-            @Parameter(description = "设备ID") @RequestParam(required = false) Long deviceId,
-            @Parameter(description = "告警级别") @RequestParam(required = false) String alarmLevel,
-            @Parameter(description = "告警状态") @RequestParam(required = false) String alarmStatus,
-            @Parameter(description = "开始时间") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-            @Parameter(description = "结束时间") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
+            @Parameter(description = "页码") @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @Parameter(description = "页大小") @RequestParam(value = "size", defaultValue = "10") Integer size,
+            @Parameter(description = "规则ID") @RequestParam(value = "ruleId", required = false) Long ruleId,
+            @Parameter(description = "设备ID") @RequestParam(value = "deviceId", required = false) Long deviceId,
+            @Parameter(description = "告警级别") @RequestParam(value = "alarmLevel", required = false) String alarmLevel,
+            @Parameter(description = "告警状态") @RequestParam(value = "alarmStatus", required = false) String alarmStatus,
+            @Parameter(description = "开始时间") @RequestParam(value = "startTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
+            @Parameter(description = "结束时间") @RequestParam(value = "endTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
 
         Page<AlarmRecord> pageParam = new Page<>(page, size);
         LambdaQueryWrapper<AlarmRecord> wrapper = new LambdaQueryWrapper<>();
@@ -250,9 +250,9 @@ public class AlarmController {
     @PutMapping("/records/{id}/acknowledge")
     @Operation(summary = "确认告警", description = "确认告警记录")
     public ApiResponse<Void> acknowledgeAlarm(
-            @Parameter(description = "告警记录ID") @PathVariable Long id,
-            @Parameter(description = "确认人ID") @RequestParam Long userId,
-            @Parameter(description = "处理备注") @RequestParam(required = false) String remark) {
+            @Parameter(description = "告警记录ID") @PathVariable(value = "id") Long id,
+            @Parameter(description = "确认人ID") @RequestParam(value = "userId") Long userId,
+            @Parameter(description = "处理备注") @RequestParam(value = "remark", required = false) String remark) {
 
         AlarmRecord record = recordMapper.selectById(id);
         if (record == null) {
@@ -275,8 +275,8 @@ public class AlarmController {
     @PutMapping("/records/{id}/close")
     @Operation(summary = "关闭告警", description = "关闭告警记录")
     public ApiResponse<Void> closeAlarm(
-            @Parameter(description = "告警记录ID") @PathVariable Long id,
-            @Parameter(description = "处理备注") @RequestParam(required = false) String remark) {
+            @Parameter(description = "告警记录ID") @PathVariable(value = "id") Long id,
+            @Parameter(description = "处理备注") @RequestParam(value = "remark", required = false) String remark) {
 
         AlarmRecord record = recordMapper.selectById(id);
         if (record == null) {
@@ -298,7 +298,7 @@ public class AlarmController {
     @Operation(summary = "批量关闭告警", description = "批量关闭告警记录")
     public ApiResponse<Void> batchCloseAlarms(
             @Parameter(description = "告警记录ID列表") @RequestBody List<Long> ids,
-            @Parameter(description = "处理备注") @RequestParam(required = false) String remark) {
+            @Parameter(description = "处理备注") @RequestParam(value = "remark", required = false) String remark) {
 
         if (ids == null || ids.isEmpty()) {
             return ApiResponse.error("告警记录ID列表不能为空");
@@ -323,9 +323,9 @@ public class AlarmController {
     @GetMapping("/statistics")
     @Operation(summary = "告警统计", description = "获取告警统计信息")
     public ApiResponse<AlarmStatistics> getStatistics(
-            @Parameter(description = "设备ID") @RequestParam(required = false) Long deviceId,
-            @Parameter(description = "开始时间") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-            @Parameter(description = "结束时间") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
+            @Parameter(description = "设备ID") @RequestParam(value = "deviceId", required = false) Long deviceId,
+            @Parameter(description = "开始时间") @RequestParam(value = "startTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
+            @Parameter(description = "结束时间") @RequestParam(value = "endTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
 
         LambdaQueryWrapper<AlarmRecord> wrapper = new LambdaQueryWrapper<>();
         if (deviceId != null) {

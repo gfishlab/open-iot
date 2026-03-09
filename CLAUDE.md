@@ -318,6 +318,37 @@ wrapper.apply("tenant_id = " + tenantId);
 
 ---
 
+## Spring MVC Controller 参数规范
+
+### @RequestParam 和 @PathVariable 必须显式指定 name 属性
+
+**问题背景**：Java 编译器默认不保留参数名到字节码，Spring MVC 在运行时无法通过反射获取参数名，导致 `IllegalArgumentException`。
+
+**错误示例**：
+```java
+// ❌ 编译后参数名丢失，Spring 无法识别
+@GetMapping("/alerts")
+public ApiResponse<Page<Alert>> getAlerts(
+    @RequestParam(defaultValue = "1") int page,
+    @RequestParam(defaultValue = "10") int size) {
+```
+
+**正确写法**：
+```java
+// ✅ 显式指定 name 属性
+@GetMapping("/alerts")
+public ApiResponse<Page<Alert>> getAlerts(
+    @RequestParam(name = "page", defaultValue = "1") int page,
+    @RequestParam(name = "size", defaultValue = "10") int size) {
+```
+
+**规范要求**：
+- ✅ 所有 `@RequestParam` 必须指定 `name` 属性
+- ✅ 所有 `@PathVariable` 必须指定 `name` 或 `value` 属性（Spring 6+ 可省略，但建议显式指定）
+- ✅ 即使参数名与方法参数名相同，也要显式指定
+
+---
+
 ## Redis 使用规范
 
 ### RedisTemplate vs Redisson 分工

@@ -70,7 +70,7 @@ public class DeviceController {
     @GetMapping("/{id}")
     @Operation(summary = "查询设备详情", description = "根据设备ID查询设备详细信息")
     public ApiResponse<Device> getById(
-            @Parameter(description = "设备ID") @PathVariable Long id) {
+            @Parameter(description = "设备ID") @PathVariable(name = "id") Long id) {
         Device device = deviceService.getById(id);
         if (device == null) {
             return ApiResponse.notFound("设备不存在");
@@ -116,7 +116,7 @@ public class DeviceController {
     @DeleteMapping("/{id}")
     @Operation(summary = "删除设备", description = "删除指定设备")
     public ApiResponse<Void> delete(
-            @Parameter(description = "设备ID") @PathVariable Long id) {
+            @Parameter(description = "设备ID") @PathVariable(name = "id") Long id) {
         deviceService.removeById(id);
         return ApiResponse.success("设备删除成功", null);
     }
@@ -127,7 +127,7 @@ public class DeviceController {
     @PostMapping("/{id}/regenerate-token")
     @Operation(summary = "重新生成设备Token", description = "为设备重新生成认证Token")
     public ApiResponse<TokenResponse> regenerateToken(
-            @Parameter(description = "设备ID") @PathVariable Long id) {
+            @Parameter(description = "设备ID") @PathVariable(name = "id") Long id) {
         String token = deviceService.regenerateToken(id);
         TokenResponse response = new TokenResponse();
         response.setDeviceId(id);
@@ -144,7 +144,7 @@ public class DeviceController {
     @Operation(summary = "调用设备服务", description = "异步调用设备定义的服务（如开关、重启等），立即返回 invokeId")
     public ApiResponse<ServiceInvokeVO> invokeService(
             @Parameter(description = "设备 ID") @PathVariable Long id,
-            @Parameter(description = "服务标识符") @PathVariable String serviceIdentifier,
+            @Parameter(description = "服务标识符") @PathVariable(name = "serviceIdentifier") String serviceIdentifier,
             @RequestBody ServiceInvokeRequestVO request) {
 
         log.info("调用设备服务: deviceId={}, service={}", id, serviceIdentifier);
@@ -168,7 +168,7 @@ public class DeviceController {
     @Operation(summary = "同步调用设备服务", description = "同步调用设备服务，阻塞等待设备响应（最多 30 秒）")
     public ApiResponse<ServiceInvokeVO> invokeServiceSync(
             @Parameter(description = "设备 ID") @PathVariable Long id,
-            @Parameter(description = "服务标识符") @PathVariable String serviceIdentifier,
+            @Parameter(description = "服务标识符") @PathVariable(name = "serviceIdentifier") String serviceIdentifier,
             @RequestBody ServiceInvokeRequestVO request) {
 
         log.info("同步调用设备服务: deviceId={}, service={}", id, serviceIdentifier);
@@ -194,7 +194,7 @@ public class DeviceController {
     @GetMapping("/service-invocations/{invocationId}")
     @Operation(summary = "查询服务调用状态", description = "根据 invokeId 查询服务调用的执行状态和结果")
     public ApiResponse<ServiceInvokeVO> getInvocationStatus(
-            @Parameter(description = "调用 ID") @PathVariable String invocationId) {
+            @Parameter(description = "调用 ID") @PathVariable(name = "invocationId") String invocationId) {
 
         log.info("查询服务调用状态: invocationId={}", invocationId);
 

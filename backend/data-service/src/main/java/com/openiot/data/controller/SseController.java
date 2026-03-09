@@ -29,7 +29,7 @@ public class SseController {
      */
     @GetMapping(value = "/devices/{deviceId}/trajectory/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<Object> streamTrajectory(
-            @PathVariable String deviceId,
+            @PathVariable(value = "deviceId") String deviceId,
             @RequestHeader(value = "X-Tenant-Id", required = false) String tenantId) {
 
         if (tenantId == null) {
