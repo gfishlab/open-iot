@@ -61,12 +61,6 @@
       <template #header>
         <div class="card-header">
           <span>告警列表</span>
-          <div class="header-actions">
-            <el-button size="small" @click="handleBatchHandle" :disabled="selectedIds.length === 0">
-              批量处理
-            </el-button>
-            <el-button size="small" type="primary" @click="loadAlerts">刷新</el-button>
-          </div>
         </div>
       </template>
 
@@ -95,6 +89,14 @@
           <el-button @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
+
+      <!-- 操作栏 -->
+      <div class="action-bar">
+        <el-button class="glass-button" size="small" @click="handleBatchHandle" :disabled="selectedIds.length === 0">
+          批量处理
+        </el-button>
+        <el-button class="glass-button" size="small" type="primary" @click="loadAlerts">刷新</el-button>
+      </div>
 
       <!-- 表格 -->
       <el-table
@@ -507,13 +509,15 @@ onMounted(() => {
   align-items: center;
 }
 
-.header-actions {
-  display: flex;
-  gap: 8px;
-}
-
 /* ===== 搜索表单 ===== */
 .search-form {
+  margin-bottom: 16px;
+}
+
+/* ===== 操作栏 ===== */
+.action-bar {
+  display: flex;
+  gap: 8px;
   margin-bottom: 16px;
 }
 

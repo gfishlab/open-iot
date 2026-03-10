@@ -4,7 +4,6 @@
       <template #header>
         <div class="card-header">
           <span class="card-title">产品列表</span>
-          <el-button class="glass-button" type="primary" @click="handleAdd">新增产品</el-button>
         </div>
       </template>
 
@@ -27,6 +26,11 @@
           <el-button class="glass-button" @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
+
+      <!-- 操作栏 -->
+      <div class="action-bar">
+        <el-button class="glass-button" type="primary" @click="handleAdd">新增产品</el-button>
+      </div>
 
       <!-- 产品列表 -->
       <el-table :data="products" v-loading="loading" style="width: 100%">

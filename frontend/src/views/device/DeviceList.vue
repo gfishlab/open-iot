@@ -4,10 +4,32 @@
       <template #header>
         <div class="card-header">
           <span>设备列表</span>
-          <el-button type="primary" @click="handleAdd">新增设备</el-button>
         </div>
       </template>
 
+      <!-- 搜索栏 -->
+      <el-form :inline="true" :model="searchForm" style="margin-bottom: 16px">
+        <el-form-item label="设备名称">
+          <el-input v-model="searchForm.deviceName" placeholder="请输入设备名称" clearable style="width: 192px" />
+        </el-form-item>
+        <el-form-item label="在线状态">
+          <el-select v-model="searchForm.online" placeholder="全部" clearable style="width: 128px">
+            <el-option label="在线" :value="true" />
+            <el-option label="离线" :value="false" />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button class="glass-button" type="primary" @click="handleSearch">搜索</el-button>
+          <el-button class="glass-button" @click="handleReset">重置</el-button>
+        </el-form-item>
+      </el-form>
+
+      <!-- 操作栏 -->
+      <div class="action-bar">
+        <el-button class="glass-button" type="primary" @click="handleAdd">新增设备</el-button>
+      </div>
+
+      <!-- 设备列表 -->
       <el-table :data="devices" style="width: 100%" v-loading="loading" class="glass-card">
         <el-table-column prop="deviceCode" label="设备编码" width="150" />
         <el-table-column prop="deviceName" label="设备名称" width="180" />
@@ -48,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import request from '@/utils/request'
 
@@ -58,15 +80,37 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
 
+// 搜索表单
+const searchForm = reactive({
+  deviceName: '',
+  online: null as boolean | null
+})
+
+// 搜索
+function handleSearch() {
+  currentPage.value = 1
+  loadDevices()
+}
+
+// 重置
+function handleReset() {
+  searchForm.deviceName = ''
+  searchForm.online = null
+  currentPage.value = 1
+  loadDevices()
+}
+
 async function loadDevices() {
   try {
     loading.value = true
-    const data = await request.get('/devices', {
-      params: {
-        page: currentPage.value,
-        size: pageSize.value
-      }
-    })
+    const params: Record<string, unknown> = {
+      page: currentPage.value,
+      size: pageSize.value
+    }
+    if (searchForm.deviceName) params.deviceName = searchForm.deviceName
+    if (searchForm.online !== null) params.online = searchForm.online
+
+    const data = await request.get('/devices', { params })
     devices.value = data.list || []
     total.value = data.total || 0
   } catch (error) {
@@ -141,5 +185,11 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.action-bar {
+  margin-bottom: 16px;
+  display: flex;
+  gap: 8px;
 }
 </style>

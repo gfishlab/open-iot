@@ -168,3 +168,15 @@
   background-size: 200% 200%;
   animation: gradient-shift 3s ease infinite;
 }
+
+/* ===== 操作栏 ===== */
+.action-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+
+.action-bar .el-button {
+  margin: 0;
+}
