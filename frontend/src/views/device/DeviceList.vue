@@ -109,7 +109,34 @@ onMounted(() => {
 <style scoped>
 .device-list-page {
   padding: 20px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
+
+.el-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.el-card :deep(.el-card__body) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.el-table {
+  flex: 1;
+  min-height: 400px;
+}
+
+.el-pagination {
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;

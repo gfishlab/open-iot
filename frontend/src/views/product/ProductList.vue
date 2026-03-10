@@ -573,6 +573,27 @@ onMounted(() => {
 /* 页面容器 */
 .product-list-page {
   padding: 24px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.el-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.el-card :deep(.el-card__body) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.el-table {
+  flex: 1;
+  min-height: 400px;
 }
 
 /* 卡片标题行 */
@@ -592,6 +613,7 @@ onMounted(() => {
 .pagination-wrap {
   display: flex;
   justify-content: flex-end;
-  margin-top: 16px;
+  margin-top: auto;
+  flex-shrink: 0;
 }
 </style>
