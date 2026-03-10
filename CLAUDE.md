@@ -37,6 +37,264 @@ tests/
 
 ---
 
+## 前端 UI 设计规范
+
+### 玻璃拟态设计风格 (Glassmorphism)
+
+本项目前端采用**轻量玻璃拟态 + 渐变动画**设计风格，为用户提供现代化、流畅的视觉体验。
+
+#### 设计原则
+
+1. **玻璃拟态效果 (Glassmorphism)**
+   - 半透明背景：`rgba(255, 255, 255, 0.1)` + `backdrop-filter: blur(12px)`
+   - 微妙边框：半透明白边框 + 悬停发光效果
+   - 悬停反馈：背景加深 + 边框发光 + 阴影增强
+   - 圆角统一：12px (卡片), 8px (按钮), 4px (标签)
+
+2. **渐变动画**
+   - 过渡时长：200-300ms (流畅不卡顿)
+   - 动画类型：颜色过渡、阴影过渡、transform 过渡(谨慎使用)
+   - 缓动函数：`cubic-bezier(0.4, 0, 0.2, 1)` 或 `ease`
+   - 避免布局抖动：transform 动画使用 `transform: translateZ(0)` 加速
+
+3. **配色方案**
+   - **主色调**：Indigo (#6366f1) → Purple (#8b5cf6) 渐变
+   - **背景色**：Slate (#0f172a → #1e293b → #334155)
+   - **文字色**：
+     - 主文本：Slate-100 (#f1f5f9)
+     - 次要文本：Slate-400 (#94a3b8)
+     - 短文本：Slate-500 (#64748b)
+     - 强调色：Indigo-400 (#a5b4fc) 或 Purple-400 (#c4b5fe)
+   - **状态色**：
+     - 成功：Emerald (#10b981)
+     - 警告：Amber (#f59e0b)
+     - 错误：Red (#ef4444)
+     - 信息：Blue (#3b82f6)
+
+#### CSS 样式文件
+
+所有玻璃拟态样式定义在 `frontend/src/styles/glassmorphism.css`，已在 `main.ts` 中全局引入。
+
+**可用的 CSS 类：**
+
+| 类名 | 用途 | 示例 |
+|------|------|------|
+| `.glass-card` | 卡片/容器 | `<el-card class="glass-card">` |
+| `.glass-header` | 顶部导航栏 | `<header class="glass-header">` |
+| `.glass-button` | 按钮 | `<el-button class="glass-button">` |
+| `.glass-tag` | 标签 | `<el-tag class="glass-tag">` |
+| `.glass-pagination` | 分页器 | `<el-pagination class="glass-pagination">` |
+| `.glass-menu-item` | 菜单项 | `<div class="glass-menu-item">` |
+| `.glass-sidebar` | 侧边栏 | `<aside class="glass-sidebar">` |
+| `.glass-stat-card` | 统计卡片 | `<div class="glass-stat-card">` |
+| `.pulse` | 脉冲动画 | `<div class="pulse">` |
+
+#### CSS 变量
+
+```css
+:root {
+  --glass-blur: blur(12px);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+  --glass-border-hover: 1px solid rgba(99, 102, 241, 0.4);
+}
+```
+
+#### 使用示例
+
+**1. 玻璃卡片**
+```vue
+<template>
+  <el-card class="glass-card">
+    <div class="card-header">
+      <span class="card-title">设备列表</span>
+      <el-button class="glass-button" type="primary">新增设备</el-button>
+    </div>
+    <el-table :data="devices" class="glass-table">
+      <!-- 表格内容 -->
+    </el-table>
+  </el-card>
+</template>
+```
+
+**2. 玻璃按钮**
+```vue
+<template>
+  <el-button class="glass-button" @click="handleSearch">搜索</el-button>
+  <el-button class="glass-button" type="primary" @click="handleAdd">新增</el-button>
+  <el-button class="glass-button" type="danger" @click="handleDelete">删除</el-button>
+</template>
+```
+
+**3. 玻璃标签**
+```vue
+<template>
+  <el-tag class="glass-tag" :type="online ? 'success' : 'info'">
+    {{ online ? '在线' : '离线' }}
+  </el-tag>
+</template>
+```
+
+**4. 脉冲动画（用于状态指示器）**
+```vue
+<template>
+  <div class="status-indicator pulse"></div>
+</template>
+
+<style scoped>
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+}
+</style>
+```
+
+#### 布局规范
+
+**列表页面布局填满（重要）**
+
+为确保表格在数据较少时也能填满整个卡片区域，消除底部空白，所有列表页面必须遵循以下布局规范：
+
+```vue
+<template>
+  <div class="list-page">
+    <el-card>
+      <template #header>
+        <div class="card-header">
+          <span class="card-title">设备列表</span>
+          <el-button class="glass-button" type="primary">新增设备</el-button>
+        </div>
+      </template>
+
+      <el-table :data="items">
+        <!-- 表格内容 -->
+      </el-table>
+
+      <div class="pagination-wrap">
+        <el-pagination class="glass-pagination" />
+      </div>
+    </el-card>
+  </div>
+</template>
+
+<style scoped>
+/* 页面容器 - 必须设置 height: 100% 和 flex 布局 */
+.list-page {
+  padding: 20px;
+  height: 100%;  /* 填满父容器高度 */
+  display: flex;
+  flex-direction: column;
+}
+
+/* 卡片容器 - 自动扩展填满剩余空间 */
+.el-card {
+  flex: 1;  /* 自动扩展填满剩余空间 */
+  display: flex;
+  flex-direction: column;
+}
+
+/* 卡片内容区域 - flex 布局 */
+.el-card :deep(.el-card__body) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;  /* 关键：允许 flex 子元素收缩 */
+}
+
+/* 表格 - 自动扩展并设置最小高度 */
+.el-table {
+  flex: 1;  /* 表格自动扩展 */
+  min-height: 400px;  /* 最小高度保证，即使数据少也填满 */
+}
+
+/* 分页容器 - 固定在底部 */
+.pagination-wrap {
+  margin-top: auto;  /* 分页器固定在底部 */
+  flex-shrink: 0;  /* 不会被压缩 */
+  display: flex;
+  justify-content: flex-end;
+}
+</style>
+```
+
+**关键要点：**
+
+✅ **即使数据很少，表格也会自动扩展填满整个卡片区域**
+✅ **分页器始终固定在底部**
+✅ **消除了底部空白区域**
+✅ **响应式自适应不同屏幕尺寸**
+
+**为什么需要这样设计？**
+
+1. **用户体验**：避免大量空白区域，界面更紧凑美观
+2. **视觉一致性**：所有列表页面保持统一的视觉效果
+3. **响应式**：在不同屏幕尺寸下都能正常显示
+4. **数据量变化**：无论数据多少，布局都保持稳定
+
+**应用到所有列表页面：**
+
+以下页面必须遵循此布局规范：
+- `frontend/src/views/product/ProductList.vue`
+- `frontend/src/views/device/DeviceList.vue`
+- `frontend/src/views/alert/AlertList.vue`
+- `frontend/src/views/rule/RuleList.vue`
+- `frontend/src/views/tenant/TenantList.vue`
+- 其他所有包含表格的列表页面
+
+#### 设计检查清单
+
+在提交前端代码前，请确保：
+
+- [ ] 所有 Element Plus 组件都添加了对应的 `.glass-` 前缀类
+- [ ] 按钮添加了 `class="glass-button"`
+- [ ] 卡片添加了 `class="glass-card"`
+- [ ] 标签添加了 `class="glass-tag"`
+- [ ] 分页器添加了 `class="glass-pagination"`
+- [ ] 表格容器设置了 `flex: 1` 和 `min-height`
+- [ ] 页面容器设置了 `height: 100%` 和 `display: flex`
+- [ ] 悬停效果平滑（200-300ms 过渡）
+- [ ] 颜色使用项目统一的配色方案
+- [ ] 深色模式下文字对比度足够（WCAG AA 标准）
+
+#### 禁止事项
+
+- ❌ 使用纯色背景（不透明）
+- ❌ 硬编码颜色值（应使用 CSS 变量或 Tailwind 类）
+- ❌ 过度使用 transform 动画（避免布局抖动）
+- ❌ 使用 emoji 作为图标（应使用 SVG 图标）
+- ❌ 悬停时使用 `scale` 变换（会导致布局偏移）
+- ❌ 使用 `cursor: default` 在可点击元素上
+- ❌ 在深色模式下使用浅色文字（对比度不足）
+
+#### 性能优化
+
+1. **动画性能**
+   - 使用 `transform` 和 `opacity` 进行动画（GPU 加速）
+   - 避免动画 `width`、`height`、`margin`、`padding`（触发重排）
+   - 使用 `will-change` 提示浏览器优化
+
+2. **模糊效果**
+   - `backdrop-filter: blur(12px)` 性能开销中等
+   - 仅在悬停时使用模糊效果可提升性能
+   - 移动端可降级为半透明背景（不使用模糊）
+
+3. **渐变动画**
+   - 使用 `background-position` 动画（性能好）
+   - 避免频繁改变 `background-size`
+
+#### 参考资源
+
+- 设计文档：`docs/plans/2026-03-09-glassmorphism-design.md`
+- 样式文件：`frontend/src/styles/glassmorphism.css`
+- 示例组件：
+  - `frontend/src/layouts/MainLayout.vue`
+  - `frontend/src/views/product/ProductList.vue`
+  - `frontend/src/views/device/DeviceList.vue`
+  - `frontend/src/views/alert/AlertList.vue`
+
+---
+
 ## 前后端联调规范
 
 ### 架构原则
