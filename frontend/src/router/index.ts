@@ -6,7 +6,7 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: () => import('@/views/auth/Login.vue'),
-    meta: { requiresAuth: false }
+    meta: { requiresAuth: false, title: '登录' }
   },
   {
     path: '/',
@@ -20,48 +20,50 @@ const routes = [
       {
         path: 'monitor',
         name: 'Monitor',
-        component: () => import('@/views/monitor/DeviceMonitor.vue')
+        component: () => import('@/views/monitor/DeviceMonitor.vue'),
+        meta: { title: '设备监控' }
       },
       {
         path: 'devices',
         name: 'Devices',
-        component: () => import('@/views/device/DeviceList.vue')
+        component: () => import('@/views/device/DeviceList.vue'),
+        meta: { title: '设备管理' }
       },
       {
         path: 'tenants',
         name: 'Tenants',
         component: () => import('@/views/tenant/TenantList.vue'),
-        meta: { requiresAdmin: true }
+        meta: { requiresAdmin: true, title: '租户管理' }
       },
       {
         path: 'product',
         name: 'ProductList',
-        component: () => import('@/views/product/ProductList.vue')
+        component: () => import('@/views/product/ProductList.vue'),
+        meta: { title: '产品管理' }
       },
       {
         path: 'product/:id',
         name: 'ProductDetail',
-        component: () => import('@/views/product/ProductDetail.vue')
-      },
-      {
-        path: 'devices',
-        name: 'Devices',
-        component: () => import('@/views/device/DeviceList.vue')
+        component: () => import('@/views/product/ProductDetail.vue'),
+        meta: { title: '产品详情' }
       },
       {
         path: 'devices/:id',
         name: 'DeviceDetail',
-        component: () => import('@/views/device/DeviceDetail.vue')
+        component: () => import('@/views/device/DeviceDetail.vue'),
+        meta: { title: '设备详情' }
       },
       {
         path: 'alerts',
         name: 'Alerts',
-        component: () => import('@/views/alert/AlertList.vue')
+        component: () => import('@/views/alert/AlertList.vue'),
+        meta: { title: '告警管理' }
       },
       {
         path: 'rules',
         name: 'Rules',
-        component: () => import('@/views/rule/RuleList.vue')
+        component: () => import('@/views/rule/RuleList.vue'),
+        meta: { title: '规则引擎' }
       }
     ]
   }
