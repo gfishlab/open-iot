@@ -7,7 +7,8 @@ spring:
   profiles:
     active: dev  # 默认激活开发环境
   config:
-    import: "optional:nacos:"  # Spring Cloud 2023.x 需要显式声明 Nacos 配置导入
+    import:
+      - "optional:nacos:connect-service.yaml?refreshEnabled=true&group=DEFAULT_GROUP"
 
   # 数据源驱动（公共）
   datasource:
