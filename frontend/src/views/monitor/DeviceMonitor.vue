@@ -229,20 +229,20 @@ function formatTime(time: string | Date) {
 async function loadDashboardData() {
   try {
     const [stats, alerts, devices] = await Promise.allSettled([
-      request.get('/dashboard/statistics').catch(() => ({ data: getMockStats() })),
-      request.get('/alerts', { params: { page: 1, size: 5 } }).catch(() => ({ data: [] })),
-      request.get('/devices', { params: { page: 1, size: 5 } }).catch(() => ({ data: [] }))
+      request.get('/dashboard/statistics').catch(() => getMockStats()),
+      request.get('/alerts', { params: { page: 1, size: 5 } }).catch(() => ({ records: [] })),
+      request.get('/devices', { params: { page: 1, size: 5 } }).catch(() => ({ records: [] }))
     ])
 
     if (stats.status === 'fulfilled') {
-      Object.assign(dashboardData.value, stats.data)
+      Object.assign(dashboardData.value, stats.value)
     }
     if (alerts.status === 'fulfilled') {
-      recentAlerts.value = alerts.data?.records || alerts.data || []
-  }
+      recentAlerts.value = alerts.value?.records || alerts.value || []
+    }
     if (devices.status === 'fulfilled') {
-    deviceStatus.value = devices.data?.records || devices.data || []
-  }
+      deviceStatus.value = devices.value?.records || devices.value || []
+    }
 
     renderCharts()
   } catch (error) {

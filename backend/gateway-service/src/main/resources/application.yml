@@ -53,7 +53,7 @@ spring:
         - id: device-service
           uri: lb://device-service
           predicates:
-            - Path=/api/v1/devices/**,/api/v1/products/**,/api/v1/alerts/**,/api/v1/trajectory/**,/api/v1/mqtt/**,/api/v1/rules/**,/api/v1/replay/**,/api/v1/ota/**
+            - Path=/api/v1/devices/**,/api/v1/products/**,/api/v1/alerts/**,/api/v1/trajectory/**,/api/v1/mqtt/**,/api/v1/rules/**,/api/v1/replay/**,/api/v1/ota/**,/api/v1/dashboard/**
           filters:
             - StripPrefix=0
             - name: CircuitBreaker

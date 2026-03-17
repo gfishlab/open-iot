@@ -237,8 +237,8 @@ async function loadRules() {
   try {
     loading.value = true
     const params: Record<string, unknown> = {
-      page: currentPage.value,
-      size: pageSize.value
+      pageNum: currentPage.value,
+      pageSize: pageSize.value
     }
     if (searchForm.ruleName) params.ruleName = searchForm.ruleName
     if (searchForm.productId) params.productId = searchForm.productId

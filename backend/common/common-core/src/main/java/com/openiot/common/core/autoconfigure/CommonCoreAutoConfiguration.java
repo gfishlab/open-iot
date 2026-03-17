@@ -2,7 +2,9 @@ package com.openiot.common.core.autoconfigure;
 
 import com.openiot.common.core.config.TraceConfig;
 import com.openiot.common.core.exception.GlobalExceptionHandler;
+import com.openiot.common.core.handler.MyBatisMetaObjectHandler;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -13,4 +15,12 @@ import org.springframework.context.annotation.Import;
 @AutoConfiguration
 @Import({GlobalExceptionHandler.class, TraceConfig.class})
 public class CommonCoreAutoConfiguration {
+
+    /**
+     * 注册 MyBatis Plus 自动填充处理器
+     */
+    @Bean
+    public MyBatisMetaObjectHandler myBatisMetaObjectHandler() {
+        return new MyBatisMetaObjectHandler();
+    }
 }
