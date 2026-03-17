@@ -64,6 +64,24 @@ const routes = [
         name: 'Rules',
         component: () => import('@/views/rule/RuleList.vue'),
         meta: { title: '规则引擎' }
+      },
+      {
+        path: 'rules/parse',
+        name: 'ParseRules',
+        component: () => import('@/views/rule/ParseRuleList.vue'),
+        meta: { title: '解析规则' }
+      },
+      {
+        path: 'rules/mapping',
+        name: 'MappingRules',
+        component: () => import('@/views/rule/MappingRuleList.vue'),
+        meta: { title: '映射规则' }
+      },
+      {
+        path: 'users',
+        name: 'Users',
+        component: () => import('@/views/tenant/UserList.vue'),
+        meta: { requiresAdmin: true, title: '用户管理' }
       }
     ]
   }

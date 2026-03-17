@@ -152,6 +152,11 @@ public class AlarmService {
                     String.valueOf(entry.getValue()));
         }
 
+        // 检查是否还有未替换的变量（${...}），如有则表示缺少数据，不触发
+        if (evalExpr.contains("${")) {
+            return false;
+        }
+
         // 这里简化处理，实际应该使用表达式引擎
         return !evalExpr.contains("null") && !evalExpr.contains("undefined");
     }

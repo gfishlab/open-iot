@@ -36,6 +36,10 @@
             <groupId>com.openiot</groupId>
             <artifactId>common-observability</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.openiot</groupId>
+            <artifactId>common-feign-api</artifactId>
+        </dependency>
 
         <!-- Spring Boot Web -->
         <dependency>

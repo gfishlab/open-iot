@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
 import org.springframework.data.redis.core.ValueOperations;
@@ -44,6 +45,9 @@ class DeviceStatusServiceTest {
     @Mock
     private SetOperations<String, Object> setOperations;
 
+    @Mock
+    private HashOperations<String, Object, Object> hashOperations;
+
     @InjectMocks
     private DeviceStatusService deviceStatusService;
 
@@ -62,6 +66,7 @@ class DeviceStatusServiceTest {
         // Mock Redis 操作
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         when(redisTemplate.opsForSet()).thenReturn(setOperations);
+        when(redisTemplate.opsForHash()).thenReturn(hashOperations);
     }
 
     @Test
@@ -97,6 +102,7 @@ class DeviceStatusServiceTest {
     void setOffline_Success() {
         // Given
         when(deviceService.getByCode("device001")).thenReturn(testDevice);
+        when(deviceService.getById(1L)).thenReturn(testDevice);
 
         // When
         deviceStatusService.setOffline("device001");

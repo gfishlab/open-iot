@@ -46,7 +46,7 @@ public class JavaScriptParser implements ParseRuleEngine {
     /**
      * 执行超时时间（秒）
      */
-    private static final int EXECUTION_TIMEOUT_SECONDS = 3;
+    private static final int EXECUTION_TIMEOUT_SECONDS = 10;
 
     /**
      * 执行器线程池（用于超时控制）
@@ -127,10 +127,10 @@ public class JavaScriptParser implements ParseRuleEngine {
                 .allowHostClassLoading(false)
                 .allowHostClassLookup(className -> false)  // 禁止所有类查找
                 .allowInnerContextOptions(false)
+                // 允许实验性选项（GraalJS commonjs-require 需要）
+                .allowExperimentalOptions(true)
                 // 允许基本的宿主访问（用于返回结果）
                 .allowHostAccess(HostAccess.ALL)
-                // 设置执行超时
-                .option("js.eval-time-limit", String.valueOf(EXECUTION_TIMEOUT_SECONDS))
                 // 禁用 ES 模块（避免加载外部模块）
                 .option("js.commonjs-require", "false")
                 .build()) {
@@ -143,7 +143,7 @@ public class JavaScriptParser implements ParseRuleEngine {
 
             // 获取 parse 函数
             Value parseFn = context.getBindings("js").getMember("parse");
-            if (parseFn == null) {
+            if (parseFn == null || !parseFn.canExecute()) {
                 throw ParseException.configError("脚本必须定义 parse(rawData) 函数");
             }
 

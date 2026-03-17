@@ -22,6 +22,7 @@
         <module>common-mongodb</module>
         <module>common-security</module>
         <module>common-observability</module>
+        <module>common-feign-api</module>
     </modules>
 
 </project>

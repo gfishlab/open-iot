@@ -19,7 +19,7 @@ spring:
         server-addr: 127.0.0.1:8848
         file-extension: yaml
         namespace: public
-        enabled: false
+        enabled: true
 
   # 数据源驱动（公共）
   datasource:
@@ -97,6 +97,14 @@ management:
 
 # 可观测性配置（公共）
 openiot:
+  # 缓存配置（支持 Nacos 动态刷新）
+  cache:
+    device-ttl: 3600
+    product-ttl: 7200
+  # OTA 升级配置（支持 Nacos 动态刷新）
+  ota:
+    retry-count: 3
+    batch-size: 100
   observability:
     tracing:
       enabled: true

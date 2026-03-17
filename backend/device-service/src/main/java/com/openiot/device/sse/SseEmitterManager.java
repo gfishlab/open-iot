@@ -52,7 +52,15 @@ public class SseEmitterManager {
      * @return SseEmitter
      */
     public SseEmitter createEmitter(String clientId, Long timeout) {
-        log.info("创建 SSE 连接: clientId={}, timeout={}ms", clientId, timeout);
+        // 如果 clientId 为空，则自动生成一个唯一的客户端ID
+        final String actualClientId;
+        if (clientId == null || clientId.isEmpty()) {
+            actualClientId = "auto-" + java.util.UUID.randomUUID().toString().substring(0, 8);
+        } else {
+            actualClientId = clientId;
+        }
+
+        log.info("创建 SSE 连接: clientId={}, timeout={}ms", actualClientId, timeout);
 
         // 设置超时时间（默认30分钟）
         Long actualTimeout = timeout != null ? timeout : 30 * 60 * 1000L;
@@ -60,34 +68,34 @@ public class SseEmitterManager {
 
         // 设置超时回调
         emitter.onTimeout(() -> {
-            log.info("SSE 连接超时: clientId={}", clientId);
-            removeEmitter(clientId);
+            log.info("SSE 连接超时: clientId={}", actualClientId);
+            removeEmitter(actualClientId);
         });
 
         // 设置完成回调
         emitter.onCompletion(() -> {
-            log.info("SSE 连接完成: clientId={}", clientId);
-            removeEmitter(clientId);
+            log.info("SSE 连接完成: clientId={}", actualClientId);
+            removeEmitter(actualClientId);
         });
 
         // 设置错误回调
         emitter.onError(throwable -> {
-            log.error("SSE 连接错误: clientId={}, error={}", clientId, throwable.getMessage());
-            removeEmitter(clientId);
+            log.error("SSE 连接错误: clientId={}, error={}", actualClientId, throwable.getMessage());
+            removeEmitter(actualClientId);
         });
 
-        emitters.put(clientId, emitter);
+        emitters.put(actualClientId, emitter);
 
         // 保存元数据
         ConnectionMetadata metadata = new ConnectionMetadata();
-        metadata.setClientId(clientId);
+        metadata.setClientId(actualClientId);
         metadata.setConnectTime(System.currentTimeMillis());
-        metadataMap.put(clientId, metadata);
+        metadataMap.put(actualClientId, metadata);
 
         // 发送连接成功消息
-        sendMessage(clientId, SseMessage.builder()
+        sendMessage(actualClientId, SseMessage.builder()
                 .type("connected")
-                .data(Map.of("clientId", clientId, "timestamp", System.currentTimeMillis()))
+                .data(Map.of("clientId", actualClientId, "timestamp", System.currentTimeMillis()))
                 .build());
 
         return emitter;

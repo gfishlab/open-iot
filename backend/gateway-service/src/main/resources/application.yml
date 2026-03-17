@@ -21,7 +21,7 @@ spring:
         server-addr: 127.0.0.1:8848
         file-extension: yaml
         namespace: public
-        enabled: false
+        enabled: true
 
     # Gateway 路由配置（公共）
     gateway:
@@ -37,13 +37,31 @@ spring:
             - Path=/api/v1/tenants/**,/api/v1/users/**,/api/v1/auth/**,/api/v1/init/**
           filters:
             - StripPrefix=0
+            - name: CircuitBreaker
+              args:
+                name: tenant-service
+                fallbackUri: forward:/fallback/tenant-service
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 50
+                redis-rate-limiter.burstCapacity: 100
+                key-resolver: "#{@ipKeyResolver}"
         # device-service: 设备、产品、告警、轨迹、MQTT 认证、数据重放
         - id: device-service
           uri: lb://device-service
           predicates:
-            - Path=/api/v1/devices/**,/api/v1/products/**,/api/v1/alerts/**,/api/v1/trajectory/**,/api/v1/mqtt/**,/api/v1/rules/**,/api/v1/replay/**
+            - Path=/api/v1/devices/**,/api/v1/products/**,/api/v1/alerts/**,/api/v1/trajectory/**,/api/v1/mqtt/**,/api/v1/rules/**,/api/v1/replay/**,/api/v1/ota/**
           filters:
             - StripPrefix=0
+            - name: CircuitBreaker
+              args:
+                name: device-service
+                fallbackUri: forward:/fallback/device-service
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 50
+                redis-rate-limiter.burstCapacity: 100
+                key-resolver: "#{@ipKeyResolver}"
         # data-service: 数据、SSE
         - id: data-service
           uri: lb://data-service
@@ -51,6 +69,15 @@ spring:
             - Path=/api/v1/data/**,/api/v1/sse/**,/api/v1/alarms/**,/api/v1/dlq/**,/api/v1/forward/**
           filters:
             - StripPrefix=0
+            - name: CircuitBreaker
+              args:
+                name: data-service
+                fallbackUri: forward:/fallback/data-service
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 50
+                redis-rate-limiter.burstCapacity: 100
+                key-resolver: "#{@ipKeyResolver}"
         # rule-service: 规则引擎
         - id: rule-service
           uri: lb://rule-service
@@ -58,6 +85,15 @@ spring:
             - Path=/api/v1/parse-rules/**,/api/v1/mapping-rules/**,/api/v1/forward-rules/**,/api/v1/alarm-rules/**
           filters:
             - StripPrefix=0
+            - name: CircuitBreaker
+              args:
+                name: rule-service
+                fallbackUri: forward:/fallback/rule-service
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 50
+                redis-rate-limiter.burstCapacity: 100
+                key-resolver: "#{@ipKeyResolver}"
 
 # Sa-Token 配置（公共）
 sa-token:
@@ -104,6 +140,10 @@ management:
 
 # 可观测性配置（公共）
 openiot:
+  # 限流配置（支持 Nacos 动态刷新）
+  rate-limit:
+    replenish-rate: 50
+    burst-capacity: 100
   observability:
     tracing:
       enabled: true
@@ -112,6 +152,22 @@ openiot:
     metrics:
       business-enabled: true
       redis-enabled: true
+
+# Resilience4j 熔断器配置
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 20
+        failureRateThreshold: 50
+        waitDurationInOpenState: 15s
+        permittedNumberOfCallsInHalfOpenState: 5
+        slowCallDurationThreshold: 3s
+        slowCallRateThreshold: 80
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 5s
 
 # 日志配置
 logging:

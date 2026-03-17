@@ -36,6 +36,10 @@
             <groupId>com.openiot</groupId>
             <artifactId>common-observability</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.openiot</groupId>
+            <artifactId>common-feign-api</artifactId>
+        </dependency>
 
         <!-- Spring Boot Web -->
         <dependency>
@@ -75,6 +79,13 @@
         <dependency>
             <groupId>com.googlecode.aviator</groupId>
             <artifactId>aviator</artifactId>
+        </dependency>
+
+        <!-- HiveMQ MQTT Client - MQTT 5.0 客户端 -->
+        <dependency>
+            <groupId>com.hivemq</groupId>
+            <artifactId>hivemq-mqtt-client</artifactId>
+            <version>1.3.3</version>
         </dependency>
     </dependencies>
 

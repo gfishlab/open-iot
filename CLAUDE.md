@@ -1,9 +1,11 @@
-# open-iot Development Guidelines
+﻿# open-iot Development Guidelines
 
 Auto-generated from all feature plans. Last updated: 2026-02-25
 
 ## Active Technologies
 - JDK 21 (LTS，支持虚拟线程) + Spring Boot 3.2.3 (003-iot-core-platform)
+- JDK 21 (LTS) + Spring Boot 3.2.3 + Spring Cloud 2023.0.0, Spring Cloud Alibaba 2022.0.0.0, MyBatis Plus 3.5.5, Sa-Token, Netty, Kafka, Resilience4j (新增), HiveMQ MQTT Client (新增), OpenFeign (新增), Testcontainers (新增) (004-iot-platform-completion)
+- PostgreSQL (openiot_device/tenant/data/connect) + Redis + InfluxDB + MongoDB (004-iot-platform-completion)
 
 ### 后端
 - JDK 21 (LTS，支持虚拟线程) + Spring Boot 3.x, Spring Cloud Alibaba, Kafka, Netty, MyBatis Plus, Sa-Token
@@ -385,6 +387,7 @@ spring:
 JDK 21 (LTS，支持虚拟线程): Follow standard conventions
 
 ## Recent Changes
+- 004-iot-platform-completion: Added JDK 21 (LTS) + Spring Boot 3.2.3 + Spring Cloud 2023.0.0, Spring Cloud Alibaba 2022.0.0.0, MyBatis Plus 3.5.5, Sa-Token, Netty, Kafka, Resilience4j (新增), HiveMQ MQTT Client (新增), OpenFeign (新增), Testcontainers (新增)
 - 003-iot-core-platform: Added JDK 21 (LTS，支持虚拟线程) + Spring Boot 3.2.3
 
 - 001-mvp-core: Added JDK 21 (LTS，支持虚拟线程) + Spring Boot 3.x, Spring Cloud Alibaba, Kafka, Netty, MyBatis Plus, Sa-Token

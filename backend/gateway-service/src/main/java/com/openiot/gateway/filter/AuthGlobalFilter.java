@@ -109,6 +109,7 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
         return path.startsWith("/api/v1/auth/login") ||
                path.startsWith("/api/v1/auth/register") ||
                path.startsWith("/actuator/") ||
+               path.startsWith("/fallback/") ||
                path.startsWith("/error");
     }
 

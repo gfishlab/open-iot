@@ -196,6 +196,37 @@ const menuItems = [
     requiresAdmin: false
   },
   {
+    path: '/rules/parse',
+    title: '解析规则',
+    iconSvg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M16 18l6-6-6-6"/>
+      <path d="M8 6l-6 6 6 6"/>
+    </svg>`,
+    requiresAdmin: false
+  },
+  {
+    path: '/rules/mapping',
+    title: '映射规则',
+    iconSvg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+      <circle cx="8" cy="6" r="1.5"/>
+      <circle cx="16" cy="12" r="1.5"/>
+      <circle cx="12" cy="18" r="1.5"/>
+    </svg>`,
+    requiresAdmin: false
+  },
+  {
+    path: '/users',
+    title: '用户管理',
+    iconSvg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+      <circle cx="9" cy="7" r="4"/>
+      <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+      <path d="M16 3.13a4 4 0 010 7.75"/>
+    </svg>`,
+    requiresAdmin: true
+  },
+  {
     path: '/tenants',
     title: '租户管理',
     iconSvg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -215,7 +246,11 @@ const visibleMenuItems = computed(() =>
 /** 判断菜单项是否处于激活状态(支持前缀匹配,如 /product/:id 也匹配 /product) */
 function isActive(path: string): boolean {
   if (path === '/monitor') return route.path === path
-  return route.path.startsWith(path)
+  // 精确匹配优先：如果当前路径完全等于菜单路径，直接返回 true
+  if (route.path === path) return true
+  // 前缀匹配：确保子路径匹配（如 /rules/parse 匹配 /rules/parse，但不匹配 /rules）
+  // 只在当前路径以 path + '/' 开头时才算匹配，避免 /rules 误匹配 /rules/parse
+  return route.path.startsWith(path + '/')
 }
 
 // ===== 用户信息 =====

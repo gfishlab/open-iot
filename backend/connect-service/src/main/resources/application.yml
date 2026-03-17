@@ -23,7 +23,7 @@ spring:
         server-addr: 127.0.0.1:8848
         file-extension: yaml
         namespace: public
-        enabled: false
+        enabled: true
 
   # Kafka 配置（公共）
   kafka:
@@ -104,6 +104,21 @@ openiot:
       netty-enabled: true
       redis-enabled: true
       kafka-enabled: true
+  # MQTT 客户端配置（连接 EMQX Broker，用于向设备下发指令；部分参数支持 Nacos 动态刷新）
+  mqtt:
+    reconnect-delay: 5000
+    max-retry: 10
+    enabled: true
+    host: 127.0.0.1
+    port: 1883
+    client-id-prefix: connect-service-
+    username: ""
+    password: ""
+    auto-reconnect: true
+    reconnect-delay-seconds: 1
+    max-reconnect-delay-seconds: 30
+    keep-alive-seconds: 60
+    connect-timeout-seconds: 10
 
 # 日志配置
 logging:

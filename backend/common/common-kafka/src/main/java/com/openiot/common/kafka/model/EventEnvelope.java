@@ -77,6 +77,15 @@ public class EventEnvelope implements Serializable {
     public static final String EVENT_TYPE_STATUS = "STATUS";
     public static final String EVENT_TYPE_ALARM = "ALARM";
 
+    // OTA 升级相关事件类型
+    public static final String EVENT_TYPE_OTA_UPGRADE = "OTA_UPGRADE";
+    public static final String EVENT_TYPE_OTA_PROGRESS = "OTA_PROGRESS";
+
+    // 设备影子相关事件类型
+    public static final String EVENT_TYPE_SHADOW_DELTA = "SHADOW_DELTA";
+    public static final String EVENT_TYPE_SHADOW_GET = "SHADOW_GET";
+    public static final String EVENT_TYPE_SHADOW_REPORTED = "SHADOW_REPORTED";
+
     // ==================== 协议类型常量 ====================
 
     public static final String PROTOCOL_MQTT = "MQTT";

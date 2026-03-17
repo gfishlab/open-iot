@@ -66,6 +66,13 @@
         style="margin-top: 20px; justify-content: flex-end"
       />
     </el-card>
+
+    <!-- 新增/编辑设备对话框 -->
+    <DeviceForm
+      v-model="formDialogVisible"
+      :editData="currentEditDevice"
+      @success="handleFormSuccess"
+    />
   </div>
 </template>
 
@@ -73,6 +80,8 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import request from '@/utils/request'
+import type { Device } from '@/api/device'
+import DeviceForm from './DeviceForm.vue'
 
 const loading = ref(false)
 const devices = ref<any[]>([])
@@ -120,12 +129,23 @@ async function loadDevices() {
   }
 }
 
+// 表单对话框
+const formDialogVisible = ref(false)
+const currentEditDevice = ref<Device | null>(null)
+
 function handleAdd() {
-  ElMessage.info('新增设备功能开发中')
+  currentEditDevice.value = null
+  formDialogVisible.value = true
 }
 
 function handleEdit(row: any) {
-  ElMessage.info(`编辑设备: ${row.deviceName}`)
+  currentEditDevice.value = { ...row }
+  formDialogVisible.value = true
+}
+
+// 表单提交成功后刷新列表
+function handleFormSuccess() {
+  loadDevices()
 }
 
 async function handleDelete(row: any) {
