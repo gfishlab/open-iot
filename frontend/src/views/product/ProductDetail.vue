@@ -3,7 +3,7 @@
     <el-page-header @back="goBack" :title="product.productName || '产品详情'">
       <template #content>
         <span class="product-title">{{ product.productName || '加载中...' }}</span>
-        <el-tag :type="product.status === '1' ? 'success' : 'danger'" size="small">
+        <el-tag class="glass-tag" :type="product.status === '1' ? 'success' : 'danger'" size="small">
           {{ product.status === '1' ? '启用' : '禁用' }}
         </el-tag>
       </template>
@@ -14,18 +14,18 @@
     <el-skeleton :loading="loading" animated>
       <template #default>
         <!-- 基本信息 -->
-        <el-card style="margin-bottom: 24px">
+        <el-card class="glass-card" style="margin-bottom: 24px">
           <template #header>
             <div class="card-header">
               <span class="card-title">基本信息</span>
-              <el-button type="primary" size="small" @click="handleEdit">编辑</el-button>
+              <el-button class="glass-button" type="primary" size="small" @click="handleEdit">编辑</el-button>
             </div>
           </template>
           <el-descriptions :column="3" border>
             <el-descriptions-item label="产品Key">{{ product.productKey }}</el-descriptions-item>
             <el-descriptions-item label="产品名称">{{ product.productName }}</el-descriptions-item>
             <el-descriptions-item label="产品类型">
-              <el-tag>{{ product.productType === 'DEVICE' ? '设备' : '网关' }}</el-tag>
+              <el-tag class="glass-tag">{{ product.productType === 'DEVICE' ? '设备' : '网关' }}</el-tag>
             </el-descriptions-item>
             <el-descriptions-item label="协议类型">{{ product.protocolType }}</el-descriptions-item>
             <el-descriptions-item label="节点类型">{{ product.nodeType === 'DIRECT' ? '直连' : '网关' }}</el-descriptions-item>
@@ -36,11 +36,11 @@
         </el-card>
 
         <!-- 物模型 -->
-        <el-card style="margin-bottom: 24px">
+        <el-card class="glass-card" style="margin-bottom: 24px">
           <template #header>
             <div class="card-header">
               <span class="card-title">物模型定义</span>
-              <el-button type="primary" size="small" @click="handleEditThingModel">编辑物模型</el-button>
+              <el-button class="glass-button" type="primary" size="small" @click="handleEditThingModel">编辑物模型</el-button>
             </div>
           </template>
           <el-tabs v-model="thingModelTab">
@@ -71,7 +71,7 @@
                 <el-table-column prop="name" label="名称" width="200" />
                 <el-table-column prop="type" label="事件类型" width="120">
                   <template #default="{ row }: { row: EventDefinition }">
-                    <el-tag :type="row.type === 'info' ? 'info' : row.type === 'alert' ? 'warning' : 'danger'">
+                    <el-tag class="glass-tag" :type="row.type === 'info' ? 'info' : row.type === 'alert' ? 'warning' : 'danger'">
                       {{ row.type === 'info' ? '信息' : row.type === 'alert' ? '告警' : '故障' }}
                     </el-tag>
                   </template>
@@ -90,7 +90,7 @@
                 <el-table-column prop="name" label="名称" width="200" />
                 <el-table-column prop="callType" label="调用方式" width="120">
                   <template #default="{ row }: { row: ServiceDefinition }">
-                    <el-tag>{{ row.callType === 'sync' ? '同步' : '异步' }}</el-tag>
+                    <el-tag class="glass-tag">{{ row.callType === 'sync' ? '同步' : '异步' }}</el-tag>
                   </template>
                 </el-table-column>
               </el-table>
@@ -100,11 +100,11 @@
         </el-card>
 
         <!-- 关联设备 -->
-        <el-card>
+        <el-card class="glass-card">
           <template #header>
             <div class="card-header">
               <span class="card-title">关联设备 ({{ devices.length }} 台)</span>
-              <el-button type="primary" size="small" @click="handleAddDevice">添加设备</el-button>
+              <el-button class="glass-button" type="primary" size="small" @click="handleAddDevice">添加设备</el-button>
             </div>
           </template>
           <el-table :data="devices" border size="small" v-loading="devicesLoading">
@@ -113,7 +113,7 @@
             <el-table-column prop="protocolType" label="协议类型" width="100" />
             <el-table-column prop="status" label="状态" width="80">
               <template #default="{ row }: { row: Device }">
-                <el-tag :type="row.status === '1' ? 'success' : 'danger'" size="small">
+                <el-tag class="glass-tag" :type="row.status === '1' ? 'success' : 'danger'" size="small">
                   {{ row.status === '1' ? '启用' : '禁用' }}
                 </el-tag>
               </template>
@@ -121,7 +121,7 @@
             <el-table-column prop="createTime" label="创建时间" width="180" />
             <el-table-column label="操作" width="120">
               <template #default="{ row }: { row: Device }">
-                <el-button type="primary" size="small" link @click="viewDevice(row)">查看</el-button>
+                <el-button class="glass-button" size="small" @click="viewDevice(row)">查看</el-button>
               </template>
             </el-table-column>
           </el-table>

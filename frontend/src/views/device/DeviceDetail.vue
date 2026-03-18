@@ -223,6 +223,90 @@
               </div>
             </el-card>
           </el-tab-pane>
+
+          <!-- 设备轨迹 -->
+          <el-tab-pane label="设备轨迹" name="trajectory">
+            <el-card>
+              <template #header>
+                <div class="card-header">
+                  <span>设备轨迹</span>
+                  <el-button class="glass-button" size="small" @click="loadTrajectory">刷新</el-button>
+                </div>
+              </template>
+              <div v-loading="trajectoryLoading">
+                <!-- 时间范围选择器 -->
+                <div class="trajectory-toolbar">
+                  <el-date-picker
+                    v-model="trajectoryDateRange"
+                    type="datetimerange"
+                    range-separator="-"
+                    start-placeholder="开始时间"
+                    end-placeholder="结束时间"
+                    style="width: 320px"
+                  />
+                  <el-button class="glass-button" type="primary" @click="handleQueryTrajectory">查询轨迹</el-button>
+                  <el-button class="glass-button" @click="handleQueryStatistics">统计信息</el-button>
+                </div>
+
+                <!-- 轨迹统计卡片 -->
+                <div v-if="trajectoryStats" class="trajectory-stats">
+                  <div class="stat-item">
+                    <span class="stat-icon">📍</span>
+                    <div class="stat-info">
+                      <span class="stat-label">轨迹点数</span>
+                      <span class="stat-value">{{ trajectoryStats.pointCount || 0 }}</span>
+                    </div>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-icon">📏</span>
+                    <div class="stat-info">
+                      <span class="stat-label">总距离</span>
+                      <span class="stat-value">{{ formatDistance(trajectoryStats.totalDistance) }}</span>
+                    </div>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-icon">⚡</span>
+                    <div class="stat-info">
+                      <span class="stat-label">平均速度</span>
+                      <span class="stat-value">{{ formatSpeed(trajectoryStats.avgSpeed) }}</span>
+                    </div>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-icon">🚀</span>
+                    <div class="stat-info">
+                      <span class="stat-label">最大速度</span>
+                      <span class="stat-value">{{ formatSpeed(trajectoryStats.maxSpeed) }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 轨迹列表（表格形式，简单展示） -->
+                <div class="trajectory-list" v-if="trajectoryPoints.length > 0">
+                  <el-table
+                    :data="trajectoryPoints"
+                    size="small"
+                    :max-height="300"
+                    style="width: 100%"
+                  >
+                    <el-table-column prop="eventTime" label="时间" width="180" />
+                    <el-table-column prop="latitude" label="纬度" width="120">
+                      <template #default="{ row }">{{ row.latitude?.toFixed(6) }}</template>
+                    </el-table-column>
+                    <el-table-column prop="longitude" label="经度" width="120">
+                      <template #default="{ row }">{{ row.longitude?.toFixed(6) }}</template>
+                    </el-table-column>
+                    <el-table-column prop="speed" label="速度(km/h)" width="100">
+                      <template #default="{ row }">{{ row.speed || '-' }}</template>
+                    </el-table-column>
+                    <el-table-column prop="heading" label="航向角(°)" width="100">
+                      <template #default="{ row }">{{ row.heading || '-' }}</template>
+                    </el-table-column>
+                  </el-table>
+                </div>
+                <el-empty v-else description="暂无轨迹数据，请选择时间范围查询" :image-size="80" />
+              </div>
+            </el-card>
+          </el-tab-pane>
         </el-tabs>
       </el-col>
     </el-row>
@@ -392,6 +476,12 @@ const updateDesiredForm = reactive({
   version: 0,
   desired: '{}'
 })
+
+// 设备轨迹
+const trajectoryLoading = ref(false)
+const trajectoryDateRange = ref<any[]>([])
+const trajectoryPoints = ref<any[]>([])
+const trajectoryStats = ref<any>(null)
 
 // 加载设备信息
 async function loadDeviceInfo() {
@@ -679,10 +769,136 @@ async function confirmUpdateDesired() {
   }
 }
 
-// 切换到影子标签页时加载数据
+// ===== 设备轨迹相关方法 =====
+
+// 加载设备轨迹数据（默认加载最近1小时）
+async function loadTrajectory() {
+  try {
+    trajectoryLoading.value = true
+
+    // 如果没有选择时间范围，默认查询最近1小时
+    if (!trajectoryDateRange.value || trajectoryDateRange.value.length !== 2) {
+      const endTime = new Date()
+      const startTime = new Date(endTime.getTime() - 60 * 60 * 1000) // 1小时前
+      trajectoryDateRange.value = [startTime, endTime]
+    }
+
+    const [startTime, endTime] = trajectoryDateRange.value
+    const data = await request.get(`/devices/${deviceId}/trajectory`, {
+      params: {
+        startTime: startTime.toISOString(),
+        endTime: endTime.toISOString()
+      }
+    })
+
+    trajectoryPoints.value = data.points || data.list || []
+    trajectoryStats.value = data.statistics || data.stats || null
+  } catch (error) {
+    ElMessage.error('加载轨迹数据失败')
+  } finally {
+    trajectoryLoading.value = false
+  }
+}
+
+// 查询轨迹（根据选择的时间范围）
+async function handleQueryTrajectory() {
+  if (!trajectoryDateRange.value || trajectoryDateRange.value.length !== 2) {
+    ElMessage.warning('请选择时间范围')
+    return
+  }
+
+  try {
+    trajectoryLoading.value = true
+    const [startTime, endTime] = trajectoryDateRange.value
+    const data = await request.get(`/devices/${deviceId}/trajectory`, {
+      params: {
+        startTime: startTime.toISOString(),
+        endTime: endTime.toISOString()
+      }
+    })
+
+    trajectoryPoints.value = data.points || data.list || []
+    trajectoryStats.value = data.statistics || data.stats || null
+
+    if (trajectoryPoints.value.length === 0) {
+      ElMessage.info('所选时间范围内无轨迹数据')
+    } else {
+      ElMessage.success(`查询到 ${trajectoryPoints.value.length} 条轨迹记录`)
+    }
+  } catch (error) {
+    ElMessage.error('查询轨迹失败')
+  } finally {
+    trajectoryLoading.value = false
+  }
+}
+
+// 查询轨迹统计信息
+async function handleQueryStatistics() {
+  if (!trajectoryDateRange.value || trajectoryDateRange.value.length !== 2) {
+    ElMessage.warning('请选择时间范围')
+    return
+  }
+
+  try {
+    trajectoryLoading.value = true
+    const [startTime, endTime] = trajectoryDateRange.value
+    const data = await request.get(`/devices/${deviceId}/trajectory/statistics`, {
+      params: {
+        startTime: startTime.toISOString(),
+        endTime: endTime.toISOString()
+      }
+    })
+
+    trajectoryStats.value = data
+
+    // 显示统计信息弹窗
+    ElMessageBox.alert(
+      `
+      <div style="text-align: left; padding: 10px;">
+        <p><strong>轨迹点数：</strong> ${data.pointCount || 0}</p>
+        <p><strong>总距离：</strong> ${formatDistance(data.totalDistance)}</p>
+        <p><strong>平均速度：</strong> ${formatSpeed(data.avgSpeed)}</p>
+        <p><strong>最大速度：</strong> ${formatSpeed(data.maxSpeed)}</p>
+        <p><strong>起始时间：</strong> ${new Date(data.startTime || 0).toLocaleString()}</p>
+        <p><strong>结束时间：</strong> ${new Date(data.endTime || 0).toLocaleString()}</p>
+      </div>
+      `,
+      '轨迹统计信息',
+      {
+        dangerouslyUseHTMLString: true,
+        confirmButtonText: '确定'
+      }
+    )
+  } catch (error) {
+    ElMessage.error('查询统计信息失败')
+  } finally {
+    trajectoryLoading.value = false
+  }
+}
+
+// 格式化距离（米 -> 千米）
+function formatDistance(meters: number): string {
+  if (!meters || meters === 0) return '0 m'
+  if (meters < 1000) {
+    return `${meters.toFixed(0)} m`
+  }
+  return `${(meters / 1000).toFixed(2)} km`
+}
+
+// 格式化速度（米/秒 -> 千米/小时）
+function formatSpeed(metersPerSecond: number): string {
+  if (!metersPerSecond || metersPerSecond === 0) return '0 km/h'
+  const kmh = metersPerSecond * 3.6
+  return `${kmh.toFixed(1)} km/h`
+}
+
+// 切换标签页时加载数据
 function handleTabChange(tabName: string) {
   if (tabName === 'shadow' && Object.keys(shadowData.value.reported).length === 0) {
     loadShadow()
+  } else if (tabName === 'trajectory' && trajectoryPoints.value.length === 0) {
+    // 首次切换到轨迹标签页时，自动加载最近1小时的数据
+    loadTrajectory()
   }
 }
 
@@ -826,5 +1042,65 @@ onMounted(() => {
   word-wrap: break-word;
   margin: 0;
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+/* ===== 设备轨迹样式 ===== */
+.trajectory-toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.trajectory-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.stat-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.stat-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.stat-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.trajectory-list {
+  background: rgba(30, 41, 59, 0.5);
+  border-radius: 8px;
+  overflow: hidden;
 }
 </style>

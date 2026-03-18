@@ -189,19 +189,8 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import request from '@/utils/request'
-
-// 类型定义
-interface Alert {
-  id: number
-  alertTitle: string
-  alertLevel: string
-  deviceId: number
-  deviceName: string
-  status: string
-  alertTime: string
-  alertContent: string
-}
+import * as alertApi from '@/api/alert'
+import type { Alert, AlertStatus } from '@/api/alert'
 
 // 列表数据
 const loading = ref(false)
@@ -235,16 +224,16 @@ const handleForm = reactive({
 async function loadAlerts() {
   try {
     loading.value = true
-    const params: Record<string, unknown> = {
+    const params: alertApi.AlertQueryParams = {
       page: currentPage.value,
       size: pageSize.value
     }
-    if (searchForm.level) params.level = searchForm.level
-    if (searchForm.status) params.status = searchForm.status
-    if (searchForm.deviceName) params.deviceName = searchForm.deviceName
+    if (searchForm.level) params.alertLevel = searchForm.level as alertApi.AlertLevel
+    if (searchForm.status) params.alertStatus = searchForm.status as alertApi.AlertStatus
+    if (searchForm.deviceName) params.keyword = searchForm.deviceName
 
-    const data = await request.get('/alerts', { params })
-    alerts.value = data.records || data.list || []
+    const data = await alertApi.getAlertList(params)
+    alerts.value = data.records || []
     total.value = data.total || 0
   } catch (error) {
     ElMessage.error('加载告警列表失败')
@@ -256,7 +245,7 @@ async function loadAlerts() {
 // 加载统计数据
 async function loadStatistics() {
   try {
-    const data = await request.get('/alerts/statistics')
+    const data = await alertApi.getAlertStatistics()
     statistics.value = data || {}
   } catch (error) {
     console.error('加载统计数据失败', error)
@@ -341,9 +330,7 @@ async function handleIgnore(row: Alert) {
       cancelButtonText: '取消',
       type: 'warning'
     })
-    await request.put(`/alerts/${row.id}/handle`, {
-      status: 'ignored'
-    })
+    await alertApi.handleAlert(row.id, { status: 'ignored' })
     ElMessage.success('操作成功')
     loadAlerts()
     loadStatistics()
@@ -374,12 +361,16 @@ async function confirmHandle() {
     handleLoading.value = true
     if (currentAlert.value) {
       // 单个处理
-      await request.put(`/alerts/${currentAlert.value.id}/handle`, handleForm)
+      await alertApi.handleAlert(currentAlert.value.id, {
+        status: handleForm.status as AlertStatus,
+        remark: handleForm.remark
+      })
     } else {
       // 批量处理
-      await request.put('/alerts/batch-handle', {
-        alertIds: selectedIds.value,
-        ...handleForm
+      await alertApi.batchHandleAlerts({
+        ids: selectedIds.value,
+        status: handleForm.status as AlertStatus,
+        remark: handleForm.remark
       })
     }
     ElMessage.success('操作成功')
