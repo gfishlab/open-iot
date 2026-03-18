@@ -118,7 +118,7 @@
         <el-table-column prop="deviceName" label="设备" width="150" />
         <el-table-column prop="status" label="状态" width="100">
           <template #default="{ row }">
-            <el-tag :type="getStatusType(row.status)" size="small">
+            <el-tag class="glass-tag" :type="getStatusType(row.status)" size="small">
               {{ getStatusText(row.status) }}
             </el-tag>
           </template>
@@ -154,6 +154,7 @@
           :total="total"
           :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
+          class="glass-pagination"
           @size-change="loadAlerts"
           @current-change="loadAlerts"
         />
@@ -179,8 +180,8 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="handleDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="confirmHandle" :loading="handleLoading">确定</el-button>
+        <el-button class="glass-button" @click="handleDialogVisible = false">取消</el-button>
+        <el-button class="glass-button" type="primary" @click="confirmHandle" :loading="handleLoading">确定</el-button>
       </template>
     </el-dialog>
   </div>
