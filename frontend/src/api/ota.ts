@@ -34,7 +34,7 @@ export function getFirmwareList(params: {
   size: number
   productId?: number
 }) {
-  return request.get('/api/v1/ota/firmware', { params })
+  return request.get('/ota/firmware', { params })
 }
 
 /**
@@ -51,7 +51,7 @@ export function uploadFirmware(data: FirmwareUploadVO, file: File) {
     formData.append('description', data.description)
   }
 
-  return request.post('/api/v1/ota/firmware', formData, {
+  return request.post('/ota/firmware', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   })
 }
@@ -60,7 +60,7 @@ export function uploadFirmware(data: FirmwareUploadVO, file: File) {
  * 下载固件
  */
 export function downloadFirmware(firmwareId: number) {
-  return request.get(`/api/v1/ota/firmware/${firmwareId}/download`, {
+  return request.get(`/ota/firmware/${firmwareId}/download`, {
     responseType: 'blob'
   })
 }
@@ -69,7 +69,7 @@ export function downloadFirmware(firmwareId: number) {
  * 删除固件
  */
 export function deleteFirmware(firmwareId: number) {
-  return request.delete(`/api/v1/ota/firmware/${firmwareId}`)
+  return request.delete(`/ota/firmware/${firmwareId}`)
 }
 
 // ========== 升级任务管理 ==========
@@ -127,35 +127,35 @@ export function getTaskList(params: {
   size: number
   status?: string
 }) {
-  return request.get('/api/v1/ota/tasks', { params })
+  return request.get('/ota/tasks', { params })
 }
 
 /**
  * 创建升级任务
  */
 export function createTask(data: OtaTaskCreateVO) {
-  return request.post('/api/v1/ota/tasks', data)
+  return request.post('/ota/tasks', data)
 }
 
 /**
  * 开始任务
  */
 export function startTask(taskId: number) {
-  return request.put(`/api/v1/ota/tasks/${taskId}/start`)
+  return request.put(`/ota/tasks/${taskId}/start`)
 }
 
 /**
  * 暂停任务
  */
 export function pauseTask(taskId: number) {
-  return request.put(`/api/v1/ota/tasks/${taskId}/pause`)
+  return request.put(`/ota/tasks/${taskId}/pause`)
 }
 
 /**
  * 取消任务
  */
 export function cancelTask(taskId: number) {
-  return request.put(`/api/v1/ota/tasks/${taskId}/cancel`)
+  return request.put(`/ota/tasks/${taskId}/cancel`)
 }
 
 /**
@@ -165,7 +165,7 @@ export function getTaskDeviceStatuses(taskId: number, params: {
   page: number
   size: number
 }) {
-  return request.get(`/api/v1/ota/tasks/${taskId}/devices`, { params })
+  return request.get(`/ota/tasks/${taskId}/devices`, { params })
 }
 
 // ========== 设备影子 ==========
@@ -226,7 +226,7 @@ export function queryTrajectory(deviceId: number, params: {
   startTime: string
   endTime: string
 }) {
-  return request.get(`/api/v1/devices/${deviceId}/trajectory/query`, { params })
+  return request.get(`/devices/${deviceId}/trajectory/query`, { params })
 }
 
 /**
@@ -238,14 +238,14 @@ export function queryTrajectoryPage(deviceId: number, params: {
   pageNum: number
   pageSize: number
 }) {
-  return request.get(`/api/v1/devices/${deviceId}/trajectory/page`, { params })
+  return request.get(`/devices/${deviceId}/trajectory/page`, { params })
 }
 
 /**
  * 获取最新轨迹点
  */
 export function getLatestTrajectory(deviceId: number) {
-  return request.get(`/api/v1/devices/${deviceId}/trajectory/latest`)
+  return request.get(`/devices/${deviceId}/trajectory/latest`)
 }
 
 /**
@@ -255,7 +255,7 @@ export function calculateTrajectoryDistance(deviceId: number, params: {
   startTime: string
   endTime: string
 }) {
-  return request.get(`/api/v1/devices/${deviceId}/trajectory/distance`, { params })
+  return request.get(`/devices/${deviceId}/trajectory/distance`, { params })
 }
 
 /**
@@ -265,5 +265,5 @@ export function getTrajectoryStatistics(deviceId: number, params: {
   startTime: string
   endTime: string
 }) {
-  return request.get(`/api/v1/devices/${deviceId}/trajectory/statistics`, { params })
+  return request.get(`/devices/${deviceId}/trajectory/statistics`, { params })
 }

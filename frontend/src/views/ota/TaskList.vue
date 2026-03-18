@@ -267,7 +267,10 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus'
+import request from '@/utils/request'
 import * as otaApi from '@/api/ota'
+import * as productApi from '@/api/product'
+import * as deviceApi from '@/api/device'
 import type { OtaTask, OtaTaskCreateVO, Product, Firmware, Device, DeviceStatus } from '@/api/ota'
 
 // 列表数据
@@ -361,7 +364,7 @@ async function loadTasks() {
 // 加载产品列表
 async function loadProducts() {
   try {
-    const data = await request.get('/products', { params: { pageNum: 1, pageSize: 1000 } })
+    const data = await productApi.getProductList({ pageNum: 1, pageSize: 1000 })
     products.value = (data.records || data.list || []).map((p: any) => ({
       id: p.id,
       name: p.productName || p.name
@@ -384,7 +387,7 @@ async function loadFirmwares(productId: number) {
 // 加载设备列表
 async function loadDevices(productId: number) {
   try {
-    const data = await request.get('/devices', { params: { productId, page: 1, size: 1000 } })
+    const data = await deviceApi.getDeviceList({ productId, page: 1, size: 1000 })
     availableDevices.value = data.records || data.list || []
   } catch (error) {
     console.error('加载设备列表失败', error)
