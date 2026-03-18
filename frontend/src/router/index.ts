@@ -82,6 +82,18 @@ const routes = [
         name: 'Users',
         component: () => import('@/views/tenant/UserList.vue'),
         meta: { requiresAdmin: true, title: '用户管理' }
+      },
+      {
+        path: 'ota/firmware',
+        name: 'OtaFirmware',
+        component: () => import('@/views/ota/FirmwareList.vue'),
+        meta: { title: 'OTA 固件' }
+      },
+      {
+        path: 'ota/tasks',
+        name: 'OtaTasks',
+        component: () => import('@/views/ota/TaskList.vue'),
+        meta: { title: 'OTA 升级任务' }
       }
     ]
   }

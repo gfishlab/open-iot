@@ -58,10 +58,10 @@
         <el-table-column prop="createTime" label="创建时间" width="180" />
         <el-table-column label="操作" fixed="right" width="280">
           <template #default="{ row }: { row: Product }">
-            <el-button size="small" @click="handleDetail(row)">详情</el-button>
-            <el-button size="small" @click="handleEdit(row)">编辑</el-button>
-            <el-button size="small" type="warning" @click="handleThingModel(row)">物模型</el-button>
-            <el-button size="small" type="danger" @click="handleDelete(row)">删除</el-button>
+            <el-button class="glass-button" size="small" @click="handleDetail(row)">详情</el-button>
+            <el-button class="glass-button" size="small" @click="handleEdit(row)">编辑</el-button>
+            <el-button class="glass-button" size="small" type="warning" @click="handleThingModel(row)">物模型</el-button>
+            <el-button class="glass-button" size="small" type="danger" @click="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

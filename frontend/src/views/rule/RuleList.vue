@@ -62,10 +62,10 @@
         <div class="card-header">
           <span>规则列表</span>
           <div class="header-actions">
-            <el-button size="small" @click="handleBatchDelete" :disabled="selectedIds.length === 0">
+            <el-button class="glass-button" size="small" @click="handleBatchDelete" :disabled="selectedIds.length === 0">
               批量删除
             </el-button>
-            <el-button size="small" type="primary" @click="handleCreate">
+            <el-button class="glass-button" size="small" type="primary" @click="handleCreate">
               新增规则
             </el-button>
           </div>
@@ -90,8 +90,8 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleSearch">搜索</el-button>
-          <el-button @click="handleReset">重置</el-button>
+          <el-button class="glass-button" type="primary" @click="handleSearch">搜索</el-button>
+          <el-button class="glass-button" @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
 
@@ -140,10 +140,10 @@
         <el-table-column prop="updateTime" label="更新时间" width="160" />
         <el-table-column label="操作" fixed="right" width="240">
           <template #default="{ row }">
-            <el-button size="small" @click="handleTest(row)">测试</el-button>
-            <el-button size="small" @click="handleViewLogs(row)">日志</el-button>
-            <el-button size="small" type="primary" @click="handleEdit(row)">编辑</el-button>
-            <el-button size="small" type="danger" @click="handleDelete(row)">删除</el-button>
+            <el-button class="glass-button" size="small" @click="handleTest(row)">测试</el-button>
+            <el-button class="glass-button" size="small" @click="handleViewLogs(row)">日志</el-button>
+            <el-button class="glass-button" size="small" type="primary" @click="handleEdit(row)">编辑</el-button>
+            <el-button class="glass-button" size="small" type="danger" @click="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -332,8 +332,8 @@ function execute(data) {
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="runTest" :loading="testing">执行测试</el-button>
-          <el-button @click="fillSampleData">填充示例数据</el-button>
+          <el-button class="glass-button" type="primary" @click="runTest" :loading="testing">执行测试</el-button>
+          <el-button class="glass-button" @click="fillSampleData">填充示例数据</el-button>
         </el-form-item>
       </el-form>
 

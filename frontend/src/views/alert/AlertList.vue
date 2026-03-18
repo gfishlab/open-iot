@@ -85,8 +85,8 @@
           <el-input v-model="searchForm.deviceName" placeholder="设备名称" clearable style="width: 160px" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleSearch">搜索</el-button>
-          <el-button @click="handleReset">重置</el-button>
+          <el-button class="glass-button" type="primary" @click="handleSearch">搜索</el-button>
+          <el-button class="glass-button" @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
 
